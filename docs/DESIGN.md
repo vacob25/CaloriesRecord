@@ -76,7 +76,9 @@ Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornalie
 Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
 
 ### Login
-Campo email, pulsante "Invia link". Messaggio di conferma "Controlla la posta". Nessuna password.
+Due passaggi, nella stessa schermata, senza password (ADR-014):
+1. Campo email e pulsante "Invia codice".
+2. Messaggio "Ti abbiamo scritto: inserisci il codice" e campo per il codice numerico (`inputmode="numeric"`, `autocomplete="one-time-code"` per proporlo dalla mail), pulsante "Accedi". Link "Invia un nuovo codice" attivo dopo 60 secondi (limite di Supabase). Errore chiaro se il codice è sbagliato o scaduto.
 
 ## Stati comuni
 Caricamento = scheletro con la stessa forma del contenuto. Errore = messaggio + "Riprova". Vuoto = frase + azione. Offline = banner "Serve la connessione".

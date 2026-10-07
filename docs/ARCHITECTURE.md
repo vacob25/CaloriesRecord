@@ -5,7 +5,7 @@ Single-page app React servita come PWA. Nessun backend proprio: il browser parla
 ```
 iPhone (Safari, PWA) ──► Vercel (file statici)
         │
-        ├──► Supabase: Auth (magic link) + Postgres (RLS)
+        ├──► Supabase: Auth (codice OTP via email) + Postgres (RLS)
         └──► Open Food Facts (ricerca, barcode)
 ```
 
