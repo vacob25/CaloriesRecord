@@ -51,7 +51,23 @@ Pro: cache, invalidazione, stati di caricamento/errore già gestiti. Contro: una
 **ADR-008 · zod per la validazione**
 Pro: un solo schema per form e risposte API, tipi derivati. Contro: dipendenza in più.
 
+## Decise allo step 2 (7 ottobre 2026)
+
+**ADR-016 · oxlint invece di ESLint**
+È il linter del template ufficiale di Vite: un solo pacchetto, configurazione minima (`.oxlintrc.json`), regole di React hooks incluse, molto veloce. Scartato: ESLint + typescript-eslint + 2 plugin React (4-5 pacchetti per lo stesso risultato). Da rivedere se serve una regola che esiste solo in ESLint.
+
+**ADR-017 · Font Plus Jakarta Sans servito dall'app (@fontsource)**
+Il file del font finisce nel build e nella cache del service worker: la shell si apre con il font giusto anche con rete lenta, e il browser non fa richieste a Google (privacy, `SECURITY.md`). Scartato: link a Google Fonts. Costo: ~60 kB di font nel precache.
+
+**ADR-018 · Tailwind v4 con token in CSS (`@theme`)**
+I token di `DESIGN.md` stanno in `src/styles/index.css`. La palette di default di Tailwind è disattivata (`--color-*: initial`): si possono usare solo i colori del design. Non esiste `tailwind.config.js`.
+
+**ADR-019 · Barra di stato iOS `default`**
+Con `black-translucent` il testo della barra di stato è bianco e su fondo chiaro (#F4F6F9) sarebbe illeggibile. `default` dà barra chiara con testo scuro e il contenuto parte sotto di essa.
+
 ## Punti aperti (rispondere prima dello step indicato)
+- **Step 3:** `DESIGN.md` (Login: pulsante "Invia link", messaggio "Controlla la posta") e lo schema in `ARCHITECTURE.md` ("magic link") contraddicono ADR-014 (codice OTP). Da allineare a ADR-014 prima di scrivere la schermata di login.
+- **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
 - **Step 3:** verificare sull'iPhone che con l'OTP la sessione nella PWA duri (chiudere/riaprire, dopo 1 giorno, dopo 1 settimana) e che il servizio email predefinito di Supabase regga l'uso quotidiano; altrimenti SMTP personalizzato.
 - **Step 4:** unità "porzione" per i cibi: solo grammi con scorciatoia da `serving_g`, o anche millilitri per i liquidi? (Latte, olio.) Proposta: solo grammi in v1, con densità ignorata e dichiarata.
 - **Step 6:** sesso e data di nascita si inseriscono nell'app alla prima apertura (schermata profilo) e restano nel database, non nel repo.

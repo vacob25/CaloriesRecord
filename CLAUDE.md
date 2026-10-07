@@ -32,6 +32,12 @@ PWA personale (un solo utente) per registrare calorie e macro da iPhone. Obietti
 8. Login con codice numerico via email (OTP), non con link magico (ADR-014).
 9. Nessun dato personale reale nel repo, nemmeno in test o esempi: si usa il profilo fittizio di `docs/DOMAIN_RULES.md`.
 
-## Comandi (aggiornare quando esistono)
-- `npm run dev` · `npm run build` · `npm run test` · `npm run lint` · `npm run typecheck`
+## Comandi
+- `npm install` — installa le dipendenze
+- `npm run dev` — server di sviluppo (http://localhost:5173)
+- `npm run build` — typecheck + build di produzione in `dist/` (con service worker)
+- `npm run preview` — serve `dist/` in locale per provare la PWA
+- `npm run test` — Vitest una volta (`npm run test:watch` per la modalità watch)
+- `npm run lint` — oxlint, gli avvisi fanno fallire il comando
+- `npm run typecheck` — TypeScript strict, senza generare file
 - Prima di dichiarare uno step finito: `typecheck`, `lint`, `test` e `build` devono passare.
