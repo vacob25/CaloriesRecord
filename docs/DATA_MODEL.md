@@ -93,7 +93,15 @@ create policy "foods_update_own" on public.foods
 create policy "foods_delete_own" on public.foods
   for delete to authenticated using (user_id = (select auth.uid()));
 ```
-Nessuna policy per `anon`: senza login non si legge né scrive niente. Dopo ogni migrazione, verificare con due utenti di prova che l'utente A non veda mai le righe di B (test in SECURITY.md).
+Nessuna policy e **nessun grant** per `anon`: senza login non si legge né scrive niente.
+
+### Grant espliciti (obbligatori)
+Dal 2026 le tabelle create nello schema `public` non sono più esposte automaticamente alla Data API: senza `grant` l'app riceve l'errore `42501 permission denied for table …` (progetti nuovi dal 30 maggio 2026, tutti i progetti dal 30 ottobre 2026). Ogni tabella della migrazione deve avere, subito dopo `create table`:
+```sql
+grant select, insert, update, delete on public.foods to authenticated;
+-- niente grant a anon; service_role non serve (non lo usiamo)
+```
+Il grant dice *chi può provare* a toccare la tabella; la RLS dice *quali righe*. Servono entrambi. Dopo ogni migrazione, verificare con due utenti di prova che l'utente A non veda mai le righe di B (test in SECURITY.md).
 
 ## Query frequenti (per gli indici)
 - Pasti di un giorno: `entry_date = $1` ordinati per `created_at`.

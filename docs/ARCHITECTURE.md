@@ -79,4 +79,4 @@ docs/
 Ogni schermata gestisce tre stati: caricamento (scheletro), errore (messaggio + riprova), vuoto (invito all'azione). Gli errori di rete non cancellano mai ciò che l'utente stava scrivendo.
 
 ## Variabili d'ambiente
-`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.

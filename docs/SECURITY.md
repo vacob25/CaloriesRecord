@@ -11,16 +11,16 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 `.gitignore` deve contenere almeno: `.env`, `.env.*` (con eccezione `!.env.example`), `node_modules`, `dist`, `.vercel`, `*.log`, `.DS_Store`.
 
 ## Cosa può stare nel frontend
-`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (chiave pubblica/publishable). Sono pensate per essere esposte nel browser: la protezione dei dati sta nella RLS, non nel nascondere la chiave. Qualunque variabile `VITE_*` finisce nel bundle pubblico: mai metterci segreti.
+`VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` (chiave publishable, `sb_publishable_…`). Sono pensate per essere esposte nel browser: la protezione dei dati sta nella RLS, non nel nascondere la chiave. Qualunque variabile `VITE_*` finisce nel bundle pubblico: mai metterci segreti.
 
 ## Controllo prima di ogni commit
 1. `git status` e `git diff --staged`: nessun file `.env*` (tranne `.env.example`), nessun dato personale.
-2. Cercare segreti: `git diff --staged | grep -iE "service_role|secret|password|apikey|api_key|eyJ"`. Una stringa che inizia con `eyJ` è probabilmente un JWT: controllare che sia la chiave `anon` e non altro.
+2. Cercare segreti: `git diff --staged | grep -iE "service_role|secret|password|apikey|api_key|eyJ"`. Una stringa che inizia con `eyJ` è probabilmente un JWT: controllare che sia la chiave publishable e non una secret key o `service_role`.
 3. Se un segreto è finito in un commit (anche non pushato): ruotare la chiave dal pannello Supabase prima di tutto. Riscrivere la storia di git NON basta se è già stato pushato.
 
 ## Database: RLS
 - RLS attiva su **ogni** tabella, subito alla creazione (nella stessa migrazione).
-- Nessuna policy per il ruolo `anon`: da non loggati non si legge né scrive niente.
+- Nessuna policy e nessun `grant` per il ruolo `anon`: da non loggati non si legge né scrive niente. Per `authenticated` servono sia i `grant` espliciti (vedi `DATA_MODEL.md`) sia le policy.
 - Policy per `authenticated` limitate a `user_id = (select auth.uid())` per select, insert, update, delete (modello in `docs/DATA_MODEL.md`). In insert, `user_id` ha default `auth.uid()` e un `with check` che impedisce di scrivere per altri.
 - Le viste devono rispettare la RLS (`security_invoker = true`); in v1 meglio non usare viste.
 - Nessuna funzione `security definer` senza una ragione scritta in `DECISIONS.md`.
@@ -29,7 +29,7 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 1. Crea due utenti di prova (A e B) con email diverse.
 2. Come A inserisci una riga in ogni tabella.
 3. Come B: `select` su ogni tabella → 0 righe; `update` e `delete` su una riga di A → 0 righe toccate; `insert` con `user_id` di A → errore.
-4. Senza login (solo chiave `anon`): `select` su ogni tabella → 0 righe, `insert` → errore.
+4. Senza login (solo chiave publishable): `select` su ogni tabella → 0 righe, `insert` → errore.
 5. Segna l'esito nel messaggio di commit. Se uno qualunque fallisce, lo step non è finito.
 
 ## Login

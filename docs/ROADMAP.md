@@ -31,7 +31,7 @@ Accettazione:
 Non fare: nessuna logica, nessun database.
 
 ## Step 3 · Database e login
-Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, RLS e indici; login con **codice numerico via email (OTP)**, vedi ADR-014; guardia di route (senza sessione → login); client in `data/supabase.ts`; creazione del profilo alla prima apertura (schermata dati personali: sesso, data di nascita, altezza, peso obiettivo, inseriti nell'app).
+Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **codice numerico via email (OTP)**, vedi ADR-014; guardia di route (senza sessione → login); client in `data/supabase.ts`; creazione del profilo alla prima apertura (schermata dati personali: sesso, data di nascita, altezza, peso obiettivo, inseriti nell'app).
 Accettazione:
 - Verifica RLS con due utenti completata (`SECURITY.md`) e annotata.
 - Registrazioni aperte disattivate dopo la creazione dell'utente.
@@ -39,7 +39,7 @@ Accettazione:
 - Sessione: chiudere e riaprire l'app dopo qualche minuto, dopo un giorno e dopo una settimana; se chiede di nuovo il login, annotarlo in `DECISIONS.md`.
 - Email di login: il template "Magic Link" di Supabase contiene `{{ .Token }}`; la chiamata di verifica è `verifyOtp` con `type: 'email'`; in `signInWithOtp` si passa `shouldCreateUser: false` dopo aver creato l'utente.
 - Limite di invio: il servizio email predefinito di Supabase invia solo agli indirizzi dei membri del progetto e con limite molto basso; se dà problemi, configurare SMTP personalizzato (es. Resend).
-- Nessuna chiave diversa dalla `anon` nel repo.
+- Nessuna chiave diversa dalla publishable nel repo.
 
 ## Step 4 · Cibi e ricette
 Fare: elenco e ricerca dei propri cibi, creazione/modifica/eliminazione, preferiti; ricette con ingredienti, peso cotto e calcolo per 100 g (`lib/nutrition.ts` con test).

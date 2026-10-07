@@ -37,6 +37,9 @@ Su iOS la PWA installata ha storage separato da Safari (problema noto di WebKit)
 **ADR-015 · Nessun dato personale reale nel repo**
 Il repo è pubblico: peso, altezza, data di nascita e obiettivo stanno solo nel database (tabella `profiles`). Test ed esempi usano un profilo fittizio (uomo, 75 kg, 180 cm, 20 anni).
 
+**ADR-018 · Chiave publishable e grant espliciti (verificato sul changelog Supabase)**
+Supabase depreca le chiavi `anon` e `service_role` entro fine 2026: si usa la chiave publishable (`sb_publishable_…`) nel frontend, mai la secret. Inoltre le tabelle nuove in `public` non sono esposte alla Data API senza `grant` espliciti (progetti nuovi dal 30 maggio 2026, esistenti dal 30 ottobre 2026): la migrazione li include per `authenticated` e nessuno per `anon`. Variabile d'ambiente: `VITE_SUPABASE_PUBLISHABLE_KEY`.
+
 **ADR-013 · Registrazioni disattivate dopo la creazione dell'utente**
 App a utente singolo con repo pubblico: nessuno deve poter creare un account.
 
