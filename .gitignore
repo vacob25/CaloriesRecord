@@ -1,0 +1,22 @@
+# Segreti: mai in git (docs/SECURITY.md)
+.env
+.env.*
+!.env.example
+
+# Dipendenze e build
+node_modules
+dist
+dev-dist
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Log e file di sistema
+*.log
+.DS_Store
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
