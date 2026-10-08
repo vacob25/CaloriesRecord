@@ -32,6 +32,16 @@ describe('readSupabaseEnv', () => {
     ).toBe(false)
   })
 
+  it('accetta la barra finale', () => {
+    expect(readSupabaseEnv({ VITE_SUPABASE_URL: `${URL_OK}/`, VITE_SUPABASE_PUBLISHABLE_KEY: KEY_OK }).ok).toBe(true)
+  })
+
+  it('rifiuta l’URL dell’API dati (…/rest/v1): produrrebbe …/rest/v1/auth/v1 e un 404', () => {
+    const result = readSupabaseEnv({ VITE_SUPABASE_URL: `${URL_OK}/rest/v1`, VITE_SUPABASE_PUBLISHABLE_KEY: KEY_OK })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.problems.join(' ')).toContain('senza /rest/v1')
+  })
+
   it('rifiuta una secret key e non la ripete nel messaggio', () => {
     const result = readSupabaseEnv({ VITE_SUPABASE_URL: URL_OK, VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_secret_finta' })
     expect(result.ok).toBe(false)

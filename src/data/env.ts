@@ -20,6 +20,11 @@ export function readSupabaseEnv(env: RawEnv): SupabaseEnv {
     problems.push('Manca VITE_SUPABASE_URL.')
   } else if (!isHttpsUrl(url)) {
     problems.push('VITE_SUPABASE_URL non è un indirizzo https valido.')
+  } else if (hasPath(url)) {
+    // Errore facile: copiare l'URL dell'API dati (…/rest/v1). supabase-js aggiunge da solo /auth/v1 e /rest/v1.
+    problems.push(
+      'VITE_SUPABASE_URL deve essere solo l’indirizzo base del progetto (https://<progetto>.supabase.co), senza /rest/v1 o altri percorsi.',
+    )
   }
 
   if (!key) {
@@ -34,6 +39,11 @@ export function readSupabaseEnv(env: RawEnv): SupabaseEnv {
   }
 
   return problems.length > 0 ? { ok: false, problems } : { ok: true, url, publishableKey: key }
+}
+
+function hasPath(value: string): boolean {
+  const { pathname, search, hash } = new URL(value)
+  return pathname.replace(/\/+$/, '') !== '' || search !== '' || hash !== ''
 }
 
 function isHttpsUrl(value: string): boolean {
