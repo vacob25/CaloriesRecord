@@ -32,3 +32,11 @@ export const TRAINING_LABEL: Record<TrainingType, string> = {
 
 export type Sex = 'male' | 'female'
 export const SEX_LABEL: Record<Sex, string> = { male: 'Uomo', female: 'Donna' }
+
+export const DAY_STATUS_LABEL = {
+  respected: 'Rispettato',
+  under: 'Sotto target',
+  over: 'Oltre il target',
+  noTarget: 'Senza target',
+  unregistered: 'Non registrato',
+} as const
