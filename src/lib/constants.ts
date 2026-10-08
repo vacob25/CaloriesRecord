@@ -87,3 +87,6 @@ export const RECAL_BAND_MAX = 0.4
 export const RECAL_FAT_WARNING_KG_WEEK = 0.5
 /** La proposta resta entro ±5% del mantenimento attuale. */
 export const RECAL_MAX_CHANGE = 0.05
+
+/** Promemoria del peso dopo questi giorni senza pesate, e ampiezza del riepilogo (ADR-047, scelta dell'utente). */
+export const WEIGHT_REMINDER_DAYS = 5

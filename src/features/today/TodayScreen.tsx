@@ -18,6 +18,7 @@ import { groupByMeal, rescaleEntry } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
 import { sumNutrients } from '../../lib/nutrition'
 import { TargetCard } from './TargetCard'
+import { WeightReminder } from './WeightReminder'
 
 interface AddedState {
   added?: { id: string; mealType: MealType }
@@ -62,6 +63,8 @@ export function TodayScreen() {
           Nuova proposta di ricalibrazione <span aria-hidden="true">›</span>
         </Link>
       )}
+
+      <WeightReminder today={today} />
 
       <TargetCard date={today} eaten={total} />
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { ScreenHeader } from '../../components/ScreenHeader'
 import { EmptyState, ErrorState, ListSkeleton } from '../../components/States'
@@ -45,6 +46,17 @@ export function StatsScreen() {
   return (
     <>
       <ScreenHeader title="Statistiche" />
+      <Link
+        to="/peso"
+        className="mx-5 mt-3 flex min-h-12 items-center justify-between rounded-card bg-surface px-4 text-[15px] font-semibold text-ink shadow-[0_1px_3px_rgba(21,23,30,0.08)]"
+      >
+        <span>
+          Peso <span className="font-normal text-ink-2">· registra, andamento, traguardo</span>
+        </span>
+        <span aria-hidden="true" className="text-ink-2">
+          ›
+        </span>
+      </Link>
       <div className="px-5 pt-4">
         <div className="grid grid-cols-2 gap-1 rounded-button bg-line/60 p-1" role="group" aria-label="Periodo">
           {(['week', 'month'] as const).map((option) => (

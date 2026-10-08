@@ -18,7 +18,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 10 | Ricalibrazione | in prova (fatto e provato contro Postgres + PostgREST locali; manca: conferma di ADR-044 e uso reale di qualche settimana) |
 | 11 | Rifinitura e uso reale | in corso (parte tecnica fatta: accessibilità 0 violazioni, aree ≥ 44 px, banner offline, npm audit pulito; mancano: icona e avvio definitivi, 2 settimane di uso reale) |
 | 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
-| 13 | Peso più visibile e promemoria | da fare |
+| 13 | Peso più visibile e promemoria | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 14 | Porzioni casalinghe e liquidi in ml | da fare |
 | 15 | Acqua | da fare |
 | 16 | Catalogo di ingredienti mediterranei | da fare (dati dall'altra chat) |
@@ -115,7 +115,7 @@ Accettazione:
 
 ## Step 13 · Peso più visibile e promemoria (richiesta dell'utente, 8/10/2026)
 Le regole di calcolo del peso (§4) NON cambiano: pesarsi spesso resta il modo per avere media, pendenza e ricalibrazione.
-Fare: voce "Peso" raggiungibile anche da Statistiche; promemoria in Oggi se l'ultima pesata ha più di 5 giorni (o non ce n'è nessuna); in Peso un riepilogo "ultimi 5 giorni" (pesate, media, variazione rispetto ai 5 giorni prima).
+Fare: voce "Peso" raggiungibile anche da Statistiche; promemoria in Oggi se non ti pesi da 5 giorni o più (o non c'è nessuna pesata); in Peso un riepilogo "ultimi 5 giorni" (pesate, media, variazione rispetto ai 5 giorni prima).
 Accettazione:
 - Con l'ultima pesata di 6 giorni fa compare il promemoria; dopo aver registrato il peso sparisce.
 - Il riepilogo degli ultimi 5 giorni torna con un calcolo a mano.

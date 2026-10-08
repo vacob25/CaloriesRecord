@@ -1,4 +1,5 @@
 import {
+  WEIGHT_REMINDER_DAYS,
   MOVING_AVERAGE_DAYS,
   MOVING_AVERAGE_MIN_LOGS,
   SLOPE_MIN_LOGS,
@@ -112,4 +113,34 @@ export function distanceToGoal(currentKg: number, goalKg: number): { kg: number;
   const diff = goalKg - currentKg
   if (Math.abs(diff) < 0.05) return { kg: 0, direction: 'reached' }
   return { kg: Math.abs(diff), direction: diff > 0 ? 'up' : 'down' }
+}
+
+/** Giorni passati dall'ultima pesata (fino a oggi incluso); null se non ce ne sono. */
+export function daysSinceLastWeight(logs: readonly WeightLog[], today: string): number | null {
+  const last = lastLogOnOrBefore(logs, today)
+  if (!last) return null
+  return Math.round((dayNumber(today) - dayNumber(last.date)))
+}
+
+/** Promemoria in Oggi: nessuna pesata, oppure l'ultima ha 5 giorni o più (ADR-047). */
+export function needsWeightReminder(logs: readonly WeightLog[], today: string, days = WEIGHT_REMINDER_DAYS): boolean {
+  const since = daysSinceLastWeight(logs, today)
+  return since === null || since >= days
+}
+
+export interface RecentSummary {
+  count: number
+  average: number | null
+  /** Media degli ultimi giorni meno media dei giorni prima (null se manca una delle due). */
+  change: number | null
+}
+
+/** Riepilogo degli ultimi `days` giorni (oggi incluso) confrontato con i `days` giorni prima. */
+export function recentWeightSummary(logs: readonly WeightLog[], today: string, days = WEIGHT_REMINDER_DAYS): RecentSummary {
+  const mean = (list: WeightLog[]) => (list.length === 0 ? null : list.reduce((sum, log) => sum + log.kg, 0) / list.length)
+  const current = logsInWindow(logs, today, days)
+  const previous = logsInWindow(logs, addDays(today, -days), days)
+  const average = mean(current)
+  const before = mean(previous)
+  return { count: current.length, average, change: average !== null && before !== null ? average - before : null }
 }

@@ -4,10 +4,13 @@ import { addDays } from './dates'
 import {
   ageOn,
   averageChange,
+  daysSinceLastWeight,
   distanceToGoal,
   lastLogOnOrBefore,
   movingAverage7,
   needsJumpConfirmation,
+  needsWeightReminder,
+  recentWeightSummary,
   slopeKgPerWeek,
   weightForDay,
   weightSeries,
@@ -112,5 +115,46 @@ describe('distanceToGoal', () => {
     expect(distanceToGoal(75, 80)).toEqual({ kg: 5, direction: 'up' })
     expect(distanceToGoal(82, 80)).toEqual({ kg: 2, direction: 'down' })
     expect(distanceToGoal(80.02, 80)).toEqual({ kg: 0, direction: 'reached' })
+  })
+})
+
+describe('promemoria del peso (step 13, ADR-047)', () => {
+  const today = '2026-10-20'
+  it('nessuna pesata → promemoria', () => {
+    expect(daysSinceLastWeight([], today)).toBeNull()
+    expect(needsWeightReminder([], today)).toBe(true)
+  })
+
+  it('ultima pesata 4 giorni fa → niente; 5 o 6 giorni fa → promemoria', () => {
+    expect(needsWeightReminder([{ date: '2026-10-16', kg: 75 }], today)).toBe(false)
+    expect(daysSinceLastWeight([{ date: '2026-10-15', kg: 75 }], today)).toBe(5)
+    expect(needsWeightReminder([{ date: '2026-10-15', kg: 75 }], today)).toBe(true)
+    expect(needsWeightReminder([{ date: '2026-10-14', kg: 75 }], today)).toBe(true)
+  })
+
+  it('pesata di oggi → niente promemoria (attraversa anche il cambio d’ora del 25/10)', () => {
+    expect(needsWeightReminder([{ date: today, kg: 75 }], today)).toBe(false)
+    expect(daysSinceLastWeight([{ date: '2026-10-24', kg: 75 }], '2026-10-27')).toBe(3)
+  })
+})
+
+describe('recentWeightSummary (ACCETTAZIONE step 13: calcolo a mano)', () => {
+  it('ultimi 5 giorni contro i 5 prima', () => {
+    // 11-15/10: 75,0 e 75,2 → media 75,1; 16-20/10: 75,4, 75,6, 75,8 → media 75,6; variazione +0,5
+    const logs = [
+      { date: '2026-10-11', kg: 75.0 },
+      { date: '2026-10-14', kg: 75.2 },
+      { date: '2026-10-16', kg: 75.4 },
+      { date: '2026-10-18', kg: 75.6 },
+      { date: '2026-10-20', kg: 75.8 },
+    ]
+    const summary = recentWeightSummary(logs, '2026-10-20')
+    expect(summary.count).toBe(3)
+    expect(summary.average).toBeCloseTo(75.6, 6)
+    expect(summary.change).toBeCloseTo(0.5, 6)
+  })
+
+  it('senza pesate nei 5 giorni prima → variazione null', () => {
+    expect(recentWeightSummary([{ date: '2026-10-20', kg: 75 }], '2026-10-20')).toEqual({ count: 1, average: 75, change: null })
   })
 })

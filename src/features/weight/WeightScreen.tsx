@@ -11,7 +11,14 @@ import { errorMessage } from '../../data/dbErrors'
 import { useDeleteWeight, useProfile, useWeights } from '../../data/queries'
 import { addDays, formatLongDate } from '../../lib/dates'
 import { formatNumber } from '../../lib/numbers'
-import { distanceToGoal, lastLogOnOrBefore, movingAverage7, slopeKgPerWeek, weightSeries } from '../../lib/weight'
+import {
+  distanceToGoal,
+  lastLogOnOrBefore,
+  movingAverage7,
+  recentWeightSummary,
+  slopeKgPerWeek,
+  weightSeries,
+} from '../../lib/weight'
 import { weightSummary } from '../../lib/weightText'
 
 const RANGES = [
@@ -36,6 +43,7 @@ export function WeightScreen() {
   const slope = slopeKgPerWeek(logs, today)
   const goal = profile.data?.goalWeightKg ?? null
   const distance = current !== null && goal !== null ? distanceToGoal(current, goal) : null
+  const recent = recentWeightSummary(logs, today)
 
   return (
     <>
@@ -71,6 +79,24 @@ export function WeightScreen() {
               note={goal === null ? 'imposta il peso obiettivo nel Profilo' : `obiettivo ${formatNumber(goal, 1)} kg`}
             />
           </dl>
+
+          <section aria-labelledby="recent-title" className={`${cardClass} mx-5 mt-4 p-4`}>
+            <h2 id="recent-title" className="text-[15px] font-bold">
+              Ultimi 5 giorni
+            </h2>
+            <p className="mt-1 text-[15px] text-ink">
+              {recent.count === 0
+                ? 'Nessuna pesata negli ultimi 5 giorni.'
+                : `${recent.count} ${recent.count === 1 ? 'pesata' : 'pesate'}, media ${formatNumber(recent.average ?? 0, 1)} kg`}
+              {recent.change !== null && (
+                <span className="text-ink-2">
+                  {' '}
+                  · {recent.change > 0 ? '+' : recent.change < 0 ? '−' : ''}
+                  {formatNumber(Math.abs(recent.change), 1)} kg rispetto ai 5 giorni prima
+                </span>
+              )}
+            </p>
+          </section>
 
           <section aria-labelledby="chart-title" className={`${cardClass} mx-5 mt-4 p-4`}>
             <div className="flex items-center justify-between gap-2">
