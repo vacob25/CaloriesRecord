@@ -24,6 +24,7 @@ Postgres su Supabase. Una migrazione SQL numerata per volta in `supabase/migrati
 | goal_weight_kg | numeric(4,1) | nullable, impostato dall'utente nell'app |
 | protein_g_per_kg | numeric(3,2) | default 2.00 |
 | fat_g_per_kg | numeric(3,2) | default 1.00 |
+| water_goal_ml | int | nullable, > 0; obiettivo acqua scelto dall'utente (migrazione 003, ADR-049) |
 | created_at, updated_at | timestamptz | |
 
 ### foods
@@ -34,6 +35,8 @@ Postgres su Supabase. Una migrazione SQL numerata per volta in `supabase/migrati
 | brand | text | |
 | barcode | text | unico per utente se presente |
 | source | text | `manual` / `open_food_facts` / `recipe` |
+| unit | text | `g` (default) / `ml`: per `ml` i valori `_100g` sono per 100 ml (migrazione 003, ADR-048) |
+| portions | jsonb | default `[]`; lista `{name, amount}` con `amount` nell'unità del cibo (es. "1 uovo medio", 50) |
 | kcal_100g, protein_100g, carbs_100g, fat_100g | numeric | non negativi |
 | serving_g | numeric(8,1) | opzionale |
 | cooked_weight_g | numeric(8,1) | solo `recipe`: peso totale cotto |
@@ -54,7 +57,8 @@ Vincoli: `check (kcal_100g >= 0 and protein_100g >= 0 and carbs_100g >= 0 and fa
 | meal_type | text | `breakfast` / `lunch` / `dinner` / `snack` |
 | food_id | uuid null | FK foods, ON DELETE SET NULL |
 | food_name | text not null | snapshot |
-| grams | numeric(8,1) > 0 | |
+| grams | numeric(8,1) > 0 | quantità nell'unità `unit` (il nome resta `grams` anche per i ml) |
+| unit | text | `g` / `ml`, snapshot dell'unità del cibo (migrazione 003) |
 | kcal | numeric(7,1) | snapshot calcolato |
 | protein_g, carbs_g, fat_g | numeric(7,1) | snapshot calcolato |
 | created_at | timestamptz | |
@@ -75,6 +79,12 @@ Indice su `(user_id, entry_date)`.
 | created_at, updated_at | timestamptz | |
 
 Si crea alla prima apertura del giorno, copiando i parametri del profilo di quel momento. Cambiare il tipo di allenamento aggiorna solo quella riga. I giorni passati non si ricalcolano mai quando cambia il profilo.
+
+### water_entries (migrazione 003)
+`id`, `entry_date date not null` (giorno locale), `ml int` con `check (ml > 0 and ml <= 5000)`, `created_at`. Indice su `(user_id, entry_date)`. Niente calorie: l'acqua non entra in `meal_entries`.
+
+### drink_containers (migrazione 003)
+`id`, `name text` non vuoto, `ml int` con `check (ml > 0 and ml <= 5000)`, `created_at`. Contenitori personali (es. borraccia); i tre rapidi (bicchiere, bottiglietta, bottiglia) sono costanti nell'app, non righe.
 
 ### tdee_estimates
 `id`, `week_start date`, `window_days int`, `avg_intake_kcal int`, `trend_slope_kg_week numeric(5,3)`, `estimated_maintenance_kcal int`, `proposed_maintenance_kcal int` (null se nessuna proposta), `status text` (`pending` / `accepted` / `rejected` / `none`), `created_at`. Accettare una proposta aggiorna `profiles.activity_factor` (= mantenimento proposto / BMR attuale), non esiste un campo di override (ADR-009).

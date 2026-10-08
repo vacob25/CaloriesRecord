@@ -19,7 +19,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 11 | Rifinitura e uso reale | in corso (parte tecnica fatta: accessibilità 0 violazioni, aree ≥ 44 px, banner offline, npm audit pulito; mancano: icona e avvio definitivi, 2 settimane di uso reale) |
 | 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
 | 13 | Peso più visibile e promemoria | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
-| 14 | Porzioni casalinghe e liquidi in ml | da fare |
+| 14 | Porzioni casalinghe e liquidi in ml | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 15 | Acqua | da fare |
 | 16 | Catalogo di ingredienti mediterranei | da fare (dati dall'altra chat) |
 

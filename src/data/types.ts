@@ -1,5 +1,6 @@
 import type { MealType } from '../lib/labels'
 import type { Nutrients, Per100g } from '../lib/nutrition'
+import type { FoodUnit, Portion } from '../lib/portions'
 
 /** Tipi dell'app derivati dallo schema (supabase/migrations). Nomi in camelCase, valori già numeri. */
 
@@ -11,7 +12,11 @@ export interface Food {
   brand: string | null
   barcode: string | null
   source: FoodSource
+  /** g, oppure ml per i liquidi: allora `per100g` vale per 100 ml (ADR-048). */
+  unit: FoodUnit
   per100g: Per100g
+  /** Porzioni casalinghe, es. "1 uovo medio" = 50 g (ADR-048). */
+  portions: Portion[]
   servingG: number | null
   cookedWeightG: number | null
   isFavorite: boolean
@@ -36,7 +41,9 @@ export interface MealEntry extends Nutrients {
   mealType: MealType
   foodId: string | null
   foodName: string
+  /** Quantità nell'unità `unit` (la colonna resta `grams` anche per i ml). */
   grams: number
+  unit: FoodUnit
   createdAt: string
 }
 

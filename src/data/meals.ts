@@ -11,6 +11,7 @@ interface EntryRow {
   food_id: string | null
   food_name: string
   grams: number | string
+  unit: 'g' | 'ml'
   kcal: number | string
   protein_g: number | string
   carbs_g: number | string
@@ -18,7 +19,7 @@ interface EntryRow {
   created_at: string
 }
 
-const ENTRY_COLUMNS = 'id, entry_date, meal_type, food_id, food_name, grams, kcal, protein_g, carbs_g, fat_g, created_at'
+const ENTRY_COLUMNS = 'id, entry_date, meal_type, food_id, food_name, grams, unit, kcal, protein_g, carbs_g, fat_g, created_at'
 
 function toEntry(row: EntryRow): MealEntry {
   return {
@@ -28,6 +29,7 @@ function toEntry(row: EntryRow): MealEntry {
     foodId: row.food_id,
     foodName: row.food_name,
     grams: Number(row.grams),
+    unit: row.unit === 'ml' ? 'ml' : 'g',
     kcal: Number(row.kcal),
     protein: Number(row.protein_g),
     carbs: Number(row.carbs_g),
@@ -78,6 +80,7 @@ export async function addEntry(input: NewEntry): Promise<MealEntry> {
       food_id: input.food.id,
       food_name: input.food.name,
       grams: input.grams,
+      unit: input.food.unit,
       kcal: values.kcal,
       protein_g: values.protein,
       carbs_g: values.carbs,

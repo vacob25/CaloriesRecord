@@ -1,5 +1,6 @@
 import type { FoodValues } from '../lib/foodValidation'
 import { recipePer100g, type Per100g } from '../lib/nutrition'
+import { parsePortions, type Portion } from '../lib/portions'
 import { DataError, throwIfError } from './dbErrors'
 import { getSupabase } from './supabase'
 import type { Food, FoodSource, Recipe } from './types'
@@ -10,6 +11,8 @@ interface FoodRow {
   brand: string | null
   barcode: string | null
   source: FoodSource
+  unit: 'g' | 'ml'
+  portions: unknown
   kcal_100g: number | string
   protein_100g: number | string
   carbs_100g: number | string
@@ -21,7 +24,7 @@ interface FoodRow {
 }
 
 const FOOD_COLUMNS =
-  'id, name, brand, barcode, source, kcal_100g, protein_100g, carbs_100g, fat_100g, serving_g, cooked_weight_g, is_favorite, last_used_at'
+  'id, name, brand, barcode, source, unit, portions, kcal_100g, protein_100g, carbs_100g, fat_100g, serving_g, cooked_weight_g, is_favorite, last_used_at'
 
 const toNumber = (value: number | string) => Number(value)
 const toNumberOrNull = (value: number | string | null) => (value === null ? null : Number(value))
@@ -33,6 +36,8 @@ export function toFood(row: FoodRow): Food {
     brand: row.brand,
     barcode: row.barcode,
     source: row.source,
+    unit: row.unit === 'ml' ? 'ml' : 'g',
+    portions: parsePortions(row.portions),
     per100g: {
       kcal: toNumber(row.kcal_100g),
       protein: toNumber(row.protein_100g),
@@ -87,7 +92,11 @@ export async function getFood(id: string): Promise<Food> {
   return toFood(data as FoodRow)
 }
 
-export async function createFood(values: FoodValues, source: Exclude<FoodSource, 'recipe'> = 'manual'): Promise<Food> {
+export async function createFood(
+  values: FoodValues,
+  source: Exclude<FoodSource, 'recipe'> = 'manual',
+  portions: Portion[] = [],
+): Promise<Food> {
   const { data, error } = await getSupabase()
     .from('foods')
     .insert({
@@ -95,6 +104,8 @@ export async function createFood(values: FoodValues, source: Exclude<FoodSource,
       brand: values.brand,
       barcode: values.barcode,
       source,
+      unit: values.unit,
+      portions,
       serving_g: values.servingG,
       ...valuesToRow(values.per100g),
     })
@@ -108,13 +119,15 @@ export async function createFood(values: FoodValues, source: Exclude<FoodSource,
  * Modifica un cibo. Le voci pasto già registrate non cambiano (sono snapshot, ADR-011).
  * Le ricette che lo usano come ingrediente vengono ricalcolate.
  */
-export async function updateFood(id: string, values: FoodValues): Promise<void> {
+export async function updateFood(id: string, values: FoodValues, portions: Portion[] = []): Promise<void> {
   const { error } = await getSupabase()
     .from('foods')
     .update({
       name: values.name,
       brand: values.brand,
       barcode: values.barcode,
+      unit: values.unit,
+      portions,
       serving_g: values.servingG,
       ...valuesToRow(values.per100g),
     })

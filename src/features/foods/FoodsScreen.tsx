@@ -9,6 +9,7 @@ import { errorMessage } from '../../data/dbErrors'
 import { useFoods, useToggleFavorite } from '../../data/queries'
 import { FOOD_SOURCE_LABEL } from '../../lib/labels'
 import { formatNumber } from '../../lib/numbers'
+import { per100Label } from '../../lib/portions'
 import { filterByQuery } from '../../lib/search'
 import { foodPath } from './paths'
 
@@ -68,7 +69,7 @@ export function FoodsScreen() {
               </Link>
               <span className="shrink-0 text-right text-[13px] text-ink-2">
                 <span className="font-bold">{formatNumber(food.per100g.kcal)}</span> kcal
-                <span className="block text-muted">per 100 g</span>
+                <span className="block text-muted">{per100Label(food.unit)}</span>
               </span>
               <FavoriteButton
                 name={food.name}

@@ -13,6 +13,7 @@ import { localDate, localHour } from '../../lib/dates'
 import { FOOD_SOURCE_LABEL, isMealType, MEAL_LABEL, type MealType } from '../../lib/labels'
 import { defaultGrams, entrySnapshot, mealForHour, recentFoods } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
+import { per100Label } from '../../lib/portions'
 import { filterByQuery } from '../../lib/search'
 import { OffSearch } from './OffSearch'
 
@@ -176,7 +177,7 @@ export function AddMealScreen() {
                   </span>
                 </span>
                 <span className="shrink-0 text-[13px] text-ink-2">
-                  <span className="font-bold">{formatNumber(food.per100g.kcal)}</span> kcal/100 g
+                  <span className="font-bold">{formatNumber(food.per100g.kcal)}</span> kcal/100 {food.unit}
                 </span>
               </button>
             </li>
@@ -201,9 +202,11 @@ export function AddMealScreen() {
         <GramsSheet
           key={current.id}
           title={current.name}
-          subtitle={`${formatNumber(current.per100g.kcal)} kcal per 100 g`}
+          subtitle={`${formatNumber(current.per100g.kcal)} kcal ${per100Label(current.unit)}`}
           initialGrams={defaultGrams(lastGrams.data?.[current.id], current.servingG)}
           servingG={current.servingG}
+          unit={current.unit}
+          portions={current.portions}
           preview={(grams) => entrySnapshot(current.per100g, grams)}
           submitLabel={`Aggiungi a ${mealName}`}
           busy={addEntry.isPending}

@@ -11,6 +11,7 @@ import { useDeleteFood, useFoods, useRecipe, useSaveRecipe } from '../../data/qu
 import type { Food, Recipe } from '../../data/types'
 import { validateGrams } from '../../lib/foodValidation'
 import { formatNumber, parseDecimal } from '../../lib/numbers'
+import { per100Label } from '../../lib/portions'
 import { recipePer100g, totalGrams } from '../../lib/nutrition'
 import { validateRecipe, type RecipeFormErrors } from '../../lib/recipeValidation'
 import { filterByQuery } from '../../lib/search'
@@ -108,7 +109,7 @@ function RecipeForm({ recipe }: { recipe: Recipe | null }) {
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] font-semibold">{item.ingredient.name}</p>
-                      <p className="text-[13px] text-muted">{formatNumber(item.ingredient.per100g.kcal)} kcal per 100 g</p>
+                      <p className="text-[13px] text-muted">{formatNumber(item.ingredient.per100g.kcal)} kcal {per100Label(item.ingredient.unit)}</p>
                     </div>
                     <button
                       type="button"
@@ -123,9 +124,9 @@ function RecipeForm({ recipe }: { recipe: Recipe | null }) {
                   </div>
                   <Field
                     id={`grams-${item.key}`}
-                    label={`Grammi di ${item.ingredient.name}`}
+                    label={`${item.ingredient.unit === 'ml' ? 'Millilitri' : 'Grammi'} di ${item.ingredient.name}`}
                     inputMode="decimal"
-                    suffix="g"
+                    suffix={item.ingredient.unit}
                     value={item.grams}
                     onChange={(e) =>
                       setItems((current) =>
@@ -255,7 +256,7 @@ function IngredientPicker({
               className="flex min-h-12 w-full items-center justify-between gap-2 py-2 text-left"
             >
               <span className="min-w-0 truncate text-[15px] font-semibold">{food.name}</span>
-              <span className="shrink-0 text-[13px] text-muted">{formatNumber(food.per100g.kcal)} kcal/100 g</span>
+              <span className="shrink-0 text-[13px] text-muted">{formatNumber(food.per100g.kcal)} kcal/100 {food.unit}</span>
             </button>
           </li>
         ))}

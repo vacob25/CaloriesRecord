@@ -24,6 +24,7 @@ describe('convertOffProduct', () => {
         name: 'Fiocchi d’avena di prova'.replace('’', "'"),
         brand: 'Marca Inventata',
         barcode: '0000000000017',
+        unit: 'g',
         servingG: 40,
         per100g: { kcal: 372, protein: 13.5, carbs: 58.7, fat: 7 },
       },

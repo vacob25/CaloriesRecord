@@ -6,6 +6,7 @@ const base: FoodFormInput = {
   name: 'Riso',
   brand: '',
   barcode: '',
+  unit: 'g',
   basis: '100g',
   servingG: '',
   kcal: '350',
@@ -37,6 +38,7 @@ describe('validateFood', () => {
         name: 'Riso',
         brand: null,
         barcode: null,
+        unit: 'g',
         servingG: null,
         per100g: { kcal: 350, protein: 7, carbs: 78, fat: 0.6 },
       },
@@ -125,5 +127,17 @@ describe('validateFood', () => {
     const result = validateFood({ ...base, brand: '  Marca  ', barcode: ' 8001234567890 ' })
     expect(result.ok && result.value.brand).toBe('Marca')
     expect(result.ok && result.value.barcode).toBe('8001234567890')
+  })
+})
+
+describe('liquidi in ml (step 14)', () => {
+  it('latte: valori per 100 ml, unità ml', () => {
+    const result = validateFood({ ...base, name: 'Latte', unit: 'ml', kcal: '64', protein: '3,3', carbs: '4,9', fat: '3,6' })
+    expect(result).toMatchObject({ ok: true, value: { unit: 'ml', per100g: { kcal: 64, protein: 3.3, carbs: 4.9, fat: 3.6 } } })
+  })
+
+  it('messaggi in ml', () => {
+    expect(validateGrams('0', 'ml')).toEqual({ ok: false, message: 'I ml devono essere più di 0.' })
+    expect(validateGrams('5001', 'ml')).toEqual({ ok: false, message: 'Al massimo 5000 ml.' })
   })
 })

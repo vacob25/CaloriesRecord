@@ -57,11 +57,11 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 - Barra in alto: indietro, titolo "Aggiungi a {pasto}". Scelta del pasto a 4 segmenti (default: in base all'ora).
 - Ricerca testuale + pulsante barcode. Schede: Recenti, Preferiti, I miei cibi, Ricette.
 - Elenco con nome, fonte (I miei cibi / Open Food Facts / Ricetta) e kcal per 100 g.
-- Pannello inferiore alla selezione: grammi con − / + a passi di 10 g e campo numerico, anteprima kcal e macro in tempo reale, pulsante "Aggiungi a {pasto}". Se il cibo ha `serving_g`, scorciatoia "1 porzione".
+- Pannello inferiore alla selezione: grammi con − / + a passi di 10 g e campo numerico, anteprima kcal e macro in tempo reale, pulsante "Aggiungi a {pasto}". Se il cibo ha porzioni casalinghe (step 14), chip "1 uovo medio (50 g)": scelta la porzione compare un contatore − / + a passi di ½ e la quantità si calcola da sola; scrivere a mano o usare − / + da 10 deseleziona la porzione. Senza porzioni, se il cibo ha `serving_g`, scorciatoia "1 porzione". Per i liquidi l'etichetta è "Millilitri" e l'unità "ml".
 - Il pulsante fa un'unica azione e torna a Oggi. Annulla possibile con un avviso "Aggiunto · Annulla" per alcuni secondi.
 
 ### Cibi
-Elenco dei cibi e delle ricette con ricerca. "Nuovo cibo": nome, marca, kcal e macro per 100 g (o per porzione, con conversione), barcode opzionale. "Nuova ricetta": ingredienti con grammi, peso totale cotto, risultato per 100 g. Modifica ed eliminazione sempre disponibili (l'eliminazione non tocca lo storico).
+Elenco dei cibi e delle ricette con ricerca. "Nuovo cibo": nome, marca, unità (grammi o millilitri), kcal e macro per 100 g/ml (o per porzione, con conversione), porzioni casalinghe facoltative (nome + quantità), barcode opzionale. "Nuova ricetta": ingredienti con grammi, peso totale cotto, risultato per 100 g. Modifica ed eliminazione sempre disponibili (l'eliminazione non tocca lo storico).
 
 ### Scanner barcode
 Fotocamera a schermo intero con riquadro di inquadratura, pulsante torcia se disponibile, annulla. Prodotto non trovato → "Non trovato su Open Food Facts. Crealo a mano" con codice già compilato. Permesso fotocamera negato → spiegazione e alternativa di ricerca testuale.

@@ -16,6 +16,7 @@ import { formatLongDate } from '../../lib/dates'
 import { isMealType, MEAL_LABEL, MEAL_TYPES, type MealType } from '../../lib/labels'
 import { groupByMeal, rescaleEntry } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
+import { formatQuantity } from '../../lib/portions'
 import { sumNutrients } from '../../lib/nutrition'
 import { TargetCard } from './TargetCard'
 import { WeightReminder } from './WeightReminder'
@@ -108,7 +109,7 @@ export function TodayScreen() {
                       >
                         <span className="min-w-0">
                           <span className="block truncate text-[15px]">{entry.foodName}</span>
-                          <span className="block text-[13px] text-muted">{formatNumber(entry.grams, 1)} g</span>
+                          <span className="block text-[13px] text-muted">{formatQuantity(entry.grams, entry.unit)}</span>
                         </span>
                         <span className="shrink-0 text-[15px] tabular-nums text-ink-2">{formatNumber(entry.kcal)} kcal</span>
                       </button>
@@ -164,6 +165,7 @@ function EditEntrySheet({ entry, onClose, onDelete }: { entry: MealEntry; onClos
       title={entry.foodName}
       subtitle="Valori salvati al momento della registrazione"
       initialGrams={entry.grams}
+      unit={entry.unit}
       preview={(grams) => rescaleEntry(entry, grams)}
       submitLabel="Salva"
       busy={update.isPending}

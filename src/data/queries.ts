@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import type { FoodValues } from '../lib/foodValidation'
+import type { Portion } from '../lib/portions'
 import type { MealType, TrainingType } from '../lib/labels'
 import type { ParamsValues, PersonalValues } from '../lib/profileValidation'
 import {
@@ -65,12 +66,22 @@ function useInvalidateFoods() {
 export function useSaveFood() {
   const invalidate = useInvalidateFoods()
   return useMutation({
-    mutationFn: async ({ id, values, source }: { id: string | null; values: FoodValues; source?: 'manual' | 'open_food_facts' }) => {
+    mutationFn: async ({
+      id,
+      values,
+      source,
+      portions = [],
+    }: {
+      id: string | null
+      values: FoodValues
+      source?: 'manual' | 'open_food_facts'
+      portions?: Portion[]
+    }) => {
       if (id) {
-        await updateFood(id, values)
+        await updateFood(id, values, portions)
         return null
       }
-      return createFood(values, source)
+      return createFood(values, source, portions)
     },
     onSuccess: invalidate,
   })

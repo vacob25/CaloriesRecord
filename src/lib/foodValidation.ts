@@ -9,6 +9,7 @@ import {
 } from './constants'
 import { parseDecimal, round } from './numbers'
 import { kcalFromMacros, per100gFromServing, type Per100g } from './nutrition'
+import type { FoodUnit } from './portions'
 
 /** Grammi di una voce pasto o di un ingrediente: > 0 e ≤ 5000 (§9). */
 export const gramsSchema = z
@@ -16,10 +17,12 @@ export const gramsSchema = z
   .gt(0, { message: 'I grammi devono essere più di 0.' })
   .max(GRAMS_MAX, { message: `Al massimo ${GRAMS_MAX} g.` })
 
-export function validateGrams(input: string): { ok: true; value: number } | { ok: false; message: string } {
+export function validateGrams(input: string, unit: FoodUnit = 'g'): { ok: true; value: number } | { ok: false; message: string } {
   const parsed = gramsSchema.safeParse(parseDecimal(input) ?? undefined)
   if (parsed.success) return { ok: true, value: round(parsed.data, 1) }
-  return { ok: false, message: parsed.error.issues[0]?.message ?? 'Grammi non validi.' }
+  const message = parsed.error.issues[0]?.message ?? 'Quantità non valida.'
+  // Per i liquidi gli stessi limiti valgono in ml.
+  return { ok: false, message: unit === 'ml' ? message.replace('i grammi', 'i ml').replace('I grammi', 'I ml').replace(' g.', ' ml.') : message }
 }
 
 /** Testo del modulo "Nuovo cibo / Modifica cibo", così come l'utente lo scrive. */
@@ -27,7 +30,9 @@ export interface FoodFormInput {
   name: string
   brand: string
   barcode: string
-  /** I valori scritti sono per 100 g o per una porzione di `servingG` grammi. */
+  /** g, oppure ml per i liquidi (valori per 100 ml, ADR-048). */
+  unit: FoodUnit
+  /** I valori scritti sono per 100 g/ml o per una porzione di `servingG` grammi/ml. */
   basis: '100g' | 'serving'
   servingG: string
   kcal: string
@@ -41,6 +46,7 @@ export interface FoodValues {
   name: string
   brand: string | null
   barcode: string | null
+  unit: FoodUnit
   servingG: number | null
   per100g: Per100g
 }
@@ -66,6 +72,7 @@ const formSchema = z.object({
   name: z.string().trim().min(1, { message: 'Inserisci il nome.' }),
   brand: optionalText,
   barcode: optionalText,
+  unit: z.enum(['g', 'ml']),
   basis: z.enum(['100g', 'serving']),
   servingG: z.string().transform((text) => parseDecimal(text)),
   kcal: requiredNumber('le kcal'),
@@ -92,14 +99,14 @@ export function validateFood(input: FoodFormInput): FoodValidation {
   let servingG: number | null = null
   const servingText = input.servingG.trim()
   if (input.basis === 'serving' || servingText !== '') {
-    const serving = validateGrams(servingText)
+    const serving = validateGrams(servingText, input.unit)
     if (serving.ok) servingG = serving.value
     else errors.servingG = servingText === '' ? 'Inserisci i grammi della porzione.' : serving.message
   }
 
   if (!parsed.success || Object.keys(errors).length > 0) return { ok: false, errors }
 
-  const { name, brand, barcode, basis, kcal, protein, carbs, fat } = parsed.data
+  const { name, brand, barcode, unit, basis, kcal, protein, carbs, fat } = parsed.data
   const written = { kcal, protein, carbs, fat }
   const raw = basis === 'serving' && servingG !== null ? per100gFromServing(written, servingG) : written
   const per100g: Per100g = {
@@ -109,14 +116,14 @@ export function validateFood(input: FoodFormInput): FoodValidation {
     fat: round(raw.fat, 2),
   }
 
-  const where = basis === 'serving' ? ' (convertito a 100 g)' : ''
-  if (per100g.kcal > KCAL_100G_MAX) errors.kcal = `Al massimo ${KCAL_100G_MAX} kcal per 100 g${where}.`
+  const where = basis === 'serving' ? ` (convertito a 100 ${unit})` : ''
+  if (per100g.kcal > KCAL_100G_MAX) errors.kcal = `Al massimo ${KCAL_100G_MAX} kcal per 100 ${unit}${where}.`
   for (const key of ['protein', 'carbs', 'fat'] as const) {
-    if (per100g[key] > MACRO_100G_MAX) errors[key] = `Al massimo ${MACRO_100G_MAX} g per 100 g${where}.`
+    if (per100g[key] > MACRO_100G_MAX) errors[key] = `Al massimo ${MACRO_100G_MAX} g per 100 ${unit}${where}.`
   }
   const macroSum = per100g.protein + per100g.carbs + per100g.fat
   if (macroSum > MACRO_100G_MAX * (1 + MACRO_SUM_TOLERANCE)) {
-    errors.macroSum = `Proteine + carboidrati + grassi superano 100 g su 100 g${where}: controlla i valori.`
+    errors.macroSum = `Proteine + carboidrati + grassi superano 100 g su 100 ${unit}${where}: controlla i valori.`
   }
   if (Object.keys(errors).length > 0) return { ok: false, errors }
 
@@ -130,5 +137,5 @@ export function validateFood(input: FoodFormInput): FoodValidation {
     )
   }
 
-  return { ok: true, value: { name, brand, barcode, servingG, per100g }, warnings }
+  return { ok: true, value: { name, brand, barcode, unit, servingG, per100g }, warnings }
 }

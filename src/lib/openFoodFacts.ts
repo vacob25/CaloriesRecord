@@ -72,6 +72,7 @@ export function convertOffProduct(raw: unknown, barcodeFallback = ''): OffConver
     name,
     brand: product.brands?.split(',')[0]?.trim() ?? '',
     barcode: product.code ?? barcodeFallback,
+    unit: 'g',
     basis: '100g',
     servingG: servingG !== undefined && servingG > 0 ? text(servingG) : '',
     kcal: text(nutriments['energy-kcal_100g']),
