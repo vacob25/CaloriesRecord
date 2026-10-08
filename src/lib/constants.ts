@@ -90,3 +90,9 @@ export const RECAL_MAX_CHANGE = 0.05
 
 /** Promemoria del peso dopo questi giorni senza pesate, e ampiezza del riepilogo (ADR-047, scelta dell'utente). */
 export const WEIGHT_REMINDER_DAYS = 5
+
+/** Acqua (ADR-049). Massimo per singola aggiunta e per contenitore, come il vincolo del database. */
+export const WATER_ML_MAX = 5000
+/** Obiettivo acqua: solo un limite contro gli errori di battitura, non un consiglio (il valore lo sceglie l'utente). */
+export const WATER_GOAL_MAX_L = 10
+export const CONTAINER_NAME_MAX = 30

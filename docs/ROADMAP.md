@@ -20,7 +20,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
 | 13 | Peso più visibile e promemoria | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 14 | Porzioni casalinghe e liquidi in ml | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
-| 15 | Acqua | da fare |
+| 15 | Acqua | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 16 | Catalogo di ingredienti mediterranei | da fare (dati dall'altra chat) |
 
 Gli step 1-7 portano a un primo uso reale quotidiano. 8-12 arrivano nelle settimane dopo (lo step 12 si può anticipare).

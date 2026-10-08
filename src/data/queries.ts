@@ -25,6 +25,15 @@ import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type 
 import { createProfile, getProfile, updateParams, updatePersonal } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
 import type { MealEntry } from './types'
+import {
+  addWater,
+  createContainer,
+  deleteContainer,
+  deleteWater,
+  listContainers,
+  listWater,
+  updateWaterGoal,
+} from './water'
 import { deleteWeight, listWeights, saveWeight } from './weights'
 
 /**
@@ -43,6 +52,9 @@ export const queryKeys = {
   targetForDay: (date: string) => ['daily_targets', date] as const,
   weights: ['weight_logs'] as const,
   recalibration: (today: string) => ['tdee_estimates', today] as const,
+  water: ['water_entries'] as const,
+  waterForDay: (date: string) => ['water_entries', date] as const,
+  containers: ['drink_containers'] as const,
 }
 
 export function useFoods() {
@@ -263,4 +275,42 @@ export function useDecideProposal(today: string) {
     // Niente ricalcolo del target di oggi: la proposta vale dal giorno dopo (§7).
     onSuccess: () => invalidate(queryKeys.recalibration(today), queryKeys.profile),
   })
+}
+
+// Acqua (step 15)
+
+export function useWater(date: string) {
+  return useQuery({ queryKey: queryKeys.waterForDay(date), queryFn: () => listWater(date) })
+}
+
+export function useAddWater(date: string) {
+  const invalidate = useInvalidate()
+  return useMutation({ mutationFn: (ml: number) => addWater(date, ml), onSuccess: () => invalidate(queryKeys.water) })
+}
+
+export function useDeleteWater() {
+  const invalidate = useInvalidate()
+  return useMutation({ mutationFn: deleteWater, onSuccess: () => invalidate(queryKeys.water) })
+}
+
+export function useContainers() {
+  return useQuery({ queryKey: queryKeys.containers, queryFn: listContainers })
+}
+
+export function useCreateContainer() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: ({ name, ml }: { name: string; ml: number }) => createContainer(name, ml),
+    onSuccess: () => invalidate(queryKeys.containers),
+  })
+}
+
+export function useDeleteContainer() {
+  const invalidate = useInvalidate()
+  return useMutation({ mutationFn: deleteContainer, onSuccess: () => invalidate(queryKeys.containers) })
+}
+
+export function useUpdateWaterGoal() {
+  const invalidate = useInvalidate()
+  return useMutation({ mutationFn: updateWaterGoal, onSuccess: () => invalidate(queryKeys.profile) })
 }

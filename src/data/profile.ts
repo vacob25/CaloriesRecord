@@ -13,10 +13,11 @@ interface ProfileRow {
   goal_weight_kg: number | string | null
   protein_g_per_kg: number | string
   fat_g_per_kg: number | string
+  water_goal_ml: number | null
 }
 
 const PROFILE_COLUMNS =
-  'sex, birth_date, height_cm, activity_factor, surplus_pct, training_bonus_kcal, goal_weight_kg, protein_g_per_kg, fat_g_per_kg'
+  'sex, birth_date, height_cm, activity_factor, surplus_pct, training_bonus_kcal, goal_weight_kg, protein_g_per_kg, fat_g_per_kg, water_goal_ml'
 
 function toProfile(row: ProfileRow): Profile {
   return {
@@ -29,6 +30,7 @@ function toProfile(row: ProfileRow): Profile {
     goalWeightKg: row.goal_weight_kg === null ? null : Number(row.goal_weight_kg),
     proteinGPerKg: Number(row.protein_g_per_kg),
     fatGPerKg: Number(row.fat_g_per_kg),
+    waterGoalMl: row.water_goal_ml,
   }
 }
 

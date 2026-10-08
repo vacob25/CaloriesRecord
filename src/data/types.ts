@@ -57,6 +57,8 @@ export interface Profile {
   goalWeightKg: number | null
   proteinGPerKg: number
   fatGPerKg: number
+  /** Obiettivo acqua scelto dall'utente; null = nessuno (ADR-049). */
+  waterGoalMl: number | null
 }
 
 export interface DailyTarget {

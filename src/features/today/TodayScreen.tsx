@@ -19,6 +19,7 @@ import { formatNumber } from '../../lib/numbers'
 import { formatQuantity } from '../../lib/portions'
 import { sumNutrients } from '../../lib/nutrition'
 import { TargetCard } from './TargetCard'
+import { WaterCard } from './WaterCard'
 import { WeightReminder } from './WeightReminder'
 
 interface AddedState {
@@ -124,6 +125,8 @@ export function TodayScreen() {
           })}
         </div>
       )}
+
+      <WaterCard date={today} />
 
       {editing && (
         <EditEntrySheet

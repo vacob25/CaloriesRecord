@@ -19,6 +19,7 @@ import {
 } from '../../lib/profileValidation'
 import { PersonalFields } from './PersonalFields'
 import { RecalibrationCard } from './RecalibrationCard'
+import { WaterSection } from './WaterSection'
 
 const text = (value: number | null) => (value === null ? '' : String(value).replace('.', ','))
 
@@ -43,6 +44,7 @@ export function ProfileScreen() {
           <RecalibrationCard />
           <PersonalSection profile={profile.data} />
           <ParamsSection profile={profile.data} />
+          <WaterSection profile={profile.data} />
         </>
       )}
       <div className="px-5 pt-6">

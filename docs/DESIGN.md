@@ -50,6 +50,7 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 - Card riepilogo: anello con "kcal restanti" al centro; a lato obiettivo, mangiate e badge del tipo di giorno ("Giorno calcio +200"); sotto tre barre macro (proteine, carboidrati, grassi) con "mangiati / obiettivo".
 - Se le kcal superano il target: l'anello mostra "oltre di N kcal", non numeri negativi, senza colore di allarme (in un bulk non è un errore grave).
 - Quattro card pasto (Colazione, Pranzo, Cena, Snack) con totale kcal e voci; un pasto vuoto è una card tratteggiata "+ Aggiungi". Tocco su una voce → modifica grammi o elimina.
+- Card Acqua (step 15) sotto i pasti: totale del giorno ("1,45 L", e "di 2 L" solo se c'è un obiettivo, con barra blu e "Mancano …"); griglia a 3 colonne di tocchi rapidi con icona, nome e quantità (Bicchiere 200 ml, Bottiglietta 500 ml, Bottiglia 1,5 L, poi i contenitori personali) e "Altra quantità" (pannello con ml e "Salva come contenitore"); riga "Ultima aggiunta: … · Annulla". Il nome visibile fa parte del nome accessibile ("Aggiungi Bicchiere 200 ml").
 - Tipo di giorno (riposo/palestra/calcio/entrambi): selettore sul badge; cambia il target del solo giorno.
 - Barra di navigazione in basso: Oggi, Cibi, "+" centrale, Statistiche, Profilo.
 
@@ -73,7 +74,7 @@ Inserimento del peso mattutino, grafico con punti grezzi e media mobile, distanz
 Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornaliera, giorni rispettati, peso in kg/settimana), grafico a barre calorie contro linea del target (verde = rispettato, arancio = sotto), grafico peso 4 settimane con traguardo, distribuzione calorie per pasto, cibi più frequenti. Periodo senza dati: stato vuoto, non grafici a zero.
 
 ### Profilo
-Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
+Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), Acqua (obiettivo facoltativo in litri, elenco dei propri contenitori con elimina), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
 
 ### Login
 Email e password (ADR-028; il codice OTP di ADR-014 è rinviato allo step 12):
