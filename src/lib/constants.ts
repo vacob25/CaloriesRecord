@@ -37,3 +37,29 @@ export const MEAL_BY_HOUR = [
 
 /** Durata dell'avviso "Aggiunto · Annulla" (DESIGN.md: "per alcuni secondi"). */
 export const UNDO_SECONDS = 6
+
+/** Mifflin-St Jeor (DOMAIN_RULES §1). */
+export const BMR_SEX_OFFSET = { male: 5, female: -161 } as const
+
+/** Il target si arrotonda al multiplo di 10 kcal più vicino (§2). */
+export const TARGET_ROUNDING_KCAL = 10
+/** Avviso (non blocco) se il surplus supera il 20% (§2). */
+export const SURPLUS_WARNING_PCT = 0.2
+/** Avviso se i carboidrati scendono sotto 3 g/kg (§3). */
+export const MIN_CARBS_G_PER_KG = 3
+
+/** Peso (§4, §9). */
+export const WEIGHT_MIN_KG = 30
+export const WEIGHT_MAX_KG = 250
+export const MOVING_AVERAGE_DAYS = 7
+export const MOVING_AVERAGE_MIN_LOGS = 4
+export const SLOPE_WINDOW_DAYS = 28
+export const SLOPE_MIN_LOGS = 10
+/** Salto dal giorno prima oltre il quale si chiede conferma (§9). */
+export const WEIGHT_JUMP_CONFIRM_KG = 2
+
+/** Dati personali (§10, ADR-038). */
+export const HEIGHT_MIN_CM = 100
+export const HEIGHT_MAX_CM = 250
+export const AGE_MIN_YEARS = 14
+export const AGE_MAX_YEARS = 100

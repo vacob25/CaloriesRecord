@@ -1,4 +1,11 @@
-import { KCAL_PER_G_CARBS, KCAL_PER_G_FAT, KCAL_PER_G_PROTEIN } from './constants'
+import {
+  BMR_SEX_OFFSET,
+  KCAL_PER_G_CARBS,
+  KCAL_PER_G_FAT,
+  KCAL_PER_G_PROTEIN,
+  MIN_CARBS_G_PER_KG,
+  TARGET_ROUNDING_KCAL,
+} from './constants'
 import { round } from './numbers'
 
 /** Valori nutrizionali per 100 g (come in `foods`). */
@@ -81,4 +88,54 @@ export function recipePer100g(ingredients: readonly RecipeIngredient[], cookedWe
 /** Peso crudo totale degli ingredienti: proposta iniziale per il peso cotto. */
 export function totalGrams(ingredients: readonly { grams: number }[]): number {
   return ingredients.reduce((sum, item) => sum + item.grams, 0)
+}
+
+// ─── Target del giorno (DOMAIN_RULES §1-3) ────────────────────────────────
+
+export interface BmrInput {
+  sex: 'male' | 'female'
+  weightKg: number
+  heightCm: number
+  ageYears: number
+}
+
+/** BMR con Mifflin-St Jeor. */
+export function bmr({ sex, weightKg, heightCm, ageYears }: BmrInput): number {
+  return 10 * weightKg + 6.25 * heightCm - 5 * ageYears + BMR_SEX_OFFSET[sex]
+}
+
+/** Mantenimento = BMR · fattore di attività. */
+export function maintenance(bmrKcal: number, activityFactor: number): number {
+  return bmrKcal * activityFactor
+}
+
+/**
+ * Target del giorno: mantenimento · (1 + surplus) + un solo bonus nei giorni di allenamento
+ * (anche "entrambi"), arrotondato a 10 kcal.
+ */
+export function dayTarget(
+  maintenanceKcal: number,
+  surplusPct: number,
+  trainingType: 'rest' | 'gym' | 'football' | 'both',
+  trainingBonusKcal: number,
+): number {
+  const base = maintenanceKcal * (1 + surplusPct)
+  const bonus = trainingType === 'rest' ? 0 : trainingBonusKcal
+  return round((base + bonus) / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
+}
+
+export interface Macros {
+  protein: number
+  fat: number
+  carbs: number
+  /** Carboidrati sotto 3 g/kg: target troppo basso per un bulk (§3). */
+  lowCarbs: boolean
+}
+
+/** Macro del giorno: prima proteine e grassi arrotondati, poi i carboidrati da quei valori (§3). */
+export function macros(targetKcal: number, weightKg: number, proteinGPerKg: number, fatGPerKg: number): Macros {
+  const protein = round(proteinGPerKg * weightKg)
+  const fat = round(fatGPerKg * weightKg)
+  const carbs = round((targetKcal - KCAL_PER_G_PROTEIN * protein - KCAL_PER_G_FAT * fat) / KCAL_PER_G_CARBS)
+  return { protein, fat, carbs, lowCarbs: carbs < MIN_CARBS_G_PER_KG * weightKg }
 }

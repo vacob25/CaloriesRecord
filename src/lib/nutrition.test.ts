@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  bmr,
+  dayTarget,
   kcalFromMacros,
+  macros,
+  maintenance,
   kcalOf,
   nutrientsFor,
   per100gFromServing,
@@ -78,5 +82,46 @@ describe('recipePer100g', () => {
 
   it('totalGrams somma i grammi crudi', () => {
     expect(totalGrams(pastaAlRagu)).toBe(460)
+  })
+})
+
+// Profilo di esempio FITTIZIO di DOMAIN_RULES.md: uomo, 75 kg, 180 cm, 20 anni.
+describe('bmr (TESTING.md)', () => {
+  it('uomo 75 kg, 180 cm, 20 anni → 1780', () => {
+    expect(bmr({ sex: 'male', weightKg: 75, heightCm: 180, ageYears: 20 })).toBeCloseTo(1780, 2)
+  })
+
+  it('donna 60 kg, 165 cm, 30 anni → 1320,25', () => {
+    expect(bmr({ sex: 'female', weightKg: 60, heightCm: 165, ageYears: 30 })).toBeCloseTo(1320.25, 2)
+  })
+})
+
+describe('maintenance', () => {
+  it('1780 · 1,6 → 2848', () => {
+    expect(maintenance(1780, 1.6)).toBeCloseTo(2848, 2)
+  })
+})
+
+describe('dayTarget (TESTING.md)', () => {
+  it.each([
+    ['rest', 3130],
+    ['football', 3330],
+    ['gym', 3330],
+    ['both', 3330],
+  ] as const)('2848, +10%%, %s, bonus 200 → %s (il bonus non si somma)', (type, expected) => {
+    expect(dayTarget(2848, 0.1, type, 200)).toBe(expected)
+  })
+})
+
+describe('macros (TESTING.md)', () => {
+  it.each([
+    [3130, { protein: 150, fat: 75, carbs: 464, lowCarbs: false }],
+    [3330, { protein: 150, fat: 75, carbs: 514, lowCarbs: false }],
+    [2000, { protein: 150, fat: 75, carbs: 181, lowCarbs: true }],
+  ])('%s kcal, 75 kg, 2,0/1,0 g/kg → %o', (target, expected) => {
+    const result = macros(target, 75, 2, 1)
+    expect(result).toEqual(expected)
+    // Coerenza: le kcal dei macro tornano al target entro ±5 kcal.
+    expect(Math.abs(4 * result.protein + 4 * result.carbs + 9 * result.fat - target)).toBeLessThanOrEqual(5)
   })
 })
