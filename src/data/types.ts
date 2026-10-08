@@ -1,4 +1,5 @@
-import type { Per100g } from '../lib/nutrition'
+import type { MealType } from '../lib/labels'
+import type { Nutrients, Per100g } from '../lib/nutrition'
 
 /** Tipi dell'app derivati dallo schema (supabase/migrations). Nomi in camelCase, valori già numeri. */
 
@@ -26,4 +27,15 @@ export interface RecipeItem {
 export interface Recipe {
   food: Food
   items: RecipeItem[]
+}
+
+/** Voce del diario: nome e valori sono uno snapshot (ADR-011). */
+export interface MealEntry extends Nutrients {
+  id: string
+  entryDate: string
+  mealType: MealType
+  foodId: string | null
+  foodName: string
+  grams: number
+  createdAt: string
 }
