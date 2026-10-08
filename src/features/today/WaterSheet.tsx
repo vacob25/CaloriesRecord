@@ -15,49 +15,50 @@ interface WaterSheetProps {
   onClose: () => void
 }
 
-/** Quantità libera in ml; se serve si salva come contenitore (es. la borraccia di tutti i giorni). */
+/**
+ * Quantità libera in ml, oppure un nuovo contenitore (es. la borraccia di tutti i giorni).
+ * Salvare un contenitore NON aggiunge acqua (step 17): poi si usa il suo "+" quando la bevi.
+ */
 export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
   const add = useAddWater(date)
   const create = useCreateContainer()
   const [mlText, setMlText] = useState('')
-  const [save, setSave] = useState(false)
+  const [asContainer, setAsContainer] = useState(false)
   const [name, setName] = useState('')
   const [errors, setErrors] = useState<{ ml?: string; name?: string }>({})
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const ml = validateWaterMl(mlText)
-    const containerName = save ? validateContainerName(name, existingNames) : null
-    const next = {
+    const containerName = asContainer ? validateContainerName(name, existingNames) : null
+    setErrors({
       ml: ml.ok ? undefined : ml.message,
       name: containerName && !containerName.ok ? containerName.message : undefined,
-    }
-    setErrors(next)
+    })
     if (!ml.ok || (containerName && !containerName.ok)) return
-    try {
-      if (containerName) {
-        await create.mutateAsync({ name: containerName.value, ml: ml.value })
-        // Contenitore salvato: se ora fallisce l'aggiunta, "Aggiungi" di nuovo non deve ricrearlo.
-        setSave(false)
-      }
-      await add.mutateAsync(ml.value)
-      onClose()
-    } catch {
-      // L'errore si mostra sotto il modulo (add.error / create.error).
-    }
+    if (containerName) create.mutate({ name: containerName.value, ml: ml.value }, { onSuccess: onClose })
+    else add.mutate({ ml: ml.value, container: null }, { onSuccess: onClose })
   }
 
-  // Solo l'ultimo errore: dopo un nuovo tentativo riuscito quello vecchio sparisce.
-  const error = add.isError ? add.error : create.isError && save ? create.error : null
+  const mutation = asContainer ? create : add
   const busy = add.isPending || create.isPending
 
   return (
-    <SheetFrame title="Altra quantità d'acqua" onClose={onClose}>
+    <SheetFrame title={asContainer ? 'Nuovo contenitore' : "Altra quantità d'acqua"} onClose={onClose}>
       {() => (
-        <form onSubmit={(event) => void handleSubmit(event)} noValidate className="mt-4 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
+          <label className="flex min-h-11 items-center gap-3 text-[15px] font-semibold text-ink">
+            <input
+              type="checkbox"
+              checked={asContainer}
+              onChange={(event) => setAsContainer(event.target.checked)}
+              className="size-5 accent-green"
+            />
+            Salva come contenitore (senza aggiungere acqua)
+          </label>
           <Field
             id="water-ml"
-            label="Millilitri"
+            label={asContainer ? 'Capienza del contenitore' : 'Millilitri'}
             inputMode="numeric"
             autoComplete="off"
             suffix="ml"
@@ -65,15 +66,11 @@ export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
             onChange={(event) => setMlText(event.target.value)}
             error={errors.ml}
           />
-          <label className="flex min-h-11 items-center gap-3 text-[15px] font-semibold text-ink">
-            <input type="checkbox" checked={save} onChange={(event) => setSave(event.target.checked)} className="size-5 accent-green" />
-            Salva come contenitore
-          </label>
-          {save && (
+          {asContainer && (
             <Field
               id="water-name"
               label="Nome del contenitore"
-              hint="Comparirà tra i tocchi rapidi, es. Borraccia."
+              hint="Compare nell'elenco con il suo − / +. Es. Borraccia."
               autoComplete="off"
               maxLength={CONTAINER_NAME_MAX}
               value={name}
@@ -81,9 +78,9 @@ export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
               error={errors.name}
             />
           )}
-          {error && <FormMessage kind="error">{errorMessage(error)}</FormMessage>}
+          {mutation.isError && <FormMessage kind="error">{errorMessage(mutation.error)}</FormMessage>}
           <button type="submit" disabled={busy} className={primaryButtonClass}>
-            {busy ? 'Salvataggio…' : 'Aggiungi'}
+            {busy ? 'Salvataggio…' : asContainer ? 'Salva contenitore' : 'Aggiungi'}
           </button>
         </form>
       )}

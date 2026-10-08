@@ -1,5 +1,5 @@
-import { DEFAULT_GRAMS, GRAMS_MAX, GRAMS_STEP, MEAL_BY_HOUR } from './constants'
-import type { MealType } from './labels'
+import { DEFAULT_GRAMS, GRAMS_MAX, GRAMS_STEP, MEAL_BY_HOUR, RECENT_FOODS_LIMIT } from './constants'
+import { MEAL_TYPES, type MealType } from './labels'
 import { round } from './numbers'
 import { nutrientsFor, sumNutrients, type Nutrients, type Per100g } from './nutrition'
 
@@ -71,7 +71,7 @@ export interface EntryLike extends Nutrients {
 /** Voci raggruppate per pasto, nell'ordine Colazione, Pranzo, Cena, Snack, con i totali. */
 export function groupByMeal<T extends EntryLike>(entries: readonly T[]): Record<MealType, { entries: T[]; total: Nutrients }> {
   const groups = {} as Record<MealType, { entries: T[]; total: Nutrients }>
-  for (const meal of ['breakfast', 'lunch', 'dinner', 'snack'] as const) {
+  for (const meal of MEAL_TYPES) {
     const list = entries.filter((entry) => entry.mealType === meal)
     groups[meal] = { entries: list, total: sumNutrients(list) }
   }
@@ -79,9 +79,14 @@ export function groupByMeal<T extends EntryLike>(entries: readonly T[]): Record<
 }
 
 /** Cibi usati di recente, dal più recente (DATA_MODEL: last_used_at desc, limite 20). */
-export function recentFoods<T extends { lastUsedAt: string | null }>(foods: readonly T[], limit = 20): T[] {
+export function recentFoods<T extends { lastUsedAt: string | null }>(foods: readonly T[], limit = RECENT_FOODS_LIMIT): T[] {
   return foods
     .filter((food) => food.lastUsedAt !== null)
     .sort((a, b) => (b.lastUsedAt ?? '').localeCompare(a.lastUsedAt ?? ''))
     .slice(0, limit)
+}
+
+/** Preferiti prima, poi l'ordine di partenza (stabile). Usato nelle categorie del catalogo (step 17). */
+export function favoritesFirst<T>(items: readonly T[], isFavorite: (item: T) => boolean): T[] {
+  return [...items.filter(isFavorite), ...items.filter((item) => !isFavorite(item))]
 }

@@ -1,6 +1,6 @@
 import { RESPECTED_MAX_RATIO, RESPECTED_MIN_RATIO } from './constants'
 import { daysBetween } from './dates'
-import type { MealType } from './labels'
+import { MEAL_TYPES, type MealType } from './labels'
 import { sumNutrients, type Nutrients } from './nutrition'
 import { movingAverage7, type WeightLog } from './weight'
 
@@ -76,7 +76,7 @@ export function periodStats(
   const withTarget = registered.filter((d) => d.status !== 'noTarget')
   const respectedCount = withTarget.filter((d) => d.status === 'respected').length
 
-  const mealShare = { breakfast: 0, lunch: 0, dinner: 0, snack: 0 } as Record<MealType, number>
+  const mealShare = Object.fromEntries(MEAL_TYPES.map((meal) => [meal, 0])) as Record<MealType, number>
   if (totals.kcal > 0) {
     for (const entry of inPeriod) mealShare[entry.mealType] += entry.kcal / totals.kcal
   }

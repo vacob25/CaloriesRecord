@@ -1,4 +1,5 @@
 import {
+  WEIGHT_DAILY_REMINDER_DAYS,
   WEIGHT_REMINDER_DAYS,
   MOVING_AVERAGE_DAYS,
   MOVING_AVERAGE_MIN_LOGS,
@@ -122,8 +123,8 @@ export function daysSinceLastWeight(logs: readonly WeightLog[], today: string): 
   return Math.round((dayNumber(today) - dayNumber(last.date)))
 }
 
-/** Promemoria in Oggi: nessuna pesata, oppure l'ultima ha 5 giorni o più (ADR-047). */
-export function needsWeightReminder(logs: readonly WeightLog[], today: string, days = WEIGHT_REMINDER_DAYS): boolean {
+/** Promemoria in Oggi: nessuna pesata, oppure l'ultima non è di oggi (step 17; prima erano 5 giorni, ADR-047). */
+export function needsWeightReminder(logs: readonly WeightLog[], today: string, days = WEIGHT_DAILY_REMINDER_DAYS): boolean {
   const since = daysSinceLastWeight(logs, today)
   return since === null || since >= days
 }

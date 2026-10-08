@@ -6,10 +6,13 @@ import { WaterIcon } from '../../components/WaterIcon'
 import { cardClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useAddWater, useContainers, useDeleteWater, useProfile, useWater } from '../../data/queries'
-import { DEFAULT_CONTAINERS, formatWater, waterProgress, waterTotal, type Container } from '../../lib/water'
+import { countFor, DEFAULT_CONTAINERS, formatWater, freeTotal, lastFor, waterProgress, waterTotal, type Container } from '../../lib/water'
 import { WaterSheet } from './WaterSheet'
 
-/** Acqua del giorno (step 15): un tocco per contenitore, quantità libera, annulla l'ultima aggiunta. */
+const stepButton =
+  'flex size-11 shrink-0 items-center justify-center rounded-full border border-line bg-bg text-[22px] font-bold text-ink disabled:opacity-40'
+
+/** Acqua del giorno (step 15, contatori dallo step 17): per ogni contenitore "− N +", più le quantità libere. */
 export function WaterCard({ date }: { date: string }) {
   const water = useWater(date)
   const containers = useContainers()
@@ -22,12 +25,25 @@ export function WaterCard({ date }: { date: string }) {
   const total = waterTotal(entries)
   const goal = profile.data?.waterGoalMl ?? null
   const progress = waterProgress(total, goal)
-  const last = entries.at(-1)
   const all: Container[] = [
     ...DEFAULT_CONTAINERS,
-    ...(containers.data ?? []).map((container) => ({ ...container, icon: 'flask' as const })),
+    ...(containers.data ?? []).map((container) => ({ key: container.id, name: container.name, ml: container.ml, icon: 'flask' as const })),
   ]
-  const busy = add.isPending || remove.isPending
+  const busy = add.isPending || remove.isPending || !water.isSuccess
+  const free = freeTotal(entries)
+  const lastFree = lastFor(entries, null)
+
+  function increase(container: Container) {
+    remove.reset()
+    add.mutate({ ml: container.ml, container: container.key })
+  }
+
+  function decrease(key: string | null) {
+    const last = lastFor(entries, key)
+    if (!last) return
+    add.reset()
+    remove.mutate(last.id)
+  }
 
   return (
     <section aria-labelledby="water-title" className={`${cardClass} mx-5 mt-4 px-5 py-4`}>
@@ -60,63 +76,71 @@ export function WaterCard({ date }: { date: string }) {
       {water.isError && <ErrorState message={errorMessage(water.error)} onRetry={() => void water.refetch()} />}
       {(add.isError || remove.isError) && <ErrorState message={errorMessage(add.error ?? remove.error)} />}
 
-      <ul className="mt-3 grid grid-cols-3 gap-2">
-        {all.map((container) => (
-          <li key={container.id ?? container.name}>
-            <button
-              type="button"
-              disabled={busy || !water.isSuccess}
-              onClick={() => {
-                remove.reset()
-                add.mutate(container.ml)
-              }}
-              className="flex min-h-20 w-full flex-col items-center justify-center gap-0.5 rounded-button border border-line bg-bg px-1 py-2 text-blue disabled:opacity-60"
-            >
-              <span className="sr-only">Aggiungi </span>
-              <WaterIcon icon={container.icon} />
-              <span className="w-full truncate text-center text-[13px] font-semibold text-ink">{container.name}</span>
-              <span className="text-[13px] tabular-nums text-muted">{formatWater(container.ml)}</span>
-            </button>
-          </li>
-        ))}
-        <li>
+      <ul className="mt-2 divide-y divide-line">
+        {all.map((container) => {
+          const count = countFor(entries, container.key)
+          return (
+            <li key={container.key} className="flex min-h-14 items-center gap-3 py-1">
+              <span className="text-blue">
+                <WaterIcon icon={container.icon} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[15px] font-semibold">{container.name}</span>
+                <span className="block text-[13px] tabular-nums text-muted">{formatWater(container.ml)}</span>
+              </span>
+              <button
+                type="button"
+                disabled={busy || count === 0}
+                onClick={() => decrease(container.key)}
+                aria-label={`Togli ${container.name}`}
+                className={stepButton}
+              >
+                −
+              </button>
+              <span className="w-7 text-center text-[18px] font-extrabold tabular-nums">
+                {count}
+                <span className="sr-only"> {container.name.toLowerCase()} oggi</span>
+              </span>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => increase(container)}
+                aria-label={`Aggiungi ${container.name}`}
+                className={stepButton}
+              >
+                +
+              </button>
+            </li>
+          )
+        })}
+        <li className="flex min-h-14 items-center gap-3 py-1">
+          <span className="text-green-dark">
+            <WaterIcon icon="plus" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold">Altra quantità</span>
+            <span className="block text-[13px] tabular-nums text-muted">{free > 0 ? `${formatWater(free)} oggi` : 'quantità libera o nuovo contenitore'}</span>
+          </span>
           <button
             type="button"
-            disabled={busy || !water.isSuccess}
-            onClick={() => setCustom(true)}
-            className="flex min-h-20 w-full flex-col items-center justify-center gap-0.5 rounded-button border border-dashed border-line px-1 py-2 text-green-dark disabled:opacity-60"
+            disabled={busy || !lastFree}
+            onClick={() => decrease(null)}
+            aria-label={lastFree ? `Togli l'ultima quantità libera (${formatWater(lastFree.ml)})` : 'Togli l’ultima quantità libera'}
+            className={stepButton}
           >
-            <WaterIcon icon="plus" />
-            <span className="text-[13px] font-semibold">Altra quantità</span>
+            −
+          </button>
+          <span className="w-7 text-center text-[18px] font-extrabold tabular-nums">
+            {countFor(entries, null)}
+            <span className="sr-only"> quantità libere oggi</span>
+          </span>
+          <button type="button" disabled={busy} onClick={() => setCustom(true)} aria-label="Altra quantità o nuovo contenitore" className={stepButton}>
+            +
           </button>
         </li>
       </ul>
 
-      {last && (
-        <div className="mt-2 flex items-center justify-between gap-3 text-[13px] text-muted">
-          <span>Ultima aggiunta: {formatWater(last.ml)}</span>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              add.reset()
-              remove.mutate(last.id)
-            }}
-            aria-label={`Annulla l'ultima aggiunta d'acqua (${formatWater(last.ml)})`}
-            className="min-h-11 px-2 text-[15px] font-semibold text-green-dark disabled:opacity-60"
-          >
-            Annulla
-          </button>
-        </div>
-      )}
-
-      {custom && (
-        <WaterSheet
-          date={date}
-          existingNames={all.map((container) => container.name)}
-          onClose={() => setCustom(false)}
-        />
-      )}
+      {custom && <WaterSheet date={date} existingNames={all.map((container) => container.name)} onClose={() => setCustom(false)} />}
     </section>
   )
 }

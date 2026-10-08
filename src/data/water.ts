@@ -7,6 +7,8 @@ export interface WaterEntry {
   id: string
   entryDate: string
   ml: number
+  /** Contenitore da cui viene (chiave di lib/water.ts), null per una quantità libera (migrazione 004). */
+  container: string | null
   createdAt: string
 }
 
@@ -20,6 +22,7 @@ interface WaterRow {
   id: string
   entry_date: string
   ml: number
+  container: string | null
   created_at: string
 }
 
@@ -27,15 +30,21 @@ interface WaterRow {
 export async function listWater(date: string): Promise<WaterEntry[]> {
   const { data, error } = await getSupabase()
     .from('water_entries')
-    .select('id, entry_date, ml, created_at')
+    .select('id, entry_date, ml, container, created_at')
     .eq('entry_date', date)
     .order('created_at')
   throwIfError(error)
-  return (data as WaterRow[]).map((row) => ({ id: row.id, entryDate: row.entry_date, ml: row.ml, createdAt: row.created_at }))
+  return (data as WaterRow[]).map((row) => ({
+    id: row.id,
+    entryDate: row.entry_date,
+    ml: row.ml,
+    container: row.container,
+    createdAt: row.created_at,
+  }))
 }
 
-export async function addWater(date: string, ml: number): Promise<void> {
-  const { error } = await getSupabase().from('water_entries').insert({ entry_date: date, ml })
+export async function addWater(date: string, ml: number, container: string | null): Promise<void> {
+  const { error } = await getSupabase().from('water_entries').insert({ entry_date: date, ml, container })
   throwIfError(error)
 }
 

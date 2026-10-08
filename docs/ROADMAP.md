@@ -22,6 +22,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 14 | Porzioni casalinghe e liquidi in ml | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 15 | Acqua | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 16 | Catalogo di ingredienti mediterranei | in prova (195 voci CREA importate e validate; manca: prova sull'iPhone e le voci non trovate: uva, vitello, zucchero, tè, più quelle assenti dal CREA come bulgur, edamame, semi, patata dolce) |
+| 17 | Snack, acqua a contatori, peso giornaliero, Cibi con preferiti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 004 su Supabase e prova sull'iPhone) |
 
 Gli step 1-7 portano a un primo uso reale quotidiano. Gli step 8-10 e 13-16 sono fatti e in prova, l'11 è in corso (vedi tabella); lo step 12 (OTP) resta da fare e si può anticipare in qualunque momento.
 
@@ -140,6 +141,16 @@ Accettazione:
 - Il test di validazione del catalogo passa su tutte le voci (nessuna con macro > 100 g o kcal incoerenti senza nota).
 - Ogni voce ha la fonte.
 - Scegliere una voce del catalogo la salva tra i propri cibi una sola volta.
+
+## Step 17 · Richieste dell'utente dell'8/10/2026
+Fare: promemoria del peso ogni giorno in cima a Oggi (pulsante a destra) finché non ti pesi; nuovo pasto "Snack" tra colazione e pranzo e il vecchio "Snack" rinominato "Spuntino" (migrazione 004); acqua con "− N +" per ogni contenitore e per le quantità libere; salvare un contenitore non aggiunge acqua; Cibi con "Preferiti" (stella, matita per modificare) e "Alimenti recenti" (al massimo 8), pulsanti Nuovo cibo / Nuova ricetta in alto, elenco completo con "Tutti i tuoi cibi"; catalogo a riquadri con icona per categoria e stella su ogni voce, i preferiti in cima alla categoria.
+Accettazione:
+- Senza pesata di oggi il promemoria è il primo elemento sotto l'intestazione; dopo la pesata sparisce.
+- Una voce registrata nello Snack resta in "Snack"; le voci "snack" già registrate compaiono in "Spuntino".
+- Due bicchieri → contatore 2; "−" ne toglie uno; 200 ml scritti a mano non contano come bicchiere.
+- Salvare la borraccia lascia invariato il totale del giorno; il suo "+" aggiunge 750 ml.
+- Stella su una voce del catalogo → in cima alla categoria e in "Preferiti" di Cibi.
+- "Alimenti recenti" mostra al massimo 8 cibi, dal più recente.
 
 ---
 

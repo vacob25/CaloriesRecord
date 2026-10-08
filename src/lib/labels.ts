@@ -6,14 +6,16 @@ export const FOOD_SOURCE_LABEL = {
   recipe: 'Ricetta',
 } as const
 
-export const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack'] as const
+/** Ordine della giornata. 'snack' è lo spuntino del pomeriggio/sera; 'morning_snack' quello di metà mattina (step 17). */
+export const MEAL_TYPES = ['breakfast', 'morning_snack', 'lunch', 'dinner', 'snack'] as const
 export type MealType = (typeof MEAL_TYPES)[number]
 
 export const MEAL_LABEL: Record<MealType, string> = {
   breakfast: 'Colazione',
+  morning_snack: 'Snack',
   lunch: 'Pranzo',
   dinner: 'Cena',
-  snack: 'Snack',
+  snack: 'Spuntino',
 }
 
 export function isMealType(value: unknown): value is MealType {

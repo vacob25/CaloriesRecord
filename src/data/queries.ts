@@ -296,7 +296,10 @@ export function useWater(date: string) {
 
 export function useAddWater(date: string) {
   const invalidate = useInvalidate()
-  return useMutation({ mutationFn: (ml: number) => addWater(date, ml), onSuccess: () => invalidate(queryKeys.water) })
+  return useMutation({
+    mutationFn: ({ ml, container }: { ml: number; container: string | null }) => addWater(date, ml, container),
+    onSuccess: () => invalidate(queryKeys.water),
+  })
 }
 
 export function useDeleteWater() {
@@ -343,6 +346,22 @@ export function useSaveCatalogFood() {
     mutationFn: (item: CatalogItem) => {
       const { values, portions } = catalogToFood(item)
       return saveCatalogFood(values, portions)
+    },
+    onSuccess: invalidate,
+  })
+}
+
+/**
+ * Stella su una voce del catalogo (step 17): la voce diventa un proprio cibo (se non lo è già)
+ * e si inverte il suo "preferito". Così i preferiti valgono ovunque: Cibi, Aggiungi pasto, catalogo.
+ */
+export function useToggleCatalogFavorite() {
+  const invalidate = useInvalidateFoods()
+  return useMutation({
+    mutationFn: async (item: CatalogItem) => {
+      const { values, portions } = catalogToFood(item)
+      const food = await saveCatalogFood(values, portions)
+      await setFavorite(food.id, !food.isFavorite)
     },
     onSuccess: invalidate,
   })

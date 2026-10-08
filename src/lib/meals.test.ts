@@ -1,14 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
-import { defaultGrams, defaultQuantity, entrySnapshot, groupByMeal, mealForHour, recentFoods, rescaleEntry, stepGrams } from './meals'
+import { defaultGrams, defaultQuantity, entrySnapshot, favoritesFirst, groupByMeal, mealForHour, recentFoods, rescaleEntry, stepGrams } from './meals'
 
 describe('mealForHour', () => {
   it.each([
     [0, 'snack'],
     [4, 'snack'],
     [5, 'breakfast'],
-    [10, 'breakfast'],
-    [11, 'lunch'],
+    [9, 'breakfast'],
+    [10, 'morning_snack'],
+    [11, 'morning_snack'],
+    [12, 'lunch'],
     [14, 'lunch'],
     [15, 'snack'],
     [18, 'dinner'],
@@ -64,13 +66,13 @@ describe('defaultGrams', () => {
 })
 
 describe('groupByMeal', () => {
-  it('quattro pasti in ordine, con totali; pasto vuoto = zeri', () => {
+  it('cinque pasti in ordine (step 17), con totali; pasto vuoto = zeri', () => {
     const groups = groupByMeal([
       { id: 1, mealType: 'lunch' as const, kcal: 300, protein: 10, carbs: 40, fat: 5 },
       { id: 2, mealType: 'lunch' as const, kcal: 100, protein: 2, carbs: 10, fat: 5 },
       { id: 3, mealType: 'breakfast' as const, kcal: 200, protein: 8, carbs: 30, fat: 4 },
     ])
-    expect(Object.keys(groups)).toEqual(['breakfast', 'lunch', 'dinner', 'snack'])
+    expect(Object.keys(groups)).toEqual(['breakfast', 'morning_snack', 'lunch', 'dinner', 'snack'])
     expect(groups.lunch.total).toEqual({ kcal: 400, protein: 12, carbs: 50, fat: 10 })
     expect(groups.lunch.entries.map((e) => e.id)).toEqual([1, 2])
     expect(groups.dinner).toEqual({ entries: [], total: { kcal: 0, protein: 0, carbs: 0, fat: 0 } })
@@ -99,5 +101,16 @@ describe('defaultQuantity (porzioni, revisione)', () => {
     expect(defaultQuantity(100, null, eggs)).toEqual({ amount: 100, portionIndex: null })
     expect(defaultQuantity(undefined, 30, eggs)).toEqual({ amount: 30, portionIndex: null })
     expect(defaultQuantity(undefined, null, [])).toEqual({ amount: 100, portionIndex: null })
+  })
+})
+
+describe('step 17: recenti e preferiti', () => {
+  it('alimenti recenti: al massimo 8', () => {
+    const foods = Array.from({ length: 12 }, (_, i) => ({ id: i, lastUsedAt: `2026-10-${String(10 + i).padStart(2, '0')}T08:00:00Z` }))
+    expect(recentFoods(foods).map((food) => food.id)).toEqual([11, 10, 9, 8, 7, 6, 5, 4])
+  })
+  it('preferiti per primi, ordine conservato', () => {
+    const items = [{ n: 'a', f: false }, { n: 'b', f: true }, { n: 'c', f: false }, { n: 'd', f: true }]
+    expect(favoritesFirst(items, (item) => item.f).map((item) => item.n)).toEqual(['b', 'd', 'a', 'c'])
   })
 })

@@ -212,6 +212,23 @@ Per la settimana o il mese in corso la variazione del peso si misura fino a oggi
 **ADR-058 · Ritmo voluto e banda della ricalibrazione sono due cose diverse**
 `TARGET_RATE_MIN/MAX_KG_WEEK` (+0,20/+0,35, l'obiettivo di CLAUDE.md) è il ritmo voluto del bulk; `RECAL_BAND_MIN/MAX` (+0,20/+0,40, §7) è la tolleranza entro cui la ricalibrazione non propone niente. Sono corretti entrambi; i testi dell'app si generano dalle costanti, mai scritti a mano.
 
+## Step 17 (8/10/2026, richieste dell'utente)
+
+**ADR-059 · Promemoria del peso ogni giorno**
+Supera la soglia dei 5 giorni di ADR-047: il promemoria compare in cima a Oggi finché il peso di oggi non è registrato (`WEIGHT_DAILY_REMINDER_DAYS` = 1). Il riepilogo "Ultimi 5 giorni" in Peso resta (`WEIGHT_REMINDER_DAYS`). Non compare se la card del target sta già chiedendo il peso.
+
+**ADR-060 · Cinque pasti: Snack di metà mattina e Spuntino**
+Nuovo `meal_type` `morning_snack` ("Snack", tra colazione e pranzo); `snack` resta nel database e nell'app si chiama "Spuntino" (le voci già registrate non cambiano). Migrazione 004. Fasce orarie proposte (ADR-033, da confermare con l'uso): 5-10 colazione, 10-12 snack, 12-15 pranzo, 15-18 spuntino, 18-23 cena, 23-5 spuntino.
+
+**ADR-061 · Acqua: contatori per contenitore**
+Ogni aggiunta salva il contenitore da cui viene (`water_entries.container`, migrazione 004): così il conteggio "− N +" è esatto e 200 ml scritti a mano non diventano un bicchiere. Il "−" toglie l'ultima aggiunta di quel contenitore e sostituisce "Ultima aggiunta · Annulla". Salvare un nuovo contenitore non aggiunge acqua.
+
+**ADR-062 · Cibi: Preferiti e Alimenti recenti**
+In Cibi restano in alto Nuovo cibo e Nuova ricetta; poi "Preferiti" (stella, matita per modificare) e "Alimenti recenti" (`RECENT_FOODS_LIMIT` = 8, lo stesso limite della scheda Recenti in Aggiungi pasto). Gli altri cibi si trovano con la ricerca o con "Tutti i tuoi cibi": senza, un cibo né preferito né recente non si potrebbe più modificare.
+
+**ADR-063 · Catalogo a riquadri con stelle**
+Le 12 categorie sono riquadri con un'icona a linea; dentro una categoria ogni voce ha la stella e i preferiti stanno in cima. La stella su una voce non ancora copiata la copia tra i propri cibi già preferita: un solo concetto di "preferito" per tutta l'app.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).

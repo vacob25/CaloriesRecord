@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  countFor,
   DEFAULT_CONTAINERS,
+  freeTotal,
+  lastFor,
   formatWater,
   goalToText,
   validateContainerName,
@@ -61,5 +64,27 @@ describe('obiettivo quasi zero (revisione)', () => {
   it('0,0004 L sarebbe 0 ml: rifiutato', () => {
     expect(validateWaterGoal('0,0004')).toMatchObject({ ok: false })
     expect(validateWaterGoal('0,001')).toEqual({ ok: true, value: 1 })
+  })
+})
+
+describe('contatori per contenitore (step 17)', () => {
+  const day = [
+    { id: '1', ml: 200, container: 'glass' },
+    { id: '2', ml: 750, container: 'c-borraccia' },
+    { id: '3', ml: 200, container: null },
+    { id: '4', ml: 200, container: 'glass' },
+  ]
+  it('conteggio per contenitore: 200 ml scritti a mano non contano come bicchiere', () => {
+    expect(countFor(day, 'glass')).toBe(2)
+    expect(countFor(day, 'c-borraccia')).toBe(1)
+    expect(countFor(day, 'bottle')).toBe(0)
+    expect(countFor(day, null)).toBe(1)
+  })
+  it('il "−" toglie l’ultima aggiunta di quel contenitore', () => {
+    expect(lastFor(day, 'glass')?.id).toBe('4')
+    expect(lastFor(day, 'bottle')).toBeUndefined()
+  })
+  it('quantità libere: solo il loro totale', () => {
+    expect(freeTotal(day)).toBe(200)
   })
 })

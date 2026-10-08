@@ -6,8 +6,8 @@ type Result<T> = { ok: true; value: T } | { ok: false; message: string }
 export type ContainerIcon = 'glass' | 'small-bottle' | 'bottle' | 'flask'
 
 export interface Container {
-  /** `null` per i tre rapidi predefiniti, l'id del database per quelli personali. */
-  id: string | null
+  /** Chiave salvata in `water_entries.container`: il nome dell'icona per i tre rapidi, l'id del database per quelli personali. */
+  key: string
   name: string
   ml: number
   icon: ContainerIcon
@@ -15,10 +15,32 @@ export interface Container {
 
 /** Formati comuni in Italia (ADR-049): bicchiere 200 ml, bottiglietta 500 ml, bottiglia 1,5 L. */
 export const DEFAULT_CONTAINERS: readonly Container[] = [
-  { id: null, name: 'Bicchiere', ml: 200, icon: 'glass' },
-  { id: null, name: 'Bottiglietta', ml: 500, icon: 'small-bottle' },
-  { id: null, name: 'Bottiglia', ml: 1500, icon: 'bottle' },
+  { key: 'glass', name: 'Bicchiere', ml: 200, icon: 'glass' },
+  { key: 'small-bottle', name: 'Bottiglietta', ml: 500, icon: 'small-bottle' },
+  { key: 'bottle', name: 'Bottiglia', ml: 1500, icon: 'bottle' },
 ]
+
+/** Aggiunta d'acqua: `container` null = quantità libera ("Altra quantità"). */
+export interface WaterAddition {
+  id: string
+  ml: number
+  container: string | null
+}
+
+/** Quante volte oggi è stato aggiunto un contenitore (null = le quantità libere). */
+export function countFor(entries: readonly WaterAddition[], container: string | null): number {
+  return entries.filter((entry) => entry.container === container).length
+}
+
+/** L'ultima aggiunta di quel contenitore (per il "−"); le voci sono in ordine di inserimento. */
+export function lastFor(entries: readonly WaterAddition[], container: string | null): WaterAddition | undefined {
+  return entries.filter((entry) => entry.container === container).at(-1)
+}
+
+/** ml delle quantità libere del giorno. */
+export function freeTotal(entries: readonly WaterAddition[]): number {
+  return waterTotal(entries.filter((entry) => entry.container === null))
+}
 
 /** Totale del giorno in ml. */
 export function waterTotal(entries: readonly { ml: number }[]): number {

@@ -29,7 +29,8 @@ export const DEFAULT_GRAMS = 100
 export const MEAL_BY_HOUR = [
   [0, 'snack'],
   [5, 'breakfast'],
-  [11, 'lunch'],
+  [10, 'morning_snack'],
+  [12, 'lunch'],
   [15, 'snack'],
   [18, 'dinner'],
   [23, 'snack'],
@@ -90,6 +91,8 @@ export const RECAL_MAX_CHANGE = 0.05
 
 /** Promemoria del peso dopo questi giorni senza pesate, e ampiezza del riepilogo (ADR-047, scelta dell'utente). */
 export const WEIGHT_REMINDER_DAYS = 5
+/** Step 17 (richiesta dell'utente): il promemoria in Oggi compare ogni giorno finché non ti pesi. */
+export const WEIGHT_DAILY_REMINDER_DAYS = 1
 
 /** Acqua (ADR-049). Massimo per singola aggiunta e per contenitore, come il vincolo del database. */
 export const WATER_ML_MAX = 5000
@@ -104,3 +107,5 @@ export const GAIN_RATE_WARNING_KG_WEEK = 0.5
 /** Ritmo voluto del bulk (CLAUDE.md): +0,20 / +0,35 kg a settimana. Diverso dalla banda di tolleranza della ricalibrazione (§7). */
 export const TARGET_RATE_MIN_KG_WEEK = 0.2
 export const TARGET_RATE_MAX_KG_WEEK = 0.35
+/** Step 17: cronologia degli "Alimenti recenti" (Cibi e Aggiungi pasto), scelta dell'utente. */
+export const RECENT_FOODS_LIMIT = 8

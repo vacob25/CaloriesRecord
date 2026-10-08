@@ -20,6 +20,7 @@ export const CATALOG_CATEGORIES = [
   'Bevande',
   'Dolcificanti e altro',
 ] as const
+export type CatalogCategory = (typeof CATALOG_CATEGORIES)[number]
 
 const nonNegative = z.number().min(0)
 

@@ -57,6 +57,8 @@ export function TodayScreen() {
         <WeightPill date={today} />
       </header>
 
+      <WeightReminder today={today} />
+
       {pendingProposal && (
         <Link
           to="/profilo#ricalibrazione"
@@ -65,8 +67,6 @@ export function TodayScreen() {
           Nuova proposta di ricalibrazione <span aria-hidden="true">›</span>
         </Link>
       )}
-
-      <WeightReminder today={today} />
 
       <TargetCard date={today} eaten={total} />
 

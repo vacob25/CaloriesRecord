@@ -73,7 +73,7 @@ describe('periodStats', () => {
   it('distribuzione per pasto = kcal del pasto / totale; macro medie sui giorni registrati', () => {
     const entries = [entry('2026-10-05', 300, { mealType: 'breakfast' }), entry('2026-10-05', 700, { mealType: 'dinner' })]
     const stats = periodStats(start, end, entries, targets, [])
-    expect(stats.mealShare).toEqual({ breakfast: 0.3, lunch: 0, dinner: 0.7, snack: 0 })
+    expect(stats.mealShare).toEqual({ breakfast: 0.3, morning_snack: 0, lunch: 0, dinner: 0.7, snack: 0 })
     expect(stats.averageMacros).toEqual({ protein: 20, carbs: 100, fat: 10 })
   })
 

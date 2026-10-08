@@ -125,11 +125,15 @@ describe('promemoria del peso (step 13, ADR-047)', () => {
     expect(needsWeightReminder([], today)).toBe(true)
   })
 
-  it('ultima pesata 4 giorni fa → niente; 5 o 6 giorni fa → promemoria', () => {
-    expect(needsWeightReminder([{ date: '2026-10-16', kg: 75 }], today)).toBe(false)
+  it('giornaliero (step 17): ultima pesata ieri o prima → promemoria', () => {
+    expect(needsWeightReminder([{ date: '2026-10-19', kg: 75 }], today)).toBe(true)
     expect(daysSinceLastWeight([{ date: '2026-10-15', kg: 75 }], today)).toBe(5)
     expect(needsWeightReminder([{ date: '2026-10-15', kg: 75 }], today)).toBe(true)
-    expect(needsWeightReminder([{ date: '2026-10-14', kg: 75 }], today)).toBe(true)
+  })
+
+  it('soglia ancora configurabile (es. 5 giorni come in ADR-047)', () => {
+    expect(needsWeightReminder([{ date: '2026-10-16', kg: 75 }], today, 5)).toBe(false)
+    expect(needsWeightReminder([{ date: '2026-10-15', kg: 75 }], today, 5)).toBe(true)
   })
 
   it('pesata di oggi → niente promemoria (attraversa anche il cambio d’ora del 25/10)', () => {

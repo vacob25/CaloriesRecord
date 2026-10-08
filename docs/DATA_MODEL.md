@@ -58,7 +58,7 @@ Trigger `check_food_source_change` (solo quando cambia `source`): un cibo usato 
 | --- | --- | --- |
 | id | uuid PK | |
 | entry_date | date not null | giorno locale |
-| meal_type | text not null | `breakfast` / `lunch` / `dinner` / `snack` |
+| meal_type | text not null | `breakfast` / `morning_snack` / `lunch` / `dinner` / `snack` (`morning_snack` dalla migrazione 004: "Snack"; `snack` nell'app è "Spuntino") |
 | food_id | uuid null | `(food_id, user_id)` → `foods (id, user_id)` ON DELETE SET NULL (food_id): si azzera solo `food_id` (ADR-022) |
 | food_name | text not null | snapshot |
 | grams | numeric(8,1) > 0 | quantità nell'unità `unit` (il nome resta `grams` anche per i ml) |
@@ -85,7 +85,7 @@ Indici su `(user_id, entry_date)` e su `food_id`.
 Si crea alla prima apertura del giorno, copiando i parametri del profilo di quel momento. Cambiare il tipo di allenamento aggiorna solo quella riga. I giorni passati non si ricalcolano mai quando cambia il profilo.
 
 ### water_entries (migrazione 003)
-`id`, `entry_date date not null` (giorno locale), `ml int` con `check (ml > 0 and ml <= 5000)`, `created_at`. Indice su `(user_id, entry_date)`. Niente calorie: l'acqua non entra in `meal_entries`.
+`id`, `entry_date date not null` (giorno locale), `ml int` con `check (ml > 0 and ml <= 5000)`, `container text` (migrazione 004: `glass` / `small-bottle` / `bottle`, l'id di un contenitore personale, oppure null per una quantità libera; testo e non chiave esterna, così eliminare un contenitore non tocca le aggiunte), `created_at`. Indice su `(user_id, entry_date)`. Niente calorie: l'acqua non entra in `meal_entries`.
 
 ### drink_containers (migrazione 003)
 `id`, `name text` non vuoto, `ml int` con `check (ml > 0 and ml <= 5000)`, `created_at`. Indice su `user_id`. Contenitori personali (es. borraccia); i tre rapidi (bicchiere, bottiglietta, bottiglia) sono costanti nell'app, non righe.
