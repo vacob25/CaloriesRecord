@@ -71,3 +71,19 @@ export const OFF_SEARCHES_PER_MINUTE = 10
 /** Giorno "rispettato" (§5): 0,95 · target ≤ kcal ≤ 1,10 · target (soglie modificabili). */
 export const RESPECTED_MIN_RATIO = 0.95
 export const RESPECTED_MAX_RATIO = 1.1
+
+/** Ricalibrazione (DOMAIN_RULES §7). */
+export const ENERGY_PER_KG = 7700
+export const RECAL_WINDOW_DAYS = 28
+export const RECAL_MIN_DAYS = 21
+export const RECAL_MIN_REGISTERED_SHARE = 0.8
+/** Un giorno conta come registrato se ha almeno il 50% del suo target in kcal. */
+export const RECAL_REGISTERED_MIN_TARGET_SHARE = 0.5
+export const RECAL_MIN_WEIGHTS = 10
+/** Banda del ritmo voluto (kg/settimana): dentro, nessuna proposta. */
+export const RECAL_BAND_MIN = 0.2
+export const RECAL_BAND_MAX = 0.4
+/** Oltre questo ritmo si avvisa che l'eccesso è soprattutto grasso. */
+export const RECAL_FAT_WARNING_KG_WEEK = 0.5
+/** La proposta resta entro ±5% del mantenimento attuale. */
+export const RECAL_MAX_CHANGE = 0.05
