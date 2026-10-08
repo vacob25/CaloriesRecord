@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import type { FoodValues } from '../lib/foodValidation'
-import type { MealType } from '../lib/labels'
+import type { MealType, TrainingType } from '../lib/labels'
+import type { ParamsValues, PersonalValues } from '../lib/profileValidation'
 import {
   createFood,
   deleteFood,
@@ -14,7 +15,10 @@ import {
   type RecipeInput,
 } from './foods'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
+import { createProfile, getProfile, updateParams, updatePersonal } from './profile'
+import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
 import type { MealEntry } from './types'
+import { deleteWeight, listWeights, saveWeight } from './weights'
 
 /**
  * Hook dei dati condivisi tra le feature (componente → hook → data/*.ts → Supabase).
@@ -27,6 +31,10 @@ export const queryKeys = {
   entries: ['meal_entries'] as const,
   entriesForDay: (date: string) => ['meal_entries', date] as const,
   lastGrams: ['meal_entries', 'last-grams'] as const,
+  profile: ['profiles'] as const,
+  targets: ['daily_targets'] as const,
+  targetForDay: (date: string) => ['daily_targets', date] as const,
+  weights: ['weight_logs'] as const,
 }
 
 export function useFoods() {
@@ -117,5 +125,71 @@ export function useDeleteEntry(date: string) {
       if (context?.previous) client.setQueryData(key, context.previous)
     },
     onSettled: () => client.invalidateQueries({ queryKey: queryKeys.entries }),
+  })
+}
+
+export function useProfile() {
+  return useQuery({ queryKey: queryKeys.profile, queryFn: getProfile })
+}
+
+export function useDayTarget(date: string) {
+  return useQuery({ queryKey: queryKeys.targetForDay(date), queryFn: () => getOrCreateTarget(date) })
+}
+
+function useInvalidate() {
+  const client = useQueryClient()
+  return (...keys: (readonly string[])[]) => Promise.all(keys.map((queryKey) => client.invalidateQueries({ queryKey })))
+}
+
+/** Prima apertura (ADR-037): salva il peso di oggi, poi crea il profilo. */
+export function useCreateProfile() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: async ({ values, today }: { values: PersonalValues; today: string }) => {
+      if (values.weightKg !== null) await saveWeight(today, values.weightKg)
+      await createProfile(values)
+    },
+    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.weights),
+  })
+}
+
+/** Modifica del profilo: vale da oggi (ADR-039); i giorni passati non cambiano. */
+export function useUpdateProfile() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: async ({ personal, params, today }: { personal?: PersonalValues; params?: ParamsValues; today: string }) => {
+      if (personal) await updatePersonal(personal)
+      if (params) await updateParams(params)
+      await recomputeTarget(today)
+    },
+    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets),
+  })
+}
+
+export function useSetTrainingType(date: string) {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: (type: TrainingType) => setTrainingType(date, type),
+    onSuccess: () => invalidate(queryKeys.targets),
+  })
+}
+
+export function useWeights(from: string | null) {
+  return useQuery({ queryKey: [...queryKeys.weights, from ?? 'all'], queryFn: () => listWeights(from) })
+}
+
+export function useSaveWeight() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: ({ day, kg }: { day: string; kg: number }) => saveWeight(day, kg),
+    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets),
+  })
+}
+
+export function useDeleteWeight() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: (day: string) => deleteWeight(day),
+    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets),
   })
 }

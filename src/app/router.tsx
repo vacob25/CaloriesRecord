@@ -8,7 +8,9 @@ import { RecipeFormScreen } from '../features/foods/RecipeFormScreen'
 import { ProfileScreen } from '../features/profile/ProfileScreen'
 import { StatsScreen } from '../features/stats/StatsScreen'
 import { TodayScreen } from '../features/today/TodayScreen'
+import { OnboardingScreen } from '../features/profile/OnboardingScreen'
 import { Layout } from './Layout'
+import { ProfileGate } from './ProfileGate'
 import { PublicOnly, RequireAuth } from './routeGuards'
 
 export const router = createBrowserRouter([
@@ -21,10 +23,20 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/benvenuto',
+    element: (
+      <RequireAuth>
+        <OnboardingScreen />
+      </RequireAuth>
+    ),
+  },
+  {
     path: '/',
     element: (
       <RequireAuth>
-        <Layout />
+        <ProfileGate>
+          <Layout />
+        </ProfileGate>
       </RequireAuth>
     ),
     children: [

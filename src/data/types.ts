@@ -39,3 +39,25 @@ export interface MealEntry extends Nutrients {
   grams: number
   createdAt: string
 }
+
+export interface Profile {
+  sex: 'male' | 'female'
+  birthDate: string
+  heightCm: number
+  activityFactor: number
+  surplusPct: number
+  trainingBonusKcal: number
+  goalWeightKg: number | null
+  proteinGPerKg: number
+  fatGPerKg: number
+}
+
+export interface DailyTarget {
+  date: string
+  trainingType: 'rest' | 'gym' | 'football' | 'both'
+  targetKcal: number
+  protein: number
+  carbs: number
+  fat: number
+  maintenanceKcal: number
+}

@@ -16,6 +16,8 @@ import { isMealType, MEAL_LABEL, MEAL_TYPES, type MealType } from '../../lib/lab
 import { groupByMeal, rescaleEntry } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
 import { sumNutrients } from '../../lib/nutrition'
+import { TargetCard } from './TargetCard'
+import { WeightPill } from './WeightPill'
 
 interface AddedState {
   added?: { id: string; mealType: MealType }
@@ -41,36 +43,15 @@ export function TodayScreen() {
 
   return (
     <>
-      <header className="px-5 pt-6">
-        <p className="text-[13px] font-semibold text-muted first-letter:uppercase">{formatLongDate(today)}</p>
-        <h1 className="text-[28px] font-extrabold leading-tight">Oggi</h1>
+      <header className="flex items-end justify-between gap-3 px-5 pt-6">
+        <div>
+          <p className="text-[13px] font-semibold text-muted first-letter:uppercase">{formatLongDate(today)}</p>
+          <h1 className="text-[28px] font-extrabold leading-tight">Oggi</h1>
+        </div>
+        <WeightPill date={today} />
       </header>
 
-      <section aria-label="Totale del giorno" className={`${cardClass} mx-5 mt-4 p-5`}>
-        <p className="text-[13px] font-semibold text-ink-2">Mangiate oggi</p>
-        <p className="mt-1">
-          <span className="text-[32px] font-extrabold tabular-nums">{formatNumber(total.kcal)}</span>{' '}
-          <span className="text-[15px] text-ink-2">kcal</span>
-        </p>
-        <dl className="mt-3 grid grid-cols-3 gap-2 text-[13px]">
-          {(
-            [
-              ['Proteine', total.protein, 'bg-blue'],
-              ['Carboidrati', total.carbs, 'bg-orange'],
-              ['Grassi', total.fat, 'bg-magenta'],
-            ] as const
-          ).map(([label, value, dot]) => (
-            <div key={label}>
-              <dt className="flex items-center gap-1 text-ink-2">
-                <span aria-hidden="true" className={`size-2 rounded-full ${dot}`} />
-                {label}
-              </dt>
-              <dd className="text-[18px] font-extrabold tabular-nums">{formatNumber(value)} g</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-3 text-[13px] text-muted">Obiettivo e macro del giorno arrivano allo step 6.</p>
-      </section>
+      <TargetCard date={today} eaten={total} />
 
       {entries.isPending && <ListSkeleton rows={4} />}
       {entries.isError && <ErrorState message={errorMessage(entries.error)} onRetry={() => void entries.refetch()} />}
