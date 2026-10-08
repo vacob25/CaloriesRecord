@@ -156,6 +156,14 @@ La fotocamera parte dal pulsante "Avvia fotocamera" (iOS richiede un gesto). For
 **ADR-043 · Statistiche: colori e definizioni**
 Barre delle calorie: verde = rispettato, arancio = sotto target (DESIGN.md); "oltre il target" in grigio, perché il design non gli dà un colore e in un bulk non è un allarme. L'arancio su bianco ha contrasto 2,6:1 (script della skill dataviz): per questo c'è sempre la tabella dei giorni con lo stato scritto. Un giorno registrato ma senza target (non si è aperta l'app quel giorno) conta nella media ma non nel rapporto "rispettati". Peso del periodo = variazione della media mobile tra il primo e l'ultimo giorno, in kg/settimana (§8); "—" se manca una delle due medie. Non si naviga oltre il periodo attuale.
 
+## Decise allo step 10 (8 ottobre 2026) — da confermare
+
+**ADR-044 · Finestra della ricalibrazione tagliata all'inizio dell'uso** (interpretazione di §7, da confermare)
+§7 chiede "28 giorni conclusi, con almeno 21 giorni dall'inizio dell'uso" e "almeno 80% dei giorni registrati". Se l'80% fosse sempre su 28 giorni, con 21 giorni d'uso si arriverebbe al massimo al 75% e la soglia dei 21 giorni non servirebbe. Scelta: la finestra è degli ultimi 28 giorni conclusi ma comincia non prima del primo giorno d'uso (prima voce o prima pesata); servono ≥ 21 giorni nella finestra, l'80% di quei giorni registrati (≥ 50% del target) e ≥ 10 pesate. La pendenza si arrotonda a 3 decimali (come la colonna) prima del confronto con la banda, così 0,20 e 0,40 sono dentro.
+
+**ADR-045 · Una valutazione a settimana, alla prima apertura**
+Alla prima apertura di una settimana (lun-dom, Roma) si salva una riga in `tdee_estimates`: `pending` se c'è una proposta, `none` se si è in banda o mancano dati. Le aperture successive della stessa settimana rileggono quella riga: al massimo una proposta a settimana. Se a inizio settimana mancano dati, si riprova la settimana dopo. Accettare cambia solo `activity_factor` (vale da domani, il target di oggi resta); rifiutare cambia solo lo stato della riga. L'unicità per settimana è garantita dall'app, non da un vincolo nel database (basterebbe una migrazione con `unique (user_id, week_start)` se servisse).
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
