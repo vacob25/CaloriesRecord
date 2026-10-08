@@ -11,7 +11,7 @@ let client: SupabaseClient | null = null
  * Unico client Supabase dell'app. Solo i file di `src/data/` lo usano.
  * - persistSession: la sessione resta salvata sul telefono, chiudere l'app non fa uscire.
  * - autoRefreshToken: il token si rinnova da solo prima di scadere.
- * - detectSessionInUrl false: il login è con codice (ADR-014), non con link, quindi non c'è niente da leggere nell'URL.
+ * - detectSessionInUrl false: il login avviene nell'app (email e password, ADR-028), mai tramite link: non c'è niente da leggere nell'URL.
  */
 export function getSupabase(): SupabaseClient {
   if (!supabaseEnv.ok) {

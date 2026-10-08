@@ -1,43 +1,32 @@
 import { isAuthRetryableFetchError, type Session } from '@supabase/supabase-js'
 
-import { describeAuthError, type AuthErrorLike, type AuthStep } from './authErrors'
+import { describeAuthError, type AuthErrorLike } from './authErrors'
 import { getSupabase } from './supabase'
 
 export type { Session }
 
-/** Esito di un'azione di login: ok, oppure un messaggio già pronto per l'utente. */
+/** Esito del login: ok, oppure un messaggio già pronto per l'utente. */
 export type AuthActionResult = { ok: true } | { ok: false; message: string }
 
 function isOnline(): boolean {
   return typeof navigator === 'undefined' ? true : navigator.onLine
 }
 
-function toResult(error: unknown, step: AuthStep): AuthActionResult {
+function toResult(error: unknown): AuthActionResult {
   if (!error) return { ok: true }
-  const described = describeAuthError(error as AuthErrorLike, step, isOnline())
-  return described.kind === 'silent' ? { ok: true } : { ok: false, message: described.message }
+  return { ok: false, message: describeAuthError(error as AuthErrorLike, isOnline()) }
 }
 
-/** Passo 1: chiede a Supabase di mandare il codice. Non crea mai nuovi utenti (ADR-013). */
-export async function sendLoginCode(email: string): Promise<AuthActionResult> {
+/**
+ * Accesso con email e password (ADR-028). Se va bene, supabase-js salva la sessione
+ * e la rinnova da solo: non serve rifare il login a ogni apertura.
+ */
+export async function signInWithPassword(email: string, password: string): Promise<AuthActionResult> {
   try {
-    const { error } = await getSupabase().auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: false },
-    })
-    return toResult(error, 'send')
+    const { error } = await getSupabase().auth.signInWithPassword({ email, password })
+    return toResult(error)
   } catch (error) {
-    return toResult(error ?? new Error('errore'), 'send')
-  }
-}
-
-/** Passo 2: verifica il codice ricevuto per email. Se va bene, supabase-js salva la sessione. */
-export async function verifyLoginCode(email: string, code: string): Promise<AuthActionResult> {
-  try {
-    const { error } = await getSupabase().auth.verifyOtp({ email, token: code, type: 'email' })
-    return toResult(error, 'verify')
-  } catch (error) {
-    return toResult(error ?? new Error('errore'), 'verify')
+    return toResult(error ?? new Error('errore'))
   }
 }
 
