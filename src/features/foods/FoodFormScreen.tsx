@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { ConfirmButton } from '../../components/ConfirmButton'
 import { Field } from '../../components/Field'
@@ -39,19 +39,40 @@ function toForm(food: Food): FoodFormInput {
   }
 }
 
-/** /cibi/nuovo e /cibi/:id */
+/** Stato passato da Aggiungi pasto / scanner: modulo precompilato e dove tornare dopo il salvataggio. */
+export interface FoodFormState {
+  prefill?: FoodFormInput
+  source?: 'manual' | 'open_food_facts'
+  note?: string
+  returnTo?: string
+}
+
+/** /cibi/nuovo (anche ?barcode=…) e /cibi/:id */
 export function FoodFormScreen() {
   const { id } = useParams()
   const food = useFood(id)
+  const [params] = useSearchParams()
+  const state = (useLocation().state as FoodFormState | null) ?? {}
 
-  if (!id) return <FoodForm initial={EMPTY_FORM} food={null} />
+  if (!id) {
+    const initial = state.prefill ?? { ...EMPTY_FORM, barcode: params.get('barcode') ?? '' }
+    return <FoodForm initial={initial} food={null} source={state.source} note={state.note} returnTo={state.returnTo} />
+  }
   if (food.isPending) return <ListSkeleton rows={4} />
   if (food.isError) return <ErrorState message={errorMessage(food.error)} onRetry={() => void food.refetch()} />
   if (food.data.source === 'recipe') return <Navigate to={`/cibi/ricette/${food.data.id}`} replace />
   return <FoodForm key={food.data.id} initial={toForm(food.data)} food={food.data} />
 }
 
-function FoodForm({ initial, food }: { initial: FoodFormInput; food: Food | null }) {
+interface FoodFormProps {
+  initial: FoodFormInput
+  food: Food | null
+  source?: 'manual' | 'open_food_facts'
+  note?: string
+  returnTo?: string
+}
+
+function FoodForm({ initial, food, source, note, returnTo }: FoodFormProps) {
   const navigate = useNavigate()
   const save = useSaveFood()
   const remove = useDeleteFood()
@@ -80,7 +101,15 @@ function FoodForm({ initial, food }: { initial: FoodFormInput; food: Food | null
       setAcceptedWarnings(true)
       return
     }
-    save.mutate({ id: food?.id ?? null, values: result.value }, { onSuccess: () => navigate('/cibi') })
+    save.mutate(
+      { id: food?.id ?? null, values: result.value, source },
+      {
+        onSuccess: (created) => {
+          if (created && returnTo) navigate(`${returnTo}${returnTo.includes('?') ? '&' : '?'}cibo=${created.id}`)
+          else navigate('/cibi')
+        },
+      },
+    )
   }
 
   const perLabel = form.basis === 'serving' ? 'per porzione' : 'per 100 g'
@@ -88,7 +117,12 @@ function FoodForm({ initial, food }: { initial: FoodFormInput; food: Food | null
 
   return (
     <>
-      <ScreenHeader title={food ? 'Modifica cibo' : 'Nuovo cibo'} backTo="/cibi" />
+      <ScreenHeader title={food ? 'Modifica cibo' : 'Nuovo cibo'} backTo={returnTo ?? '/cibi'} />
+      {note && (
+        <div className="px-5 pt-2">
+          <FormMessage kind="warning">{note}</FormMessage>
+        </div>
+      )}
       <form onSubmit={handleSubmit} noValidate className="space-y-4 px-5 pt-4">
         <Field id="name" label="Nome" value={form.name} onChange={set('name')} error={errors.name} autoComplete="off" />
         <Field id="brand" label="Marca (facoltativa)" value={form.brand} onChange={set('brand')} autoComplete="off" />

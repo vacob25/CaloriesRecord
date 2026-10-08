@@ -12,8 +12,11 @@ import {
   saveRecipe,
   setFavorite,
   updateFood,
+  saveOffFood,
   type RecipeInput,
 } from './foods'
+import { resolveBarcode } from './barcode'
+import { searchProducts } from './openFoodFacts'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
 import { createProfile, getProfile, updateParams, updatePersonal } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
@@ -54,13 +57,24 @@ function useInvalidateFoods() {
   return () => client.invalidateQueries({ queryKey: queryKeys.foods })
 }
 
+/** Salva un cibo; per un cibo nuovo restituisce il cibo creato (serve a tornare ad "Aggiungi pasto"). */
 export function useSaveFood() {
   const invalidate = useInvalidateFoods()
   return useMutation({
-    mutationFn: ({ id, values }: { id: string | null; values: FoodValues }) =>
-      id ? updateFood(id, values) : createFood(values).then(() => undefined),
+    mutationFn: async ({ id, values, source }: { id: string | null; values: FoodValues; source?: 'manual' | 'open_food_facts' }) => {
+      if (id) {
+        await updateFood(id, values)
+        return null
+      }
+      return createFood(values, source)
+    },
     onSuccess: invalidate,
   })
+}
+
+export function useSaveOffFood() {
+  const invalidate = useInvalidateFoods()
+  return useMutation({ mutationFn: (values: FoodValues) => saveOffFood(values), onSuccess: invalidate })
 }
 
 export function useDeleteFood() {
@@ -192,4 +206,14 @@ export function useDeleteWeight() {
     mutationFn: (day: string) => deleteWeight(day),
     onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets),
   })
+}
+
+export function useResolveBarcode() {
+  const invalidate = useInvalidateFoods()
+  return useMutation({ mutationFn: (code: string) => resolveBarcode(code), onSuccess: invalidate })
+}
+
+/** Ricerca su Open Food Facts: una mutation, non una query, perché parte solo su richiesta esplicita. */
+export function useSearchOff() {
+  return useMutation({ mutationFn: (query: string) => searchProducts(query) })
 }

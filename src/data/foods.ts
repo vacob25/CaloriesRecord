@@ -62,20 +62,39 @@ export async function listFoods(): Promise<Food[]> {
   return (data as FoodRow[]).map(toFood)
 }
 
+/** Il proprio cibo con quel codice a barre, se c'è (unico per utente). */
+export async function findFoodByBarcode(barcode: string): Promise<Food | null> {
+  const { data, error } = await getSupabase().from('foods').select(FOOD_COLUMNS).eq('barcode', barcode).maybeSingle()
+  throwIfError(error)
+  return data ? toFood(data as FoodRow) : null
+}
+
+/**
+ * Prodotto di Open Food Facts scelto per la prima volta: si salva tra i propri cibi (step 8).
+ * Se esiste già un proprio cibo con lo stesso codice si usa quello: niente doppioni.
+ */
+export async function saveOffFood(values: FoodValues): Promise<Food> {
+  if (values.barcode) {
+    const existing = await findFoodByBarcode(values.barcode)
+    if (existing) return existing
+  }
+  return createFood(values, 'open_food_facts')
+}
+
 export async function getFood(id: string): Promise<Food> {
   const { data, error } = await getSupabase().from('foods').select(FOOD_COLUMNS).eq('id', id).single()
   throwIfError(error)
   return toFood(data as FoodRow)
 }
 
-export async function createFood(values: FoodValues): Promise<Food> {
+export async function createFood(values: FoodValues, source: Exclude<FoodSource, 'recipe'> = 'manual'): Promise<Food> {
   const { data, error } = await getSupabase()
     .from('foods')
     .insert({
       name: values.name,
       brand: values.brand,
       barcode: values.barcode,
-      source: 'manual',
+      source,
       serving_g: values.servingG,
       ...valuesToRow(values.per100g),
     })

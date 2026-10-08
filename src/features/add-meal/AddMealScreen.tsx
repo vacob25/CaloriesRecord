@@ -14,6 +14,7 @@ import { FOOD_SOURCE_LABEL, isMealType, MEAL_LABEL, type MealType } from '../../
 import { defaultGrams, entrySnapshot, mealForHour, recentFoods } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
 import { filterByQuery } from '../../lib/search'
+import { OffSearch } from './OffSearch'
 
 type Tab = 'recent' | 'favorites' | 'mine' | 'recipes'
 
@@ -47,7 +48,7 @@ const EMPTY_TAB_TEXT: Record<Tab, string> = {
 /** /aggiungi?pasto=lunch — registra un cibo in pochi tocchi. */
 export function AddMealScreen() {
   const navigate = useNavigate()
-  const [params] = useSearchParams()
+  const [params, setParams] = useSearchParams()
   const requested = params.get('pasto')
   const [meal, setMeal] = useState<MealType>(() =>
     isMealType(requested) ? requested : mealForHour(localHour(new Date())),
@@ -65,11 +66,28 @@ export function AddMealScreen() {
   const searching = query.trim() !== ''
   const visible = searching ? filterByQuery(all, query) : foodsForTab(all, tab)
   const mealName = MEAL_LABEL[meal].toLowerCase()
+  const returnTo = `/aggiungi?pasto=${meal}`
+
+  // Ritorno da scanner / nuovo cibo con ?cibo=<id>: si apre subito il pannello dei grammi.
+  const chosenId = params.get('cibo')
+  const fromReturn = chosenId ? (all.find((food) => food.id === chosenId) ?? null) : null
+  const current = selected ?? fromReturn
+
+  function closeSheet() {
+    setSelected(null)
+    if (chosenId) {
+      setParams((existing) => {
+        const next = new URLSearchParams(existing)
+        next.delete('cibo')
+        return next
+      }, { replace: true })
+    }
+  }
 
   function handleAdd(grams: number) {
-    if (!selected) return
+    if (!current) return
     addEntry.mutate(
-      { date: localDate(new Date()), mealType: meal, food: selected, grams },
+      { date: localDate(new Date()), mealType: meal, food: current, grams },
       { onSuccess: (entry) => navigate('/', { state: { added: { id: entry.id, mealType: meal } } }) },
     )
   }
@@ -79,18 +97,31 @@ export function AddMealScreen() {
       <ScreenHeader title={`Aggiungi a ${mealName}`} backTo="/" />
       <div className="px-5 pt-4">
         <MealPicker name="meal" value={meal} onChange={setMeal} />
-        <label htmlFor="add-search" className="sr-only">
-          Cerca un cibo
-        </label>
-        <input
-          id="add-search"
-          type="search"
-          placeholder="Cerca un cibo"
-          autoComplete="off"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          className={`${inputClass} mt-3`}
-        />
+        <div className="mt-3 flex items-end gap-2">
+          <div className="flex-1">
+            <label htmlFor="add-search" className="sr-only">
+              Cerca un cibo
+            </label>
+            <input
+              id="add-search"
+              type="search"
+              placeholder="Cerca un cibo"
+              autoComplete="off"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className={`${inputClass} !mt-0`}
+            />
+          </div>
+          <Link
+            to={`/aggiungi/scanner?pasto=${meal}`}
+            aria-label="Scansiona un codice a barre"
+            className="flex size-12 shrink-0 items-center justify-center rounded-button border border-line bg-surface text-ink"
+          >
+            <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+              <path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v8M17 8v8" />
+            </svg>
+          </Link>
+        </div>
       </div>
 
       {!searching && (
@@ -122,7 +153,7 @@ export function AddMealScreen() {
         </EmptyState>
       )}
       {foods.isSuccess && all.length > 0 && visible.length === 0 && (
-        <EmptyState text={searching ? `Nessun cibo trovato per "${query.trim()}".` : EMPTY_TAB_TEXT[tab]} />
+        <EmptyState text={searching ? `Nessuno dei tuoi cibi corrisponde a "${query.trim()}".` : EMPTY_TAB_TEXT[tab]} />
       )}
 
       {visible.length > 0 && (
@@ -152,19 +183,31 @@ export function AddMealScreen() {
         </ul>
       )}
 
-      {selected && (
+      {searching && (
+        <OffSearch
+          key={query.trim()}
+          query={query}
+          returnTo={returnTo}
+          onPick={(food) => {
+            addEntry.reset()
+            setSelected(food)
+          }}
+        />
+      )}
+
+      {current && (
         <GramsSheet
-          key={selected.id}
-          title={selected.name}
-          subtitle={`${formatNumber(selected.per100g.kcal)} kcal per 100 g`}
-          initialGrams={defaultGrams(lastGrams.data?.[selected.id], selected.servingG)}
-          servingG={selected.servingG}
-          preview={(grams) => entrySnapshot(selected.per100g, grams)}
+          key={current.id}
+          title={current.name}
+          subtitle={`${formatNumber(current.per100g.kcal)} kcal per 100 g`}
+          initialGrams={defaultGrams(lastGrams.data?.[current.id], current.servingG)}
+          servingG={current.servingG}
+          preview={(grams) => entrySnapshot(current.per100g, grams)}
           submitLabel={`Aggiungi a ${mealName}`}
           busy={addEntry.isPending}
           error={addEntry.isError ? errorMessage(addEntry.error) : null}
           onSubmit={handleAdd}
-          onClose={() => setSelected(null)}
+          onClose={closeSheet}
         />
       )}
     </>

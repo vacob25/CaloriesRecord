@@ -10,7 +10,7 @@ import { TodayScreen } from '../features/today/TodayScreen'
 import { OnboardingScreen } from '../features/profile/OnboardingScreen'
 import { Layout } from './Layout'
 import { ProfileGate } from './ProfileGate'
-import { StatsPage, WeightPage } from './lazyPages'
+import { ScannerPage, StatsPage, WeightPage } from './lazyPages'
 import { PublicOnly, RequireAuth } from './routeGuards'
 
 export const router = createBrowserRouter([
@@ -47,6 +47,7 @@ export const router = createBrowserRouter([
       { path: 'cibi/ricette/:id', element: <RecipeFormScreen /> },
       { path: 'cibi/:id', element: <FoodFormScreen /> },
       { path: 'aggiungi', element: <AddMealScreen /> },
+      { path: 'aggiungi/scanner', element: <ScannerPage /> },
       { path: 'statistiche', element: <StatsPage /> },
       { path: 'peso', element: <WeightPage /> },
       { path: 'profilo', element: <ProfileScreen /> },
