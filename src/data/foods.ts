@@ -86,6 +86,24 @@ export async function saveOffFood(values: FoodValues): Promise<Food> {
   return createFood(values, 'open_food_facts')
 }
 
+/**
+ * Voce del catalogo scelta (step 16): si salva tra i propri cibi la prima volta.
+ * Se c'è già un proprio cibo con lo stesso nome e la stessa unità si usa quello: niente doppioni.
+ */
+export async function saveCatalogFood(values: FoodValues, portions: Portion[]): Promise<Food> {
+  const { data, error } = await getSupabase()
+    .from('foods')
+    .select(FOOD_COLUMNS)
+    .eq('name', values.name)
+    .eq('unit', values.unit)
+    .neq('source', 'recipe')
+    .limit(1)
+  throwIfError(error)
+  const existing = (data as FoodRow[] | null)?.[0]
+  if (existing) return toFood(existing)
+  return createFood(values, 'manual', portions)
+}
+
 export async function getFood(id: string): Promise<Food> {
   const { data, error } = await getSupabase().from('foods').select(FOOD_COLUMNS).eq('id', id).single()
   throwIfError(error)

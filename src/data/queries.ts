@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import type { FoodValues } from '../lib/foodValidation'
+import { catalogToFood, parseCatalog, type CatalogItem } from '../lib/catalog'
 import type { Portion } from '../lib/portions'
 import type { MealType, TrainingType } from '../lib/labels'
 import type { ParamsValues, PersonalValues } from '../lib/profileValidation'
@@ -14,6 +15,7 @@ import {
   setFavorite,
   updateFood,
   saveOffFood,
+  saveCatalogFood,
   type RecipeInput,
 } from './foods'
 import { resolveBarcode } from './barcode'
@@ -55,6 +57,7 @@ export const queryKeys = {
   water: ['water_entries'] as const,
   waterForDay: (date: string) => ['water_entries', date] as const,
   containers: ['drink_containers'] as const,
+  catalog: ['catalog'] as const,
 }
 
 export function useFoods() {
@@ -313,4 +316,26 @@ export function useDeleteContainer() {
 export function useUpdateWaterGoal() {
   const invalidate = useInvalidate()
   return useMutation({ mutationFn: updateWaterGoal, onSuccess: () => invalidate(queryKeys.profile) })
+}
+
+// Catalogo di ingredienti (step 16): file statico, caricato solo quando serve.
+
+export function useCatalog(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.catalog,
+    queryFn: async () => parseCatalog((await import('./catalog/ingredienti.json')).default).items,
+    staleTime: Infinity,
+    enabled,
+  })
+}
+
+export function useSaveCatalogFood() {
+  const invalidate = useInvalidateFoods()
+  return useMutation({
+    mutationFn: (item: CatalogItem) => {
+      const { values, portions } = catalogToFood(item)
+      return saveCatalogFood(values, portions)
+    },
+    onSuccess: invalidate,
+  })
 }

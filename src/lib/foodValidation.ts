@@ -129,13 +129,17 @@ export function validateFood(input: FoodFormInput): FoodValidation {
 
   const warnings: string[] = []
   const fromMacros = kcalFromMacros(per100g)
-  const mismatch =
-    per100g.kcal === 0 ? fromMacros > 0 : Math.abs(fromMacros - per100g.kcal) / per100g.kcal > KCAL_MISMATCH_WARNING
-  if (mismatch) {
+  if (hasKcalMismatch(per100g)) {
     warnings.push(
       `Valori incoerenti: i macro danno circa ${Math.round(fromMacros)} kcal invece di ${Math.round(per100g.kcal)}. Controlla l’etichetta.`,
     )
   }
 
   return { ok: true, value: { name, brand, barcode, unit, servingG, per100g }, warnings }
+}
+
+/** §9: kcal dichiarate e kcal dai macro differiscono di oltre il 20% (avviso, non blocco). */
+export function hasKcalMismatch(per100g: Per100g): boolean {
+  const fromMacros = kcalFromMacros(per100g)
+  return per100g.kcal === 0 ? fromMacros > 0 : Math.abs(fromMacros - per100g.kcal) / per100g.kcal > KCAL_MISMATCH_WARNING
 }

@@ -15,15 +15,17 @@ import { defaultGrams, entrySnapshot, mealForHour, recentFoods } from '../../lib
 import { formatNumber } from '../../lib/numbers'
 import { per100Label } from '../../lib/portions'
 import { filterByQuery } from '../../lib/search'
+import { CatalogList } from './CatalogList'
 import { OffSearch } from './OffSearch'
 
-type Tab = 'recent' | 'favorites' | 'mine' | 'recipes'
+type Tab = 'recent' | 'favorites' | 'mine' | 'recipes' | 'catalog'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'recent', label: 'Recenti' },
   { id: 'favorites', label: 'Preferiti' },
   { id: 'mine', label: 'I miei cibi' },
   { id: 'recipes', label: 'Ricette' },
+  { id: 'catalog', label: 'Catalogo' },
 ]
 
 function foodsForTab(foods: readonly Food[], tab: Tab): Food[] {
@@ -36,6 +38,8 @@ function foodsForTab(foods: readonly Food[], tab: Tab): Food[] {
       return foods.filter((food) => food.source !== 'recipe')
     case 'recipes':
       return foods.filter((food) => food.source === 'recipe')
+    case 'catalog':
+      return []
   }
 }
 
@@ -44,6 +48,7 @@ const EMPTY_TAB_TEXT: Record<Tab, string> = {
   favorites: 'Nessun preferito. Tocca la stella di un cibo in "Cibi".',
   mine: 'Nessun cibo.',
   recipes: 'Nessuna ricetta. Creale da "Cibi" → "Nuova ricetta".',
+  catalog: '',
 }
 
 /** /aggiungi?pasto=lunch — registra un cibo in pochi tocchi. */
@@ -66,6 +71,7 @@ export function AddMealScreen() {
   const tab: Tab = chosenTab ?? (recentFoods(all).length > 0 ? 'recent' : 'mine')
   const searching = query.trim() !== ''
   const visible = searching ? filterByQuery(all, query) : foodsForTab(all, tab)
+  const inCatalog = !searching && tab === 'catalog'
   const mealName = MEAL_LABEL[meal].toLowerCase()
   const returnTo = `/aggiungi?pasto=${meal}`
 
@@ -144,16 +150,16 @@ export function AddMealScreen() {
         </div>
       )}
 
-      {foods.isPending && <ListSkeleton />}
+      {foods.isPending && !inCatalog && <ListSkeleton />}
       {foods.isError && <ErrorState message={errorMessage(foods.error)} onRetry={() => void foods.refetch()} />}
-      {foods.isSuccess && all.length === 0 && (
+      {foods.isSuccess && all.length === 0 && !inCatalog && (
         <EmptyState text="Non hai ancora nessun cibo. Crealo una volta, poi lo registri in un tocco.">
           <Link to="/cibi/nuovo" className={`${primaryButtonClass} flex items-center justify-center`}>
             Crea un cibo
           </Link>
         </EmptyState>
       )}
-      {foods.isSuccess && all.length > 0 && visible.length === 0 && (
+      {foods.isSuccess && all.length > 0 && visible.length === 0 && !inCatalog && (
         <EmptyState text={searching ? `Nessuno dei tuoi cibi corrisponde a "${query.trim()}".` : EMPTY_TAB_TEXT[tab]} />
       )}
 
@@ -183,6 +189,18 @@ export function AddMealScreen() {
             </li>
           ))}
         </ul>
+        </div>
+      )}
+
+      {(inCatalog || searching) && (
+        <div role={inCatalog ? 'tabpanel' : undefined} aria-label={inCatalog ? 'Catalogo' : undefined}>
+          <CatalogList
+            query={searching ? query : ''}
+            onPick={(food) => {
+              addEntry.reset()
+              setSelected(food)
+            }}
+          />
         </div>
       )}
 

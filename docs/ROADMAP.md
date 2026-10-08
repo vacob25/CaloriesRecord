@@ -21,7 +21,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 13 | Peso più visibile e promemoria | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 14 | Porzioni casalinghe e liquidi in ml | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 15 | Acqua | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
-| 16 | Catalogo di ingredienti mediterranei | da fare (dati dall'altra chat) |
+| 16 | Catalogo di ingredienti mediterranei | infrastruttura fatta e provata con un catalogo fittizio (schema zod, regole §9, scheda Catalogo, salvataggio alla prima scelta); manca: il JSON dall'altra chat in `src/data/catalog/ingredienti.json` |
 
 Gli step 1-7 portano a un primo uso reale quotidiano. 8-12 arrivano nelle settimane dopo (lo step 12 si può anticipare).
 
