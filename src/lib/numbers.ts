@@ -9,10 +9,14 @@ export function parseDecimal(input: string): number | null {
   return Number.isFinite(value) ? value : null
 }
 
-/** Arrotonda a `decimals` cifre evitando gli errori di virgola mobile (1.005 → 1.01). */
+/**
+ * Arrotonda a `decimals` cifre evitando gli errori di virgola mobile
+ * (1.005 → 1.01; 6.6 · 0.75 = 4.9499999… → 5). Il passaggio da 12 cifre
+ * significative toglie la "coda" binaria prima di arrotondare.
+ */
 export function round(value: number, decimals = 0): number {
   const factor = 10 ** decimals
-  return Math.round((value + Number.EPSILON) * factor) / factor
+  return Math.round(Number((value * factor).toPrecision(12))) / factor
 }
 
 const formatters = new Map<number, Intl.NumberFormat>()

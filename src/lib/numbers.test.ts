@@ -23,6 +23,9 @@ describe('round', () => {
     expect(round(1.005, 2)).toBe(1.01)
     expect(round(463.75)).toBe(464)
     expect(round(2.449, 1)).toBe(2.4)
+    expect(round(6.6 * 0.75, 1)).toBe(5)
+    expect(round(1.15, 1)).toBe(1.2)
+    expect(round(136.05, 2)).toBe(136.05)
   })
 })
 
