@@ -108,6 +108,20 @@ Il limite di §9 (≤ 5000 g) vale per grammi di voci pasto e ingredienti. Il pe
 **ADR-032 · Ricerca nei propri cibi sul telefono**
 Si scaricano tutti i propri cibi (poche centinaia di righe) e si filtra in `lib/search.ts`: ignora accenti e maiuscole ("ragu" trova "ragù"), è istantanea e funziona anche mentre si scrive. `ilike` sul server non ignora gli accenti.
 
+## Decise allo step 5 (8 ottobre 2026) — da confermare con l'uso
+
+**ADR-033 · Pasto proposto in base all'ora**
+DESIGN.md dice "default: in base all'ora" senza orari. Fasce scelte (ora di Roma, in `lib/constants.ts`): 5-11 colazione, 11-15 pranzo, 15-18 snack, 18-23 cena, 23-5 snack. È solo il valore iniziale: si cambia con un tocco. Da correggere se non corrisponde alle tue abitudini.
+
+**ADR-034 · Grammi proposti quando registri un cibo**
+In ordine: gli ultimi grammi usati per quel cibo, poi la porzione (`serving_g`), poi 100 g. Così un cibo recente si registra in 3 tocchi (+ → cibo → Aggiungi) senza scrivere niente.
+
+**ADR-035 · Modificare i grammi di una voce scala lo snapshot**
+Se cambi i grammi di una voce già registrata, kcal e macro si ricalcolano in proporzione dai valori salvati nella voce, non dal cibo (che può essere cambiato o cancellato). Così vale sempre ADR-011.
+
+**ADR-036 · "Aggiunto · Annulla" per 6 secondi**
+DESIGN.md dice "per alcuni secondi": 6 s (`UNDO_SECONDS`).
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
 - **Step 11:** il JavaScript è ~690 kB (~200 kB compressi) e Vite avvisa oltre 500 kB: valutare il caricamento separato delle schermate (lazy routes). Il service worker lo mette comunque in cache dopo la prima apertura.

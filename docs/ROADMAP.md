@@ -10,7 +10,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 2 | Setup, PWA, deploy | fatto |
 | 3 | Database e login | fatto (8/10/2026: login con password nella PWA installata, Esci e rientro, riapertura; da annotare: sessione dopo 1 giorno e 1 settimana) |
 | 4 | Cibi e ricette | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 002 su Supabase e prova sull'iPhone) |
-| 5 | Registro pasti | da fare |
+| 5 | Registro pasti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 6 | Target e macro | da fare |
 | 7 | Peso | da fare |
 | 8 | Open Food Facts e barcode | da fare |
