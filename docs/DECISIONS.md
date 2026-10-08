@@ -88,11 +88,13 @@ Con `shouldCreateUser: false` Supabase risponde con un errore se l'email non esi
 **ADR-026 · `profiles`: sesso, data di nascita e altezza obbligatori**
 `not null` nel database: un profilo esiste solo quando questi tre dati sono stati inseriti (servono al BMR). Nessun limite numerico oltre a `> 0` sull'altezza, finché `DOMAIN_RULES.md` non ne fissa.
 
+**ADR-027 · Schermata dati personali allo step 6, non allo step 3** (scelta dell'utente, 8/10/2026)
+I dati (sesso, data di nascita, altezza, peso obiettivo) servono solo ai calcoli del target, che arrivano allo step 6: costruire lì la schermata permette di provarla subito con i numeri veri, con le regole di validazione decise insieme. Fino ad allora la tabella `profiles` resta vuota; nessuna schermata dello step 4-5 la legge.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
-- **Step 3 (da decidere):** la ROADMAP mette nello step 3 la schermata "dati personali" alla prima apertura, ma la richiesta dello step 3 non la elencava e il punto qui sotto la colloca allo step 6. Non è stata fatta. Servono anche i limiti di validazione (altezza, data di nascita), che `DOMAIN_RULES.md` non definisce.
 - **Step 3:** verificare sull'iPhone che con l'OTP la sessione nella PWA duri (chiudere/riaprire, dopo 1 giorno, dopo 1 settimana) e che il servizio email predefinito di Supabase regga l'uso quotidiano; altrimenti SMTP personalizzato.
 - **Step 4:** unità "porzione" per i cibi: solo grammi con scorciatoia da `serving_g`, o anche millilitri per i liquidi? (Latte, olio.) Proposta: solo grammi in v1, con densità ignorata e dichiarata.
-- **Step 6:** sesso e data di nascita si inseriscono nell'app alla prima apertura (schermata profilo) e restano nel database, non nel repo.
+- **Step 6:** limiti di validazione della schermata dati personali (altezza minima/massima, età minima/massima, peso obiettivo) da decidere con l'utente e scrivere in `DOMAIN_RULES.md` prima del codice.
 - **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.
 - **Step 10:** valore di `ENERGY_PER_KG` (7700): tenere come costante modificabile e rivalutare dopo qualche mese di dati reali.

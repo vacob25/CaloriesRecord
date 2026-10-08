@@ -8,7 +8,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | --- | --- | --- |
 | 1 | Design | fatto |
 | 2 | Setup, PWA, deploy | fatto |
-| 3 | Database e login | in prova (fatte: migrazione 001 e verifica RLS su Supabase l'8/10/2026; mancano: prova sull'iPhone, schermata profilo da decidere) |
+| 3 | Database e login | in prova (fatte: migrazione 001 e verifica RLS su Supabase l'8/10/2026; manca: prova sull'iPhone) |
 | 4 | Cibi e ricette | da fare |
 | 5 | Registro pasti | da fare |
 | 6 | Target e macro | da fare |
@@ -31,7 +31,7 @@ Accettazione:
 Non fare: nessuna logica, nessun database.
 
 ## Step 3 · Database e login
-Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **codice numerico via email (OTP)**, vedi ADR-014; guardia di route (senza sessione → login); client in `data/supabase.ts`; creazione del profilo alla prima apertura (schermata dati personali: sesso, data di nascita, altezza, peso obiettivo, inseriti nell'app).
+Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **codice numerico via email (OTP)**, vedi ADR-014; guardia di route (senza sessione → login); client in `data/supabase.ts`. La schermata dati personali è spostata allo step 6 (ADR-027).
 Accettazione:
 - Verifica RLS con due utenti completata (`SECURITY.md`) e annotata.
 - Registrazioni aperte disattivate dopo la creazione dell'utente.
@@ -56,8 +56,10 @@ Accettazione:
 - Cancellare un cibo lascia le voci con il loro nome.
 
 ## Step 6 · Target e macro
-Fare: profilo con parametri; `lib/nutrition.ts` (BMR, mantenimento, target, macro) con tutti i test di `TESTING.md`; creazione di `daily_targets` alla prima apertura del giorno; anello e barre macro; selettore tipo di giorno.
+Fare: **schermata dati personali alla prima apertura** (sesso, data di nascita, altezza, peso obiettivo; crea la riga di `profiles`, senza profilo l'app porta lì; ADR-027); profilo con parametri; `lib/nutrition.ts` (BMR, mantenimento, target, macro) con tutti i test di `TESTING.md`; creazione di `daily_targets` alla prima apertura del giorno; anello e barre macro; selettore tipo di giorno.
 Accettazione:
+- Prima apertura senza profilo → schermata dati personali; dopo il salvataggio non ricompare.
+- Limiti di validazione dei dati personali decisi con l'utente e scritti in `DOMAIN_RULES.md` prima di scrivere il codice.
 - Con il profilo di esempio fittizio di `DOMAIN_RULES.md` il target è 3130 (riposo) e 3330 (calcio), macro 150/75/464 e 150/75/514.
 - Cambiare un parametro nel profilo non modifica i giorni passati.
 - Oltre il target l'anello mostra "oltre di N kcal".
