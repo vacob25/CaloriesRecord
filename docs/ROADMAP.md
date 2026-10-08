@@ -17,8 +17,9 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 9 | Statistiche | da fare |
 | 10 | Ricalibrazione | da fare |
 | 11 | Rifinitura e uso reale | da fare |
+| 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
 
-Gli step 1-7 portano a un primo uso reale quotidiano. 8-11 arrivano nelle settimane dopo.
+Gli step 1-7 portano a un primo uso reale quotidiano. 8-12 arrivano nelle settimane dopo (lo step 12 si può anticipare).
 
 ---
 
@@ -31,7 +32,7 @@ Accettazione:
 Non fare: nessuna logica, nessun database.
 
 ## Step 3 · Database e login
-Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **email e password** (ADR-028; l'OTP di ADR-014 è rinviato a uno step successivo); guardia di route (senza sessione → login); client in `data/supabase.ts`. La schermata dati personali è spostata allo step 6 (ADR-027).
+Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **email e password** (ADR-028; l'OTP di ADR-014 è rinviato allo step 12); guardia di route (senza sessione → login); client in `data/supabase.ts`. La schermata dati personali è spostata allo step 6 (ADR-027).
 Accettazione:
 - Verifica RLS con due utenti completata (`SECURITY.md`) e annotata.
 - Registrazioni aperte disattivate dopo la creazione dell'utente.
@@ -97,6 +98,16 @@ Accettazione:
 ## Step 11 · Rifinitura e uso reale
 Fare: icona e schermata di avvio definitive, prestazioni, stati vuoti/errore/offline ovunque, accessibilità (contrasto, aree toccabili, label), 2 settimane di uso reale con elenco dei problemi.
 Accettazione: lista di problemi incontrati dall'utente corretta o classificata come v2; `npm audit` senza vulnerabilità alte.
+
+## Step 12 · Login con codice OTP (rinviato dallo step 3)
+Si può anticipare in qualunque momento dopo lo step 3: non dipende dagli altri step.
+Prima di scrivere: decidere con l'utente se l'OTP **sostituisce** la password o si **aggiunge** (es. "Accedi con un codice" come alternativa). Riprendere il codice dalla storia di git (commit `3a69c12`: schermata a due passaggi, timer di reinvio, login in attesa salvato, errori) invece di riscriverlo.
+Fare: invio email funzionante (Resend con API key dello stesso account del destinatario e mittente `onboarding@resend.dev`, oppure dominio verificato su Resend); template "Magic Link" di Supabase con `{{ .Token }}` e senza link; schermata codice con `inputmode="numeric"` e `autocomplete="one-time-code"`; "Invia un nuovo codice" dopo 60 s.
+Accettazione:
+- La mail con il codice arriva in Posta in arrivo (non solo in Spam) in meno di un minuto.
+- Login con codice funzionante **dentro la PWA installata**: si chiede il codice, lo si inserisce nell'app, si resta collegati.
+- `signInWithOtp` con `shouldCreateUser: false`; `verifyOtp` con `type: 'email'`; un'email non registrata non viene rivelata.
+- Codice sbagliato/scaduto, troppi tentativi e rete assente hanno messaggi chiari; la sessione resiste come allo step 3.
 
 ---
 

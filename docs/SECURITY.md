@@ -38,7 +38,7 @@ Cosa controlla (a mano sarebbe così):
 5. Segna l'esito nel messaggio di commit. Se uno qualunque fallisce, lo step non è finito.
 
 ## Login
-- **Email e password** (ADR-028): l'app chiama `signInWithPassword({ email, password })`. Mai link magico. Il codice OTP via email (ADR-014) è rinviato.
+- **Email e password** (ADR-028): l'app chiama `signInWithPassword({ email, password })`. Mai link magico. Il codice OTP via email (ADR-014) è rinviato allo step 12.
 - Password: lunga e unica (meglio una frase di 4-5 parole, o generata dal Portachiavi iCloud), mai riusata altrove. Il repo è pubblico e l'URL dell'app è trovabile: la password è l'unica cosa che protegge l'accesso. In Supabase (Authentication → Sign In / Providers → Email) alzare la lunghezza minima della password ad almeno 12.
 - Password dimenticata: Authentication → Users → utente → reimpostala dal pannello. Non c'è recupero via email in app.
 - Tentativi di accesso: Supabase limita i login ripetuti (Authentication → Rate Limits); non alzare quei limiti.

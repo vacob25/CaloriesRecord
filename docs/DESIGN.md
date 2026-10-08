@@ -76,7 +76,7 @@ Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornalie
 Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
 
 ### Login
-Email e password (ADR-028; il codice OTP di ADR-014 è rinviato):
+Email e password (ADR-028; il codice OTP di ADR-014 è rinviato allo step 12):
 - Campo email (`type="email"`, `autocomplete="username"`) e campo password (`autocomplete="current-password"`), così il Portachiavi iCloud propone e salva l'accesso. Pulsante "Mostra/Nascondi" la password (≥ 44 px, con `aria-label`). Pulsante "Accedi".
 - Errore unico "Email o password non corretti." (non dice quale dei due è sbagliato). Dopo un errore i campi restano compilati.
 - Nessun "password dimenticata" in app: si reimposta dal pannello di Supabase.
