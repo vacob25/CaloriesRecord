@@ -38,11 +38,13 @@ Cosa controlla (a mano sarebbe così):
 5. Segna l'esito nel messaggio di commit. Se uno qualunque fallisce, lo step non è finito.
 
 ## Login
-- **Codice numerico via email (OTP), non link magico** (ADR-014). Nel template email "Magic Link" di Supabase si usa `{{ .Token }}`; l'app chiama `signInWithOtp({ email, options: { shouldCreateUser: false } })` e poi `verifyOtp({ email, token, type: 'email' })`. Un utente può chiedere un nuovo codice una volta ogni 60 secondi; il codice scade dopo un'ora per impostazione predefinita.
+- **Email e password** (ADR-028): l'app chiama `signInWithPassword({ email, password })`. Mai link magico. Il codice OTP via email (ADR-014) è rinviato.
+- Password: lunga e unica (meglio una frase di 4-5 parole, o generata dal Portachiavi iCloud), mai riusata altrove. Il repo è pubblico e l'URL dell'app è trovabile: la password è l'unica cosa che protegge l'accesso. In Supabase (Authentication → Sign In / Providers → Email) alzare la lunghezza minima della password ad almeno 12.
+- Password dimenticata: Authentication → Users → utente → reimpostala dal pannello. Non c'è recupero via email in app.
+- Tentativi di accesso: Supabase limita i login ripetuti (Authentication → Rate Limits); non alzare quei limiti.
 - In Supabase: `Site URL` = URL di produzione su Vercel; `Redirect URLs` solo gli URL che servono (produzione e `http://localhost:5173`). Mai `*`.
 - Il servizio email predefinito di Supabase invia solo agli indirizzi dei membri del progetto e ha un limite molto basso (non è pensato per la produzione): per un'app personale con te come proprietario basta; se arrivano errori "email not authorized" o limiti di invio, configurare un SMTP personalizzato (es. Resend).
-- Creare il proprio utente (Authentication → Users → Add user, oppure accedere una volta), poi disattivare le registrazioni aperte (Authentication → Providers → Email → "Allow new users to sign up"). Così, anche se qualcuno trova l'URL, non può creare un account.
-- Limitare il rate dell'invio email dalle impostazioni di Supabase, se disponibile.
+- Creare il proprio utente da Authentication → Users → Add user → Create new user, con email, password e "Auto Confirm User"; poi disattivare le registrazioni aperte (Authentication → Providers → Email → "Allow new users to sign up"). Così, anche se qualcuno trova l'URL, non può creare un account.
 - Sessione: gestita da `supabase-js` (storage del browser). Il logout deve cancellare la sessione locale.
 
 ## Input e rete

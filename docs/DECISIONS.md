@@ -31,7 +31,7 @@ Il diario deve restare invariato se un cibo viene corretto o cancellato.
 **ADR-012 · Ricette solo con ingredienti semplici in v1**
 Una ricetta non può contenere un'altra ricetta (niente cicli, calcolo più semplice).
 
-**ADR-014 · Login con codice OTP via email invece del link magico**
+**ADR-014 · Login con codice OTP via email invece del link magico** — *sospesa l'8/10/2026, sostituita per ora da ADR-028*
 Su iOS la PWA installata ha storage separato da Safari (problema noto di WebKit): il link nella mail si apre in Safari e accede lì, non nell'app. Con il codice numerico lo si inserisce direttamente nella PWA. Resta passwordless, quindi rispetta la richiesta dell'utente. Costo: un passaggio in più (copiare il codice). Alternativa se dà problemi: email + password con sessione lunga. Da verificare allo step 3 sull'iPhone vero.
 
 **ADR-015 · Nessun dato personale reale nel repo**
@@ -79,10 +79,10 @@ La migrazione toglie ogni permesso ad `anon` e `authenticated` e poi concede ad 
 **ADR-023 · Sessione: "senza rete" è diverso da "uscito"**
 Con il token scaduto e la rete assente supabase-js conserva la sessione ma la comunica come nulla. L'app la legge con `getSession()` e, se l'errore è di rete, mostra "Serve la connessione" invece del login; il rientro è automatico quando torna la rete (al massimo ~60 s: supabase-js tiene in cache un rinnovo fallito per 60 s). Solo un errore vero del server (token revocato) porta al login. Scartato: usare l'evento `INITIAL_SESSION`, che in quel caso fa sembrare l'utente disconnesso.
 
-**ADR-024 · Login in attesa salvato sul telefono**
+**ADR-024 · Login in attesa salvato sul telefono** — *sospesa con ADR-014 (vale solo per l'OTP)*
 Email e orario dell'invio del codice stanno in `localStorage` per al massimo 1 ora (validità del codice), e si cancellano all'accesso. Motivo: su iOS, passando a Mail per leggere il codice, la PWA può essere ricaricata e si perderebbe il passaggio. Non è un dato importante: se iOS lo cancella si richiede il codice.
 
-**ADR-025 · Email non registrata: stessa risposta di una registrata**
+**ADR-025 · Email non registrata: stessa risposta di una registrata** — *col login a password vale come "Email o password non corretti" per entrambi i casi*
 Con `shouldCreateUser: false` Supabase risponde con un errore se l'email non esiste. L'app lo tratta come un invio riuscito ("Se l'indirizzo è giusto, la mail arriva…"), così dall'esterno non si può scoprire quale email ha un account. Costo: se sbagli a scrivere l'email, il codice semplicemente non arriva.
 
 **ADR-026 · `profiles`: sesso, data di nascita e altezza obbligatori**
@@ -91,9 +91,13 @@ Con `shouldCreateUser: false` Supabase risponde con un errore se l'email non esi
 **ADR-027 · Schermata dati personali allo step 6, non allo step 3** (scelta dell'utente, 8/10/2026)
 I dati (sesso, data di nascita, altezza, peso obiettivo) servono solo ai calcoli del target, che arrivano allo step 6: costruire lì la schermata permette di provarla subito con i numeri veri, con le regole di validazione decise insieme. Fino ad allora la tabella `profiles` resta vuota; nessuna schermata dello step 4-5 la legge.
 
+**ADR-028 · Login con email e password (per ora)** (scelta dell'utente, 8/10/2026)
+L'OTP via email dipende da un servizio di invio (SMTP/Resend) che ha dato problemi di configurazione: senza mail non si entra. La password non dipende da nessun servizio esterno. ADR-014 la prevedeva già come alternativa. Come si fa: `signInWithPassword` di supabase-js; campi con `autocomplete="username"` e `"current-password"` per il Portachiavi iCloud (funziona anche nella PWA installata); nessuna regola sulla password al login (le impone Supabase alla creazione). Rischi accettati: la sicurezza dipende dalla password (repo pubblico, URL trovabile) → password lunga e unica, lunghezza minima alzata in Supabase; nessun "password dimenticata" in app (servirebbe l'email): la si reimposta dal pannello di Supabase. L'OTP torna in uno step successivo; il codice dell'OTP è nella storia di git (commit `3a69c12`) e si può riprendere da lì.
+
 ## Punti aperti (rispondere prima dello step indicato)
+- **Step da decidere:** reintrodurre il login con codice OTP (ADR-014) quando l'invio email (Resend con account e mittente corretti, o dominio verificato) funziona. Decidere se OTP al posto della password o in aggiunta.
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
-- **Step 3:** verificare sull'iPhone che con l'OTP la sessione nella PWA duri (chiudere/riaprire, dopo 1 giorno, dopo 1 settimana) e che il servizio email predefinito di Supabase regga l'uso quotidiano; altrimenti SMTP personalizzato.
+- **Step 3:** verificare sull'iPhone che la sessione nella PWA duri (chiudere/riaprire, dopo 1 giorno, dopo 1 settimana).
 - **Step 4:** unità "porzione" per i cibi: solo grammi con scorciatoia da `serving_g`, o anche millilitri per i liquidi? (Latte, olio.) Proposta: solo grammi in v1, con densità ignorata e dichiarata.
 - **Step 6:** limiti di validazione della schermata dati personali (altezza minima/massima, età minima/massima, peso obiettivo) da decidere con l'utente e scrivere in `DOMAIN_RULES.md` prima del codice.
 - **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.

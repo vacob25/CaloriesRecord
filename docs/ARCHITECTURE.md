@@ -5,7 +5,7 @@ Single-page app React servita come PWA. Nessun backend proprio: il browser parla
 ```
 iPhone (Safari, PWA) ──► Vercel (file statici)
         │
-        ├──► Supabase: Auth (codice OTP via email) + Postgres (RLS)
+        ├──► Supabase: Auth (email e password) + Postgres (RLS)
         └──► Open Food Facts (ricerca, barcode)
 ```
 
@@ -72,7 +72,7 @@ docs/
 - Fotocamera: `getUserMedia` richiede un gesto dell'utente (tap) e HTTPS; sul `<video>` servono `playsinline` e `muted`. Va provata su iPhone vero, non solo sul simulatore.
 - Gli aggiornamenti del service worker su iOS arrivano al riavvio dell'app: prevedere un avviso "nuova versione disponibile" (`registerType: 'prompt'`).
 - iOS può cancellare i dati locali dei siti poco usati: nessun dato importante solo in localStorage. In locale solo preferenze (es. ultimo pasto scelto).
-- Login: codice numerico via email (OTP) inserito nell'app, non link magico. Su iOS l'app installata ha uno storage separato da Safari (problema noto di WebKit): un link nella mail si aprirebbe in Safari e accederebbe lì, non nella PWA (ADR-014).
+- Login: email e password nell'app (ADR-028), con Portachiavi iCloud; mai link magico. Il codice OTP (ADR-014) è rinviato. Su iOS l'app installata ha uno storage separato da Safari (problema noto di WebKit): un link nella mail si aprirebbe in Safari e accederebbe lì, non nella PWA (ADR-014).
 - Notifiche e widget: fuori scope in v1.
 
 ## Errori e stati

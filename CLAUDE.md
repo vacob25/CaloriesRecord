@@ -29,7 +29,7 @@ PWA personale (un solo utente) per registrare calorie e macro da iPhone. Obietti
 5. Nessun recupero delle calorie non assunte: l'obiettivo è solo giornaliero.
 6. Le date sono giorni locali Europe/Rome (stringa `YYYY-MM-DD`), mai timestamp UTC per i giorni.
 7. Lingua dell'interfaccia: italiano. Unità: kg, cm, kcal, g.
-8. Login con codice numerico via email (OTP), non con link magico (ADR-014).
+8. Login con email e password (ADR-028), mai con link magico. Il codice OTP via email (ADR-014) è rinviato a uno step successivo.
 9. Nessun dato personale reale nel repo, nemmeno in test o esempi: si usa il profilo fittizio di `docs/DOMAIN_RULES.md`.
 
 ## Comandi

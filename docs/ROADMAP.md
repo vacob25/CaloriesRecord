@@ -31,14 +31,13 @@ Accettazione:
 Non fare: nessuna logica, nessun database.
 
 ## Step 3 · Database e login
-Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **codice numerico via email (OTP)**, vedi ADR-014; guardia di route (senza sessione → login); client in `data/supabase.ts`. La schermata dati personali è spostata allo step 6 (ADR-027).
+Fare: progetto Supabase; migrazione 001 con tutte le tabelle di `DATA_MODEL.md`, `grant` espliciti a `authenticated` (e nessuno ad `anon`), RLS e indici; login con **email e password** (ADR-028; l'OTP di ADR-014 è rinviato a uno step successivo); guardia di route (senza sessione → login); client in `data/supabase.ts`. La schermata dati personali è spostata allo step 6 (ADR-027).
 Accettazione:
 - Verifica RLS con due utenti completata (`SECURITY.md`) e annotata.
 - Registrazioni aperte disattivate dopo la creazione dell'utente.
-- Login con codice funzionante **dentro la PWA installata** (non in Safari): si chiede il codice, lo si inserisce nell'app, si resta collegati.
+- Login con email e password funzionante **dentro la PWA installata** (non solo in Safari), con la password proposta dal Portachiavi iCloud; si resta collegati.
 - Sessione: chiudere e riaprire l'app dopo qualche minuto, dopo un giorno e dopo una settimana; se chiede di nuovo il login, annotarlo in `DECISIONS.md`.
-- Email di login: il template "Magic Link" di Supabase contiene `{{ .Token }}`; la chiamata di verifica è `verifyOtp` con `type: 'email'`; in `signInWithOtp` si passa `shouldCreateUser: false` dopo aver creato l'utente.
-- Limite di invio: il servizio email predefinito di Supabase invia solo agli indirizzi dei membri del progetto e con limite molto basso; se dà problemi, configurare SMTP personalizzato (es. Resend).
+- Utente creato dal pannello con password lunga e "Auto Confirm User"; lunghezza minima della password alzata in Supabase.
 - Nessuna chiave diversa dalla publishable nel repo.
 
 ## Step 4 · Cibi e ricette
