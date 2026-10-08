@@ -186,13 +186,40 @@ Contenitori rapidi predefiniti: bicchiere 200 ml, bottiglietta 500 ml, bottiglia
 **ADR-050 · Catalogo di ingredienti da una fonte verificabile**
 Da questo ambiente le banche dati ufficiali (CREA, USDA, IEO) non sono raggiungibili e i valori non si scrivono a memoria. Il catalogo si produce in un'altra chat con ricerca web (testo in `docs/prompts/catalogo-ingredienti.md`), con la fonte per ogni voce; qui si valida con zod e le regole §9 prima di importarlo. È un file JSON statico nell'app (dati pubblici): niente tabella condivisa nel database, così la RLS per utente resta semplice; la voce scelta si copia tra i propri cibi. Dettagli (step 16): il file è `src/data/catalog/ingredienti.json`, caricato solo all'apertura della scheda Catalogo o durante una ricerca; le voci che non passano zod o §9 si scartano (e il test `ingredienti.test.ts` fallisce, così non arrivano in produzione); kcal incoerenti oltre il 20% sono ammesse solo con una nota che le spiega. La copia ha `source = manual` (nessuna migrazione per un nuovo valore) ed è riconosciuta per nome + unità: sceglierla di nuovo usa il cibo già salvato.
 
+## Revisione dell'8/10/2026
+
+**ADR-051 · Quantità arrotondate prima della validazione**
+Grammi/ml, porzioni, obiettivo acqua e peso cotto si arrotondano come li salva il database e poi si controllano: un valore che diventerebbe 0 (es. 0,04 g) è rifiutato nel modulo, non dal database. Il peso cotto ha come massimo `COOKED_WEIGHT_MAX_G`, il limite tecnico di `numeric(8,1)`, non un limite di dominio (ADR-031 resta valida).
+
+**ADR-052 · Mantenimento intero prima del target**
+Il mantenimento si arrotonda all'intero prima di calcolare il target, perché `daily_targets.maintenance_kcal` è `int` e il target di un giorno deve potersi ricalcolare dal mantenimento salvato (cambio del tipo di giorno). DOMAIN_RULES §2 aggiornato. Effetto al massimo di 10 kcal sul target; il profilo di esempio non cambia (2848 → 3130/3330).
+
+**ADR-053 · Avviso sul ritmo stimato (§2)**
+Implementato l'avviso "ritmo stimato > `GAIN_RATE_WARNING_KG_WEEK`": ritmo = mantenimento di oggi riscalato sul nuovo fattore di attività × `surplus_pct` × 7 / `ENERGY_PER_KG` (surplus dei giorni di riposo, bonus escluso). Si mostra al salvataggio dei parametri nel Profilo; è un avviso, non un blocco.
+
+**ADR-054 · Quantità proposta con le porzioni (estende ADR-034)**
+Ordine: ultima quantità usata → `serving_g` → prima porzione casalinga (1×, già selezionata) → 100 g.
+
+**ADR-055 · Open Food Facts: liquidi in ml**
+Un prodotto con `serving_quantity_unit` = `ml` si salva con unità `ml` (per i liquidi i valori `_100g` di OFF sono per 100 ml, come dice la documentazione OFF), con la porzione in ml; altrimenti in grammi. Supera la nota "porzione usata solo se in grammi" di ADR-041.
+
+**ADR-056 · Catalogo: copie e scelta della scheda**
+Una voce già copiata si riconosce per nome (senza distinguere maiuscole: `ilike` con i caratteri jolly neutralizzati) + unità. Il catalogo si usa anche nella scelta degli ingredienti di una ricetta. La scheda Catalogo è aperta all'inizio quando l'utente non ha ancora cibi propri.
+
+**ADR-057 · Statistiche: peso di un periodo non finito**
+Per la settimana o il mese in corso la variazione del peso si misura fino a oggi, non fino alla fine del periodo (che non ha ancora dati).
+
+**ADR-058 · Ritmo voluto e banda della ricalibrazione sono due cose diverse**
+`TARGET_RATE_MIN/MAX_KG_WEEK` (+0,20/+0,35, l'obiettivo di CLAUDE.md) è il ritmo voluto del bulk; `RECAL_BAND_MIN/MAX` (+0,20/+0,40, §7) è la tolleranza entro cui la ricalibrazione non propone niente. Sono corretti entrambi; i testi dell'app si generano dalle costanti, mai scritti a mano.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
 - **Prestazioni (facoltativo):** pacchetto principale ~745 kB (~216 kB compressi). Misurato: react-dom 204 kB, supabase-js ~200 kB (di cui ~77 kB realtime/storage non usati), codice dell'app 95 kB, react-router 90 kB, zod 81 kB. Tagli possibili: `zod/mini` (stesso pacchetto, riscrivere gli schemi, −60/70 kB) o usare `@supabase/auth-js` + `@supabase/postgrest-js` al posto di supabase-js (−77 kB, ma cambia una dipendenza decisa). Il service worker mette tutto in cache dopo la prima apertura: decidere solo se l'avvio sull'iPhone risulta lento.
 - **Step 11 (tuo):** icone dell'app provvisorie (anello bianco su verde, generate allo step 2) e nessuna schermata di avvio iOS dedicata: decidere icona e schermata definitive.
 - **Step 11 (tuo):** 2 settimane di uso reale con l'elenco dei problemi (criterio di accettazione).
-- **Step 3 (in corso):** sessione nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: dopo 1 giorno e dopo 1 settimana.
-- **Step 4 (superato da ADR-048):** in v1 solo grammi; dallo step 14 i liquidi si registrano in ml con valori per 100 ml.
-- **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.
+- **Step 3 (fatto), sessione:** nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: se resta collegata dopo 1 giorno e dopo 1 settimana.
 - **Step 10:** valore di `ENERGY_PER_KG` (7700): tenere come costante modificabile e rivalutare dopo qualche mese di dati reali.
+- **Precisione della modifica di una voce:** lo snapshot è salvato a 1 decimale (`numeric(7,1)`); correggere una voce registrata con pochissimi grammi (es. 1 g → 100 g) amplifica l'arrotondamento. Soluzione possibile: salvare anche i valori per 100 nello snapshot (nuova migrazione). Da decidere.
+- **Una ricalibrazione per settimana:** è garantita dall'app, non dal database (manca un indice unico su `(user_id, week_start)`); con due dispositivi aperti insieme potrebbero nascere due righe. Possibile migrazione futura.
+- **Avviso "valori incoerenti" su alimenti quasi a zero calorie (acqua, caffè):** §9 applicato alla lettera dà sempre l'avviso. Da decidere se ignorare il controllo sotto una soglia.

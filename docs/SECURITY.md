@@ -31,6 +31,8 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 
 **Esiti:** 8/10/2026, dopo la migrazione 001 sul progetto Supabase reale → `RLS verificata: tutti i controlli superati`.
 
+Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. **Da rieseguire** sul progetto reale dopo le migrazioni 002 e 003; esito da annotare qui dall'utente: _(da fare)_.
+
 Cosa controlla (a mano sarebbe così):
 1. Crea due utenti di prova (A e B) con email diverse.
 2. Come A inserisci una riga in ogni tabella.
@@ -43,8 +45,8 @@ Cosa controlla (a mano sarebbe così):
 - Password: lunga e unica (meglio una frase di 4-5 parole, o generata dal Portachiavi iCloud), mai riusata altrove. Il repo è pubblico e l'URL dell'app è trovabile: la password è l'unica cosa che protegge l'accesso. In Supabase (Authentication → Sign In / Providers → Email) alzare la lunghezza minima della password ad almeno 12.
 - Password dimenticata: Authentication → Users → utente → reimpostala dal pannello. Non c'è recupero via email in app.
 - Tentativi di accesso: Supabase limita i login ripetuti (Authentication → Rate Limits); non alzare quei limiti.
-- In Supabase: `Site URL` = URL di produzione su Vercel; `Redirect URLs` solo gli URL che servono (produzione e `http://localhost:5173`). Mai `*`.
-- Il servizio email predefinito di Supabase invia solo agli indirizzi dei membri del progetto e ha un limite molto basso (non è pensato per la produzione): per un'app personale con te come proprietario basta; se arrivano errori "email not authorized" o limiti di invio, configurare un SMTP personalizzato (es. Resend).
+- In Supabase: `Site URL` = URL di produzione su Vercel; `Redirect URLs` solo gli URL che servono (produzione e `http://localhost:5173`). Mai `*`. Con il login attuale (utente creato a mano, nessuna email dall'app) contano poco, ma vanno tenuti giusti: diventano essenziali con lo step 12.
+- **Solo per lo step 12 (OTP via email):** il servizio email predefinito di Supabase invia solo agli indirizzi dei membri del progetto e ha un limite molto basso (non è pensato per la produzione): per un'app personale con te come proprietario basta; se arrivano errori "email not authorized" o limiti di invio, configurare un SMTP personalizzato (es. Resend).
 - Creare il proprio utente da Authentication → Users → Add user → Create new user, con email, password e "Auto Confirm User"; poi disattivare le registrazioni aperte (Authentication → Providers → Email → "Allow new users to sign up"). Così, anche se qualcuno trova l'URL, non può creare un account.
 - Sessione: gestita da `supabase-js` (storage del browser). Il logout deve cancellare la sessione locale.
 
@@ -53,6 +55,7 @@ Cosa controlla (a mano sarebbe così):
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.
 - Open Food Facts: chiamate in sola lettura, senza inviare dati personali (solo codice a barre o testo cercato) e senza credenziali (ADR-041). Il conteggio delle richieste sta in `sessionStorage` (solo orari, nessun dato personale).
 - Dipendenze: `npm audit` a ogni step e prima di un deploy. Nessun pacchetto sconosciuto o con pochi download senza averlo detto all'utente.
+- Intestazioni di sicurezza in `vercel.json` per tutte le risposte: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()` (fotocamera solo per l'app stessa, per lo scanner).
 - Vercel: variabili d'ambiente solo dalle impostazioni del progetto; le anteprime (preview) non devono usare credenziali di produzione se in futuro si aggiungono segreti.
 
 ## Privacy

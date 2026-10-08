@@ -7,18 +7,20 @@ Tutte le formule vivono in `src/lib/`. Costanti con nome in un solo file (`lib/c
 BMR = 10 · peso_kg + 6,25 · altezza_cm − 5 · età + 5      (uomo)
 BMR = 10 · peso_kg + 6,25 · altezza_cm − 5 · età − 161    (donna)
 ```
-Peso usato: la media mobile attuale (sezione 4), non l'ultima pesata. L'età si calcola dalla data di nascita al giorno considerato.
+Peso usato: la media mobile attuale (sezione 4) se disponibile (≥ 4 pesate in 7 giorni), altrimenti l'ultima pesata (ADR-037). L'età si calcola dalla data di nascita al giorno considerato.
 
 ## 2. Mantenimento e target del giorno
 ```
-mantenimento = BMR · activity_factor            (default 1,60)
+mantenimento = round(BMR · activity_factor)     (default 1,60; intero, ADR-052)
 target_base  = mantenimento · (1 + surplus_pct) (default +10%)
 target_giorno = target_base + (training_type ≠ rest ? training_bonus_kcal : 0)
 ```
+- Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052).
 - Arrotondare il target al multiplo di 10 kcal più vicino.
 - `activity_factor` 1,60 = circa 6 sedute di allenamento a settimana, ad esempio 3 di palestra + 3 di sport di squadra (valore di partenza, poi corretto dalla ricalibrazione).
 - `training_type`: `rest`, `gym`, `football`, `both`. Il bonus è uno solo (non si somma) per non gonfiare il target nei giorni doppi.
-- Tetto di sicurezza di interfaccia: avviso (non blocco) se `surplus_pct` > 20% o se il ritmo stimato supera +0,5 kg/settimana.
+- Tetto di sicurezza di interfaccia: avviso (non blocco) se `surplus_pct` > 20% o se il ritmo stimato supera +0,5 kg/settimana (`GAIN_RATE_WARNING_KG_WEEK`).
+- Ritmo stimato (kg/settimana, ADR-053) = `mantenimento_oggi / activity_factor_attuale · activity_factor_nuovo · surplus_pct · 7 / ENERGY_PER_KG`: surplus dei giorni di riposo, bonus escluso. Si controlla al salvataggio dei parametri. Profilo di esempio: 2848 · 0,10 · 7 / 7700 ≈ 0,26.
 
 **Profilo di esempio, FITTIZIO, usato in tutti i test e gli esempi (uomo, 75 kg, 180 cm, 20 anni):** BMR = 750 + 1125 − 100 + 5 = 1780 → mantenimento = 2848 → target base = 3132,8 → **3130 kcal** (riposo); con bonus 200 → **3330 kcal**. I dati reali dell'utente non stanno mai nel repo: si inseriscono nell'app.
 
@@ -92,3 +94,8 @@ Limiti da dichiarare all'utente: 7700 kcal/kg è una semplificazione (l'aumento 
 - Età (calcolata dalla data di nascita al giorno considerato): 14-100 anni. Sotto i 14 anni Mifflin-St Jeor non è validata.
 - Peso attuale e peso obiettivo: 30-250 kg, come §9. Il peso obiettivo è facoltativo.
 - Parametri del profilo: nessun limite di dominio stabilito oltre a valori > 0 (fattore di attività) e ≥ 0 (surplus, bonus, g/kg); resta l'avviso di §2 se il surplus supera il 20%.
+
+## 11. Porzioni, liquidi e acqua (step 14-15, ADR-048, ADR-049)
+- Ogni cibo ha un'unità: `g` o `ml`. Per i liquidi (`ml`) i valori sono per 100 ml, come sulle etichette: nessuna densità. Nelle ricette un ingrediente in ml conta come grammi per il peso totale.
+- Porzioni casalinghe: nome + quantità nell'unità del cibo (es. "1 uovo medio", 50 g). Si scelgono a passi di ½ (`PORTION_COUNT_STEP`), mai sotto ½; quantità = porzione × numero.
+- Acqua: da 1 a `WATER_ML_MAX` (5000) ml per singola aggiunta e per contenitore; obiettivo facoltativo, scritto in litri, al massimo `WATER_GOAL_MAX_L` (10 L, solo contro gli errori di battitura). L'acqua non ha calorie e sta in una tabella sua (`water_entries`), fuori dal diario dei pasti.

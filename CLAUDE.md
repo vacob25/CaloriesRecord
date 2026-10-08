@@ -18,7 +18,7 @@ PWA personale (un solo utente) per registrare calorie e macro da iPhone. Obietti
 | `docs/TESTING.md` | Strategia di test e casi con valori attesi | Scrivi o cambi funzioni in `src/lib/` |
 | `docs/DESIGN.md` | Token, componenti, schermate, accessibilità | Scrivi UI |
 | `docs/SECURITY.md` | Repo pubblico, segreti, RLS, dati personali | Mai da saltare prima di ogni commit e step 3 |
-| `docs/ROADMAP.md` | Step 1-11 con criteri di accettazione | Inizio e fine di ogni step |
+| `docs/ROADMAP.md` | Step 1-16 con criteri di accettazione | Inizio e fine di ogni step |
 | `docs/DECISIONS.md` | Registro decisioni (ADR) e punti aperti | Prima di cambiare una scelta già presa |
 
 ## Regole non negoziabili

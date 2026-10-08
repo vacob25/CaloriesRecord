@@ -30,7 +30,7 @@ Riferimento visivo: canvas "App Calorie – Design v1" (schermate Oggi, Aggiungi
 Regole sul colore: verde = calorie e azioni; blu = proteine e peso; arancio = carboidrati e "sotto target"; magenta = grassi. Non riusare questi colori con altri significati. Il testo arancio chiaro (#E9861F) non va su fondo bianco per testi piccoli: usare `--orange-text`.
 
 ## Tipografia
-Plus Jakarta Sans (Google Fonts, pesi 400-800). Numeri grandi 800; titoli 800; etichette 600-700. Scala: 11 (nav) · 12-13 (etichette) · 15 (voci) · 18-22 (valori) · 28 (titolo schermata) · 32 (numero dell'anello).
+Plus Jakarta Sans, servito dall'app con `@fontsource-variable/plus-jakarta-sans` (ADR-017: niente Google Fonts, il font è nel precache), pesi 400-800. Numeri grandi 800; titoli 800; etichette 600-700. Scala: 11 (nav) · 12-13 (etichette) · 15 (voci) · 18-22 (valori) · 28 (titolo schermata) · 32 (numero dell'anello).
 
 ## Forma e spazio
 Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 px. Spazi a multipli di 4. Ombre leggere e solo sulle card. Larghezza di riferimento 390 px, con tutto fluido fino a 360 px; oltre i 480 px il contenuto si centra con larghezza massima 480.
@@ -52,15 +52,18 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 - Quattro card pasto (Colazione, Pranzo, Cena, Snack) con totale kcal e voci; un pasto vuoto è una card tratteggiata "+ Aggiungi". Tocco su una voce → modifica grammi o elimina.
 - Card Acqua (step 15) sotto i pasti: totale del giorno ("1,45 L", e "di 2 L" solo se c'è un obiettivo, con barra blu e "Mancano …"); griglia a 3 colonne di tocchi rapidi con icona, nome e quantità (Bicchiere 200 ml, Bottiglietta 500 ml, Bottiglia 1,5 L, poi i contenitori personali) e "Altra quantità" (pannello con ml e "Salva come contenitore"); riga "Ultima aggiunta: … · Annulla". Il nome visibile fa parte del nome accessibile ("Aggiungi Bicchiere 200 ml").
 - Tipo di giorno (riposo/palestra/calcio/entrambi): selettore sul badge; cambia il target del solo giorno.
+- Promemoria peso (step 13, ADR-047): card sotto l'intestazione se non ci si pesa da `WEIGHT_REMINDER_DAYS` giorni o più (o non c'è nessuna pesata), con la pill del peso. Non compare se la card del target sta già chiedendo il peso.
+- Ricalibrazione: se c'è una proposta in attesa, un avviso "Nuova proposta di ricalibrazione ›" porta alla sezione Ricalibrazione del Profilo.
+- Tocco su una voce: pannello con quantità, modifica ed elimina; se il cibo esiste ancora con la stessa unità mostra anche le sue porzioni casalinghe (i valori restano quelli dello snapshot, ADR-035).
 - Barra di navigazione in basso: Oggi, Cibi, "+" centrale, Statistiche, Profilo.
 
 ### Aggiungi pasto
 - Barra in alto: indietro, titolo "Aggiungi a {pasto}". Scelta del pasto a 4 segmenti (default: in base all'ora).
 - Ricerca testuale + pulsante barcode. Schede: Recenti, Preferiti, I miei cibi, Ricette.
 - Elenco con nome, fonte (I miei cibi / Open Food Facts / Ricetta) e kcal per 100 g.
-- Pannello inferiore alla selezione: grammi con − / + a passi di 10 g e campo numerico, anteprima kcal e macro in tempo reale, pulsante "Aggiungi a {pasto}". Se il cibo ha porzioni casalinghe (step 14), chip "1 uovo medio (50 g)": scelta la porzione compare un contatore − / + a passi di ½ e la quantità si calcola da sola; scrivere a mano o usare − / + da 10 deseleziona la porzione. Senza porzioni, se il cibo ha `serving_g`, scorciatoia "1 porzione". Per i liquidi l'etichetta è "Millilitri" e l'unità "ml".
+- Pannello inferiore alla selezione: grammi con − / + a passi di 10 g e campo numerico, anteprima kcal e macro in tempo reale, pulsante "Aggiungi a {pasto}". Se il cibo ha porzioni casalinghe (step 14), chip "1 uovo medio (50 g)": scelta la porzione compare un contatore − / + a passi di ½ e la quantità si calcola da sola; scrivere a mano o usare − / + da 10 deseleziona la porzione. Senza porzioni, se il cibo ha `serving_g`, scorciatoia "1 porzione". Quantità proposta: l'ultima usata, poi `serving_g`, poi la prima porzione casalinga (1×, già selezionata), poi 100. Per i liquidi l'etichetta è "Millilitri" e l'unità "ml".
 - Il pulsante fa un'unica azione e torna a Oggi. Annulla possibile con un avviso "Aggiunto · Annulla" per alcuni secondi.
-- Scheda "Catalogo" (step 16): ingredienti divisi per categoria con kcal per 100 g/ml; durante una ricerca le voci del catalogo compaiono sotto i propri cibi in "Dal catalogo". Una nota spiega da dove vengono i valori e che la voce si copia tra i propri cibi.
+- Scheda "Catalogo" (step 16): ingredienti divisi per categoria con kcal per 100 g/ml; durante una ricerca le voci del catalogo compaiono sotto i propri cibi in "Dal catalogo". Una nota spiega da dove vengono i valori e che la voce si copia tra i propri cibi. Le voci già copiate mostrano "Già tra i tuoi cibi". Se non hai ancora nessun cibo la scheda Catalogo è quella aperta all'inizio. Il catalogo si cerca anche nella scelta degli ingredienti di una ricetta (da 2 lettere).
 
 ### Cibi
 Elenco dei cibi e delle ricette con ricerca. "Nuovo cibo": nome, marca, unità (grammi o millilitri), kcal e macro per 100 g/ml (o per porzione, con conversione), porzioni casalinghe facoltative (nome + quantità), barcode opzionale. "Nuova ricetta": ingredienti con grammi, peso totale cotto, risultato per 100 g. Modifica ed eliminazione sempre disponibili (l'eliminazione non tocca lo storico).
@@ -70,12 +73,17 @@ Fotocamera a schermo intero con riquadro di inquadratura, pulsante torcia se dis
 
 ### Peso
 Inserimento del peso mattutino, grafico con punti grezzi e media mobile, distanza dal peso obiettivo del profilo, pendenza in kg/settimana. Nota fissa: "Conta la tendenza, non la singola pesata".
+- Riepilogo "Ultimi 5 giorni" (step 13): pesate, media e variazione rispetto ai 5 giorni prima.
+- Si apre anche da Statistiche: la freccia indietro torna a Statistiche (altrimenti a Oggi).
 
 ### Statistiche
 Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornaliera, giorni rispettati, peso in kg/settimana), grafico a barre calorie contro linea del target (verde = rispettato, arancio = sotto), grafico peso 4 settimane con traguardo, distribuzione calorie per pasto, cibi più frequenti. Periodo senza dati: stato vuoto, non grafici a zero.
 
 ### Profilo
 Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), Acqua (obiettivo facoltativo in litri, elenco dei propri contenitori con elimina), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
+
+### Benvenuto (prima apertura)
+`/benvenuto`, mostrata finché non esiste il profilo (ADR-037): sesso, data di nascita, altezza, peso di oggi (salvato come prima pesata) e peso obiettivo facoltativo. Limiti di DOMAIN_RULES §10. Dopo il salvataggio non ricompare.
 
 ### Login
 Email e password (ADR-028; il codice OTP di ADR-014 è rinviato allo step 12):
@@ -84,7 +92,7 @@ Email e password (ADR-028; il codice OTP di ADR-014 è rinviato allo step 12):
 - Nessun "password dimenticata" in app: si reimposta dal pannello di Supabase.
 
 ## Stati comuni
-Caricamento = scheletro con la stessa forma del contenuto. Errore = messaggio + "Riprova". Vuoto = frase + azione. Offline = banner "Serve la connessione".
+Caricamento = scheletro con la stessa forma del contenuto. Errore = messaggio + "Riprova". Vuoto = frase + azione. Offline = banner "Serve la connessione". L'avviso "Nuova versione disponibile" (Aggiorna / Dopo) sta sopra l'avviso "Aggiunto · Annulla": i due non si sovrappongono mai.
 
 ## Icone e logo
 Icone a tratto (stroke 2, angoli arrotondati), stile uniforme. Icona dell'app: forma semplice su fondo `--green`, senza testo; 192, 512 (anche maskable) e 180 px per iOS.

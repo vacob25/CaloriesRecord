@@ -1,9 +1,11 @@
 # Strategia di test
 
 ## Principio
-Le funzioni di `src/lib/` sono pure e si testano con Vitest, file `*.test.ts` accanto al sorgente. Ogni funzione di dominio ha test prima di essere usata da un componente. La UI non ha test automatici in v1 (si prova sull'iPhone a ogni step); i test end-to-end arrivano solo se servono dopo lo step 11.
+Le funzioni di `src/lib/` sono pure e si testano con Vitest, file `*.test.ts` accanto al sorgente. Ogni funzione di dominio ha test prima di essere usata da un componente. Ci sono test unitari anche fuori da `lib/`: in `src/data/` (`env`, `authErrors`, `dbErrors` e i dati del catalogo `catalog/ingredienti.test.ts`) e in `src/app/` (`navItems`). La UI non ha test di componenti: si prova sull'iPhone a ogni step.
 
-Comandi: `npm run test` (una volta), `npm run test -- --watch` mentre sviluppi. Uno step non è finito se `typecheck`, `lint`, `test` e `build` non passano tutti.
+Prove end-to-end: si fanno a mano con Playwright contro Postgres + PostgREST locali; gli script non sono nel repo.
+
+Comandi: `npm run test` (una volta), `npm run test:watch` mentre sviluppi. Uno step non è finito se `typecheck`, `lint`, `test` e `build` non passano tutti.
 
 ## Casi con valori attesi (da copiare nei test)
 Tutti i casi usano il **profilo di esempio fittizio** di `DOMAIN_RULES.md` (uomo, 75 kg, 180 cm, 20 anni). Mai dati reali dell'utente nei test.
@@ -63,9 +65,50 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | Giorno con 0 voci | escluso da media e conteggi ("non registrato") |
 | 7 giorni: 5 dentro −5/+10%, 1 sotto, 1 non registrato | rispettati 5 su 6 |
 | Cibo cancellato (`food_id` null) | raggruppato per `food_name` |
+| Settimana in corso (5-11/10/2026, oggi 8/10), +0,1 kg al giorno | peso misurato fino a oggi: 0,70 kg/settimana |
+| Periodo già concluso | il giorno di oggi non cambia il risultato |
+
+### targets.ts
+| Funzione | Input | Atteso |
+| --- | --- | --- |
+| `computeDayTarget` | profilo di esempio, riposo | mantenimento 2848 (intero), target 3130, macro 150/75/464 |
+| `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,6, surplus 0,10 | ≈ 0,2589 kg/settimana |
+| `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,8, surplus 0,20 | ≈ 0,5825 (2848 / 1,6 · 1,8 = 3204; oltre l'avviso) |
+
+### portions.ts
+| Caso | Atteso |
+| --- | --- |
+| `portionAmount`: 2 × uovo medio da 50 g; ½ × banana da 120 g | 100 g; 60 g |
+| `stepCount`: 1 +½; 1 −½; ½ −½ | 1,5; 0,5; 0,5 (mai sotto ½) |
+| `formatCount` 0,5 / 1 / 1,5 / 2 | ½ / 1 / 1½ / 2 |
+| Porzione da 0,04 | si arrotonda a 0: rifiutata nel modulo e scartata se letta dal database |
+
+### water.ts
+| Caso | Atteso |
+| --- | --- |
+| Contenitori rapidi | 200, 500, 1500 ml |
+| 200 + 500 + 750 ml | 1450 ml, mostrato "1,45 L" |
+| Avanzamento 1450 su obiettivo 2000 / senza obiettivo | 0,725 e mancano 550 ml / nessuna barra |
+| Quantità libera 0 / 5001 ml | errore |
+| Obiettivo "2,5" L / vuoto / "11" | 2500 ml / nessun obiettivo / errore (massimo 10 L) |
+| Obiettivo "0,0004" L | diventerebbe 0 ml: errore; "0,001" → 1 ml |
+
+### catalog.ts
+Voci fittizie, mai valori veri del catalogo.
+- Macro oltre 100 g o kcal oltre 900 → voce scartata con l'errore.
+- kcal incoerenti con i macro: scartata senza nota, tenuta se la nota spiega il motivo.
+- Categoria fuori elenco, numeri come stringhe, campi in più, fonte vuota → scartata.
+- Id o nome ripetuti tra più parti → scartati; parte malformata segnalata.
+- Conversione in cibo: unità, valori per 100 e porzioni copiati.
+
+### openFoodFacts.ts
+- Porzione in ml (`serving_quantity_unit: "ml"`, 250) → cibo con unità `ml` e porzione 250.
+- Unità della porzione sconosciuta (es. "pezzi") → grammi, senza porzione.
 
 ### validazione (zod)
 - grammi 0 o negativi → errore; 5001 g → errore.
+- Arrotondamento prima del controllo: 0,04 g → errore (diventerebbe 0); 0,05 g → 0,1; 5000,04 → 5000.
+- Peso cotto di una ricetta: 6500 g ammesso (ADR-031); 0,04 → errore; 1000000 → errore (oltre `numeric(8,1)`, `COOKED_WEIGHT_MAX_G`).
 - Cibo con proteine 60 + carboidrati 60 + grassi 10 per 100 g (> 100) → errore.
 - kcal dichiarate 400 ma macro che ne danno 800 → avviso, non errore.
 - Peso 29,9 o 250,1 → errore; salto > 2 kg dal giorno prima → richiesta di conferma.
