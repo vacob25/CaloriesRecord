@@ -16,7 +16,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 8 | Open Food Facts e barcode | in prova (fatto; provato con OFF simulato e fotocamera finta con un vero EAN-13; manca: 5 prodotti reali con l'iPhone, anche con poca luce) |
 | 9 | Statistiche | in prova (fatto e provato contro Postgres + PostgREST locali con una settimana calcolata a mano; manca: prova sull'iPhone) |
 | 10 | Ricalibrazione | in prova (fatto e provato contro Postgres + PostgREST locali; manca: conferma di ADR-044 e uso reale di qualche settimana) |
-| 11 | Rifinitura e uso reale | da fare |
+| 11 | Rifinitura e uso reale | in corso (parte tecnica fatta: accessibilità 0 violazioni, aree ≥ 44 px, banner offline, npm audit pulito; mancano: icona e avvio definitivi, 2 settimane di uso reale) |
 | 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
 
 Gli step 1-7 portano a un primo uso reale quotidiano. 8-12 arrivano nelle settimane dopo (lo step 12 si può anticipare).

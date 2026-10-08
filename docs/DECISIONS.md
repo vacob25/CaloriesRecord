@@ -164,11 +164,20 @@ Barre delle calorie: verde = rispettato, arancio = sotto target (DESIGN.md); "ol
 **ADR-045 · Una valutazione a settimana, alla prima apertura**
 Alla prima apertura di una settimana (lun-dom, Roma) si salva una riga in `tdee_estimates`: `pending` se c'è una proposta, `none` se si è in banda o mancano dati. Le aperture successive della stessa settimana rileggono quella riga: al massimo una proposta a settimana. Se a inizio settimana mancano dati, si riprova la settimana dopo. Accettare cambia solo `activity_factor` (vale da domani, il target di oggi resta); rifiutare cambia solo lo stato della riga. L'unicità per settimana è garantita dall'app, non da un vincolo nel database (basterebbe una migrazione con `unique (user_id, week_start)` se servisse).
 
+## Decise allo step 11 (8 ottobre 2026)
+
+**ADR-046 · Rifinitura tecnica**
+- Accessibilità verificata con axe-core (regole WCAG 2.1 A/AA) su tutte le 12 schermate: 0 violazioni; tutte le aree toccabili ≥ 44 px (misurate). Corretti: elenco di "Aggiungi pasto" che perdeva la semantica di lista, link troppo piccolo in Peso.
+- Pannelli inferiori (`components/SheetFrame.tsx`): X "Chiudi" visibile da 44 px, Esc, tocco sullo sfondo; lo sfondo è nascosto agli screen reader.
+- Banner "Serve la connessione" in tutte le schermate quando il telefono è offline (DESIGN.md, Stati comuni).
+- Prestazioni: separate solo le schermate pesanti (Peso/Statistiche con Recharts, scanner con zxing). Provato a separare anche Cibi/Profilo/Benvenuto: risparmio 4 kB, non vale l'attesa in più → annullato.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
-- **Step 11:** allo step 7 Peso e Statistiche si caricano a parte (Recharts ~380 kB, `app/lazyPages.tsx`). Il pacchetto principale resta ~730 kB (~210 kB compressi: React, supabase-js, zod, TanStack Query): valutare `zod/mini` o altri tagli. Il service worker lo mette comunque in cache dopo la prima apertura.
-- **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
+- **Prestazioni (facoltativo):** pacchetto principale ~745 kB (~216 kB compressi). Misurato: react-dom 204 kB, supabase-js ~200 kB (di cui ~77 kB realtime/storage non usati), codice dell'app 95 kB, react-router 90 kB, zod 81 kB. Tagli possibili: `zod/mini` (stesso pacchetto, riscrivere gli schemi, −60/70 kB) o usare `@supabase/auth-js` + `@supabase/postgrest-js` al posto di supabase-js (−77 kB, ma cambia una dipendenza decisa). Il service worker mette tutto in cache dopo la prima apertura: decidere solo se l'avvio sull'iPhone risulta lento.
+- **Step 11 (tuo):** icone dell'app provvisorie (anello bianco su verde, generate allo step 2) e nessuna schermata di avvio iOS dedicata: decidere icona e schermata definitive.
+- **Step 11 (tuo):** 2 settimane di uso reale con l'elenco dei problemi (criterio di accettazione).
 - **Step 3 (in corso):** sessione nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: dopo 1 giorno e dopo 1 settimana.
 - **Step 4 (applicata la proposta):** solo grammi in v1, con scorciatoia da `serving_g`; per i liquidi (latte, olio) si scrivono i grammi, la densità è ignorata. Da rivedere se dà fastidio nell'uso reale.
 - **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.
