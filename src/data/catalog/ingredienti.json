@@ -1,4 +1,3710 @@
 {
   "version": 1,
-  "items": []
+  "items": [
+    {
+      "id": "avena-fiocchi",
+      "name": "Avena, fiocchi",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 367,
+      "protein": 8.0,
+      "carbs": 66.8,
+      "fat": 7.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fiocchi d'avena (codice 003030)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "couscous-cotto",
+      "name": "Couscous, cotto",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 179,
+      "protein": 3.6,
+      "carbs": 39.7,
+      "fat": 1.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 185.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Couscous, cotto (codice 000046)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotto"
+    },
+    {
+      "id": "couscous-crudo",
+      "name": "Couscous, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 361,
+      "protein": 13.7,
+      "carbs": 76.5,
+      "fat": 1.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Couscous, crudo (codice 000045)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farina-d-orzo",
+      "name": "Farina d'orzo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 333,
+      "protein": 10.6,
+      "carbs": 68.4,
+      "fat": 1.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farina d'orzo (codice 000210)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farina-di-frumento-00",
+      "name": "Farina di frumento 00",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 323,
+      "protein": 11.0,
+      "carbs": 71.6,
+      "fat": 0.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farina di frumento, tipo 00 (codice 000220)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farina-di-frumento-integrale",
+      "name": "Farina di frumento integrale",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 313,
+      "protein": 11.9,
+      "carbs": 61.8,
+      "fat": 1.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farina di frumento, integrale (codice 000240)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farina-di-mais",
+      "name": "Farina di mais",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 341,
+      "protein": 8.7,
+      "carbs": 73.5,
+      "fat": 2.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farina di mais (codice 000260)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farina-di-riso",
+      "name": "Farina di riso",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 332,
+      "protein": 7.3,
+      "carbs": 79.1,
+      "fat": 0.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farina di riso (codice 000270)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farina-di-segale",
+      "name": "Farina di segale",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 342,
+      "protein": 11.7,
+      "carbs": 67.8,
+      "fat": 2.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farina di segale (codice 000280)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farro-perlato-crudo",
+      "name": "Farro perlato, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 353,
+      "protein": 14.6,
+      "carbs": 69.3,
+      "fat": 2.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farro perlato, crudo (codice 000020)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "farro-perlato-lessato",
+      "name": "Farro perlato, lessato",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 178,
+      "protein": 6.2,
+      "carbs": 37.3,
+      "fat": 1.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 185.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Farro perlato, cotto, bollito (codice 000025)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotto, bollito"
+    },
+    {
+      "id": "fette-biscottate",
+      "name": "Fette biscottate",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 387,
+      "protein": 11.3,
+      "carbs": 75.0,
+      "fat": 6.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fette biscottate (codice 001500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: Fette biscottate"
+    },
+    {
+      "id": "grano-saraceno",
+      "name": "Grano saraceno",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 329,
+      "protein": 12.4,
+      "carbs": 61.2,
+      "fat": 3.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Grano saraceno (codice 000050)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "grissini",
+      "name": "Grissini",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 421,
+      "protein": 11.3,
+      "carbs": 65.1,
+      "fat": 13.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Grissini (codice 002000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "miglio",
+      "name": "Miglio",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 343,
+      "protein": 11.8,
+      "carbs": 64.9,
+      "fat": 3.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Miglio (codice 000080)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "orzo-perlato-crudo",
+      "name": "Orzo perlato, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 346,
+      "protein": 9.4,
+      "carbs": 73.7,
+      "fat": 1.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Orzo perlato (codice 000090)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "orzo-perlato-lessato",
+      "name": "Orzo perlato, lessato",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 118,
+      "protein": 2.6,
+      "carbs": 26.4,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 215.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Orzo perlato, cotto, bollito (codice 000095)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotto, bollito"
+    },
+    {
+      "id": "pane-bianco",
+      "name": "Pane bianco",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 268,
+      "protein": 8.1,
+      "carbs": 59.5,
+      "fat": 0.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pane bianco (codice 000530)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pane-di-segale",
+      "name": "Pane di segale",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 228,
+      "protein": 8.3,
+      "carbs": 45.4,
+      "fat": 1.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pane di segale (codice 000510)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pane-integrale",
+      "name": "Pane integrale",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 224,
+      "protein": 8.5,
+      "carbs": 44.1,
+      "fat": 1.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pane di tipo integrale (codice 000550)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pane-semintegrale",
+      "name": "Pane semintegrale",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 239,
+      "protein": 8.3,
+      "carbs": 52.0,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pane di tipo semintegrale (codice 000540)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pasta-all-uovo-secca",
+      "name": "Pasta all'uovo, secca",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 346,
+      "protein": 13.0,
+      "carbs": 71.0,
+      "fat": 2.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 70.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pasta all'uovo, secca (codice 000870)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pasta-di-semola-cruda",
+      "name": "Pasta di semola, cruda",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 341,
+      "protein": 13.5,
+      "carbs": 72.7,
+      "fat": 1.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pasta di semola (codice 000800)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pasta-di-semola-lessata",
+      "name": "Pasta di semola, lessata",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 175,
+      "protein": 6.9,
+      "carbs": 37.3,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pasta di semola, cotta, bollita (codice 000805)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotta, bollita"
+    },
+    {
+      "id": "pasta-integrale-cruda",
+      "name": "Pasta integrale, cruda",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 330,
+      "protein": 13.3,
+      "carbs": 64.8,
+      "fat": 2.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pasta di semola, integrale (codice 000850)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pasta-integrale-lessata",
+      "name": "Pasta integrale, lessata",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 182,
+      "protein": 7.4,
+      "carbs": 36.0,
+      "fat": 1.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 180.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pasta di semola, integrale, cotta, bollita (codice 000855)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: integrale, cotta, bollita"
+    },
+    {
+      "id": "polenta-farina-di-mais-cruda",
+      "name": "Polenta (farina di mais), cruda",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 323,
+      "protein": 8.0,
+      "carbs": 72.7,
+      "fat": 0.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 70.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Polenta, cruda (codice 000075)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "quinoa-cruda",
+      "name": "Quinoa, cruda",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 376,
+      "protein": 15.4,
+      "carbs": 57.8,
+      "fat": 8.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Quinoa, cruda (codice 000096)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "quinoa-lessata",
+      "name": "Quinoa, lessata",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 140,
+      "protein": 4.8,
+      "carbs": 24.3,
+      "fat": 2.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 250.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Quinoa, cotta, bollita (codice 000097)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotta, bollita"
+    },
+    {
+      "id": "riso-basmati-crudo",
+      "name": "Riso Basmati, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 367,
+      "protein": 9.0,
+      "carbs": 82.9,
+      "fat": 1.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso Basmati, crudo (codice 000130)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "riso-basmati-lessato",
+      "name": "Riso Basmati, lessato",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 113,
+      "protein": 3.0,
+      "carbs": 25.2,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 240.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso Basmati, cotto, bollito (codice 000135)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotto, bollito"
+    },
+    {
+      "id": "riso-venere-crudo",
+      "name": "Riso Venere, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 355,
+      "protein": 7.8,
+      "carbs": 80.4,
+      "fat": 1.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso Venere, crudo (codice 000140)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "riso-brillato-crudo",
+      "name": "Riso brillato, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 334,
+      "protein": 6.7,
+      "carbs": 80.4,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso, brillato (codice 000100)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "riso-brillato-lessato",
+      "name": "Riso brillato, lessato",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 100,
+      "protein": 2.0,
+      "carbs": 24.2,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 260.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso, brillato, cotto, bollito (codice 000105)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: brillato, cotto, bollito"
+    },
+    {
+      "id": "riso-integrale-crudo",
+      "name": "Riso integrale, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 341,
+      "protein": 7.5,
+      "carbs": 77.4,
+      "fat": 1.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso, integrale (codice 000110)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "riso-integrale-lessato",
+      "name": "Riso integrale, lessato",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 113,
+      "protein": 2.5,
+      "carbs": 25.5,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 250.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso, integrale, cotto, bollito (codice 000115)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: integrale, cotto, bollito"
+    },
+    {
+      "id": "riso-parboiled-crudo",
+      "name": "Riso parboiled, crudo",
+      "category": "Cereali e derivati",
+      "unit": "g",
+      "kcal": 338,
+      "protein": 7.4,
+      "carbs": 81.3,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Riso, parboiled (codice 000120)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "ceci-in-scatola-sgocciolati",
+      "name": "Ceci, in scatola, sgocciolati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 111,
+      "protein": 6.7,
+      "carbs": 13.9,
+      "fat": 2.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ceci, in scatola, scolati (codice 004010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "ceci-lessati",
+      "name": "Ceci, lessati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 132,
+      "protein": 7.0,
+      "carbs": 18.9,
+      "fat": 2.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 290.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ceci, secchi, cotti, bolliti (codice 004005)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: secchi, cotti, bolliti"
+    },
+    {
+      "id": "ceci-secchi",
+      "name": "Ceci, secchi",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 343,
+      "protein": 20.9,
+      "carbs": 46.9,
+      "fat": 6.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ceci, secchi (codice 004000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fagioli-borlotti-in-scatola-sgocciolati",
+      "name": "Fagioli borlotti, in scatola, sgocciolati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 102,
+      "protein": 6.7,
+      "carbs": 15.9,
+      "fat": 0.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagioli, Borlotti, in scatola, scolati (codice 004130)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fagioli-borlotti-lessati",
+      "name": "Fagioli borlotti, lessati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 106,
+      "protein": 6.9,
+      "carbs": 16.4,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagioli, Borlotti, secchi, cotti, bolliti (codice 004125)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: Borlotti, secchi, cotti, bolliti"
+    },
+    {
+      "id": "fagioli-borlotti-secchi",
+      "name": "Fagioli borlotti, secchi",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 312,
+      "protein": 20.2,
+      "carbs": 47.7,
+      "fat": 2.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagioli, Borlotti, secchi (codice 004120)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fagioli-cannellini-in-scatola-sgocciolati",
+      "name": "Fagioli cannellini, in scatola, sgocciolati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 86,
+      "protein": 6.0,
+      "carbs": 12.5,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagioli, Cannellini in scatola, scolati (codice 004210)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fagioli-cannellini-lessati",
+      "name": "Fagioli cannellini, lessati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 107,
+      "protein": 8.0,
+      "carbs": 14.9,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagioli, Cannellini, secchi, cotti, bolliti (codice 004205)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: Cannellini, secchi, cotti, bolliti"
+    },
+    {
+      "id": "fagioli-cannellini-secchi",
+      "name": "Fagioli cannellini, secchi",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 314,
+      "protein": 23.4,
+      "carbs": 45.5,
+      "fat": 1.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagioli, Cannellini, secchi (codice 004200)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fave-secche-sgusciate",
+      "name": "Fave, secche, sgusciate",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 343,
+      "protein": 25.2,
+      "carbs": 53.6,
+      "fat": 3.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fave, secche, sgusciate, crude (codice 004420)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fave-secche-sgusciate-lessate",
+      "name": "Fave, secche, sgusciate, lessate",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 146,
+      "protein": 11.0,
+      "carbs": 22.4,
+      "fat": 1.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fave, secche, sgusciate, cotte, bollite (codice 004425)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: secche, sgusciate, cotte, bollite"
+    },
+    {
+      "id": "lenticchie-in-scatola-sgocciolate",
+      "name": "Lenticchie, in scatola, sgocciolate",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 91,
+      "protein": 5.0,
+      "carbs": 15.4,
+      "fat": 0.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Lenticchie, in scatola, scolate (codice 004510)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "lenticchie-lessate",
+      "name": "Lenticchie, lessate",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 109,
+      "protein": 6.9,
+      "carbs": 16.3,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Lenticchie, secche, cotte, bollite (codice 004505)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: secche, cotte, bollite"
+    },
+    {
+      "id": "lenticchie-secche",
+      "name": "Lenticchie, secche",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 319,
+      "protein": 22.7,
+      "carbs": 51.1,
+      "fat": 1.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Lenticchie, secche (codice 004500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "piselli-freschi-sgranati",
+      "name": "Piselli, freschi (sgranati)",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 64,
+      "protein": 5.5,
+      "carbs": 6.5,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Piselli, freschi (codice 004700)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 31% del prodotto intero); legume fresco con baccello: parte edibile solo 31%"
+    },
+    {
+      "id": "piselli-in-scatola-sgocciolati",
+      "name": "Piselli, in scatola, sgocciolati",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 78,
+      "protein": 5.3,
+      "carbs": 11.1,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Piselli, in scatola, scolati (codice 004720)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "piselli-secchi",
+      "name": "Piselli, secchi",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 317,
+      "protein": 21.7,
+      "carbs": 48.2,
+      "fat": 2.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Piselli, secchi (codice 004710)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "soia-secca",
+      "name": "Soia, secca",
+      "category": "Legumi",
+      "unit": "g",
+      "kcal": 430,
+      "protein": 36.9,
+      "carbs": 23.2,
+      "fat": 19.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Soia, secca (codice 004900)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "aglio",
+      "name": "Aglio",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 53,
+      "protein": 8.4,
+      "carbs": 1.0,
+      "fat": 0.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 5.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Aglio (codice 005000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 75% del prodotto intero)"
+    },
+    {
+      "id": "barbabietole-rosse-crude",
+      "name": "Barbabietole rosse, crude",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 25,
+      "protein": 1.1,
+      "carbs": 4.0,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Barbabietole rosse, crude (codice 005060)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 82% del prodotto intero); lipidi: tracce (tr) in CREA, riportati come 0; kcal CREA (25) superiori del 23% al calcolo 4P+4C+9G (20): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "bieta-cruda",
+      "name": "Bieta, cruda",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 15,
+      "protein": 1.3,
+      "carbs": 1.8,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Bieta, cruda (codice 005080)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 82% del prodotto intero)"
+    },
+    {
+      "id": "broccoli-crudi",
+      "name": "Broccoli, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 33,
+      "protein": 3.0,
+      "carbs": 3.1,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Broccolo a testa, crudo (codice 005110)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 51% del prodotto intero)"
+    },
+    {
+      "id": "broccoli-lessati",
+      "name": "Broccoli, lessati",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 34,
+      "protein": 3.1,
+      "carbs": 3.2,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Broccolo a testa, cotto, bollito (codice 005105)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotto, bollito"
+    },
+    {
+      "id": "carciofi-crudi",
+      "name": "Carciofi, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 33,
+      "protein": 2.7,
+      "carbs": 2.5,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Carciofi, crudi (codice 005120)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 34% del prodotto intero); kcal CREA (33) superiori del 46% al calcolo 4P+4C+9G (23): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "carciofi-lessati",
+      "name": "Carciofi, lessati",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 44,
+      "protein": 3.6,
+      "carbs": 3.3,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Carciofi, cotti, bolliti (codice 005125)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotti, bolliti; kcal CREA (44) superiori del 45% al calcolo 4P+4C+9G (30): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "carote-crude",
+      "name": "Carote, crude",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 41,
+      "protein": 1.1,
+      "carbs": 7.6,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Carote, crude (codice 005150)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 95% del prodotto intero)"
+    },
+    {
+      "id": "carote-lessate",
+      "name": "Carote, lessate",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 47,
+      "protein": 1.3,
+      "carbs": 8.7,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Carote, cotte, bollite (codice 005155)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotte, bollite"
+    },
+    {
+      "id": "cavolfiore-crudo",
+      "name": "Cavolfiore, crudo",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 30,
+      "protein": 3.2,
+      "carbs": 2.7,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cavolfiore, crudo (codice 005160)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 66% del prodotto intero)"
+    },
+    {
+      "id": "cavolfiore-lessato",
+      "name": "Cavolfiore, lessato",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 31,
+      "protein": 3.4,
+      "carbs": 2.9,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cavolfiore, cotto, bollito (codice 005165)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotto, bollito"
+    },
+    {
+      "id": "cavolo-cappuccio-verde-crudo",
+      "name": "Cavolo cappuccio verde, crudo",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 24,
+      "protein": 2.1,
+      "carbs": 2.5,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cavolo cappuccio, verde, crudo (codice 005200)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 93% del prodotto intero); kcal CREA (24) superiori del 24% al calcolo 4P+4C+9G (19): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "cavolo-verza-crudo",
+      "name": "Cavolo verza, crudo",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 29,
+      "protein": 2.0,
+      "carbs": 3.8,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cavolo verza, cruda (codice 005210)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 92% del prodotto intero); kcal CREA (29) superiori del 20% al calcolo 4P+4C+9G (24): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "cetrioli-freschi",
+      "name": "Cetrioli, freschi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 16,
+      "protein": 0.7,
+      "carbs": 1.8,
+      "fat": 0.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cetrioli, freschi (codice 005220)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 77% del prodotto intero)"
+    },
+    {
+      "id": "cicoria-di-campo-cruda",
+      "name": "Cicoria di campo, cruda",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 17,
+      "protein": 1.4,
+      "carbs": 0.7,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cicoria, di campo, cruda (codice 005240)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 80% del prodotto intero); kcal CREA (17) superiori del 67% al calcolo 4P+4C+9G (10): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "cipolle-crude",
+      "name": "Cipolle, crude",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 28,
+      "protein": 1.0,
+      "carbs": 5.7,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cipolle, crude (codice 005300)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 83% del prodotto intero)"
+    },
+    {
+      "id": "cipolle-lessate",
+      "name": "Cipolle, lessate",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 39,
+      "protein": 1.4,
+      "carbs": 7.8,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cipolle, cotte, bollite (codice 005305)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotte, bollite"
+    },
+    {
+      "id": "fagiolini-freschi",
+      "name": "Fagiolini, freschi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 24,
+      "protein": 2.1,
+      "carbs": 2.4,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fagiolini, freschi (codice 004310)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 95% del prodotto intero); kcal CREA (24) superiori del 27% al calcolo 4P+4C+9G (19): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "finocchi-crudi",
+      "name": "Finocchi, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 15,
+      "protein": 1.2,
+      "carbs": 1.5,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Finocchi, crudi (codice 005320)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 59% del prodotto intero); lipidi: tracce (tr) in CREA, riportati come 0; kcal CREA (15) superiori del 39% al calcolo 4P+4C+9G (11): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "funghi-pleurotus-crudi",
+      "name": "Funghi pleurotus, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 37,
+      "protein": 2.2,
+      "carbs": 5.6,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Funghi coltivati, pleurotes, crudi (codice 006010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 98% del prodotto intero)"
+    },
+    {
+      "id": "funghi-porcini-crudi",
+      "name": "Funghi porcini, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 31,
+      "protein": 3.9,
+      "carbs": 1.0,
+      "fat": 0.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Funghi porcini, crudi (codice 006030)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 92% del prodotto intero)"
+    },
+    {
+      "id": "funghi-prataioli-crudi",
+      "name": "Funghi prataioli, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 24,
+      "protein": 3.7,
+      "carbs": 0.8,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Funghi coltivati, prataioli, crudi (codice 006000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 95% del prodotto intero); kcal CREA (24) superiori del 21% al calcolo 4P+4C+9G (20): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "lattuga-fresca",
+      "name": "Lattuga, fresca",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 22,
+      "protein": 1.8,
+      "carbs": 2.2,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Lattuga, fresca (codice 005410)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 80% del prodotto intero)"
+    },
+    {
+      "id": "melanzane-cotte-in-padella",
+      "name": "Melanzane, cotte in padella",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 39,
+      "protein": 1.3,
+      "carbs": 5.4,
+      "fat": 0.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Melanzane, cotte, in padella (codice 005506)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotte, in padella"
+    },
+    {
+      "id": "melanzane-crude",
+      "name": "Melanzane, crude",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 23,
+      "protein": 1.0,
+      "carbs": 2.6,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Melanzane, crude (codice 005500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 92% del prodotto intero); kcal CREA (23) superiori del 28% al calcolo 4P+4C+9G (18): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "passata-di-pomodoro",
+      "name": "Passata di pomodoro",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 21,
+      "protein": 1.3,
+      "carbs": 3.0,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pomodori, passata (codice 006670)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "patate-crude",
+      "name": "Patate, crude",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 72,
+      "protein": 2.0,
+      "carbs": 16.0,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Patate, crude (codice 006500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 83% del prodotto intero)"
+    },
+    {
+      "id": "patate-lessate-senza-buccia",
+      "name": "Patate, lessate, senza buccia",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 74,
+      "protein": 1.8,
+      "carbs": 16.9,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Patate, senza buccia, cotte, bollite (codice 006515)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: senza buccia, cotte, bollite"
+    },
+    {
+      "id": "peperoni-rossi-crudi",
+      "name": "Peperoni rossi, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 34,
+      "protein": 0.9,
+      "carbs": 6.5,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Peperoni, rossi, crudi (codice 005630)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 82% del prodotto intero)"
+    },
+    {
+      "id": "peperoni-verdi-crudi",
+      "name": "Peperoni verdi, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 31,
+      "protein": 0.7,
+      "carbs": 6.0,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Peperoni, verdi, crudi (codice 005640)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 81% del prodotto intero)"
+    },
+    {
+      "id": "peperoni-crudi",
+      "name": "Peperoni, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 26,
+      "protein": 0.9,
+      "carbs": 4.2,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Peperoni, crudi (codice 005600)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 82% del prodotto intero)"
+    },
+    {
+      "id": "pomodori-da-insalata-freschi",
+      "name": "Pomodori da insalata, freschi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 19,
+      "protein": 1.2,
+      "carbs": 2.8,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pomodori, da insalata, freschi (codice 006600)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pomodori-pelati-in-scatola",
+      "name": "Pomodori pelati in scatola",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 22,
+      "protein": 1.2,
+      "carbs": 3.0,
+      "fat": 0.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pomodori, pelati in scatola (codice 006680)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pomodorini-ciliegino-freschi",
+      "name": "Pomodorini ciliegino, freschi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 37,
+      "protein": 1.1,
+      "carbs": 7.2,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 250.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pomodorini ciliegino, freschi (codice 006650)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "porri-crudi",
+      "name": "Porri, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 35,
+      "protein": 2.1,
+      "carbs": 5.2,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Porri, crudi (codice 005650)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 77% del prodotto intero)"
+    },
+    {
+      "id": "radicchio-rosso-fresco",
+      "name": "Radicchio rosso, fresco",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 19,
+      "protein": 1.4,
+      "carbs": 1.6,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Radicchio, rosso, fresco (codice 005440)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 72% del prodotto intero); kcal CREA (19) superiori del 47% al calcolo 4P+4C+9G (13): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "ravanelli-freschi",
+      "name": "Ravanelli, freschi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 13,
+      "protein": 0.8,
+      "carbs": 1.8,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ravanelli, freschi (codice 005670)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 99% del prodotto intero)"
+    },
+    {
+      "id": "rucola-fresca",
+      "name": "Rucola, fresca",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 30,
+      "protein": 2.6,
+      "carbs": 3.9,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Rucola o Ruchetta, fresca (codice 005460)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "sedano-crudo",
+      "name": "Sedano, crudo",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 23,
+      "protein": 2.3,
+      "carbs": 2.4,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Sedano, crudo (codice 005680)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 80% del prodotto intero)"
+    },
+    {
+      "id": "spinaci-crudi",
+      "name": "Spinaci, crudi",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 35,
+      "protein": 3.4,
+      "carbs": 2.9,
+      "fat": 0.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Spinaci, crudi (codice 005700)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 83% del prodotto intero)"
+    },
+    {
+      "id": "spinaci-lessati",
+      "name": "Spinaci, lessati",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 41,
+      "protein": 4.0,
+      "carbs": 3.5,
+      "fat": 0.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Spinaci, cotti, bolliti (codice 005705)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotti, bolliti"
+    },
+    {
+      "id": "zucca-gialla-fresca",
+      "name": "Zucca gialla, fresca",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 29,
+      "protein": 1.1,
+      "carbs": 3.5,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Zucca gialla, fresca (codice 005720)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 81% del prodotto intero); kcal CREA (29) superiori del 50% al calcolo 4P+4C+9G (19): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "zucchine-crude",
+      "name": "Zucchine, crude",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 16,
+      "protein": 1.5,
+      "carbs": 1.7,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Zucchine, crude (codice 005730)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 88% del prodotto intero)"
+    },
+    {
+      "id": "zucchine-lessate",
+      "name": "Zucchine, lessate",
+      "category": "Verdure e ortaggi",
+      "unit": "g",
+      "kcal": 30,
+      "protein": 3.2,
+      "carbs": 3.4,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 200.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Zucchine, cotte, bollite (codice 005735)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: cotte, bollite"
+    },
+    {
+      "id": "albicocche",
+      "name": "Albicocche",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 42,
+      "protein": 0.4,
+      "carbs": 9.8,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Albicocche, fresche (codice 007000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 94% del prodotto intero)"
+    },
+    {
+      "id": "ananas",
+      "name": "Ananas",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 42,
+      "protein": 0.5,
+      "carbs": 10.0,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ananas, fresco (codice 007460)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 57% del prodotto intero)"
+    },
+    {
+      "id": "anguria-cocomero",
+      "name": "Anguria (cocomero)",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 16,
+      "protein": 0.4,
+      "carbs": 3.7,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cocomero, fresco (codice 007040)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 52% del prodotto intero); lipidi: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "arancia",
+      "name": "Arancia",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 37,
+      "protein": 0.7,
+      "carbs": 7.8,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Arance, fresche (codice 008000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 80% del prodotto intero)"
+    },
+    {
+      "id": "avocado",
+      "name": "Avocado",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 238,
+      "protein": 4.4,
+      "carbs": 1.8,
+      "fat": 23.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Avocado, fresco (codice 007490)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 76% del prodotto intero)"
+    },
+    {
+      "id": "banana",
+      "name": "Banana",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 76,
+      "protein": 1.2,
+      "carbs": 17.4,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Banane, fresche (codice 007510)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 65% del prodotto intero)"
+    },
+    {
+      "id": "cachi-loti",
+      "name": "Cachi (loti)",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 70,
+      "protein": 0.6,
+      "carbs": 16.0,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Loti o kaki, freschi (codice 007090)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 97% del prodotto intero)"
+    },
+    {
+      "id": "ciliegie",
+      "name": "Ciliegie",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 48,
+      "protein": 0.8,
+      "carbs": 11.0,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ciliege, fresche (codice 007710)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 86% del prodotto intero)"
+    },
+    {
+      "id": "datteri-secchi",
+      "name": "Datteri, secchi",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 270,
+      "protein": 2.7,
+      "carbs": 63.1,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Datteri, secchi (codice 007630)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 90% del prodotto intero)"
+    },
+    {
+      "id": "fichi-freschi",
+      "name": "Fichi, freschi",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 63,
+      "protein": 0.9,
+      "carbs": 14.2,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fichi, freschi (codice 007050)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 75% del prodotto intero)"
+    },
+    {
+      "id": "fichi-secchi",
+      "name": "Fichi, secchi",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 282,
+      "protein": 3.5,
+      "carbs": 58.0,
+      "fat": 2.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fichi, secchi (codice 007070)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fragole",
+      "name": "Fragole",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 30,
+      "protein": 0.9,
+      "carbs": 5.3,
+      "fat": 0.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fragole, fresche (codice 007730)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 94% del prodotto intero)"
+    },
+    {
+      "id": "kiwi",
+      "name": "Kiwi",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 48,
+      "protein": 1.2,
+      "carbs": 9.0,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Kiwi, freschi (codice 007570)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 87% del prodotto intero)"
+    },
+    {
+      "id": "lamponi",
+      "name": "Lamponi",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 49,
+      "protein": 1.0,
+      "carbs": 6.5,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Lamponi, freschi (codice 007740)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "kcal CREA (49) superiori del 38% al calcolo 4P+4C+9G (35): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "limone",
+      "name": "Limone",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 16,
+      "protein": 0.6,
+      "carbs": 2.5,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Limoni, freschi (codice 008030)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 64% del prodotto intero); kcal CREA (16) superiori del 29% al calcolo 4P+4C+9G (12): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "mandarino",
+      "name": "Mandarino",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 76,
+      "protein": 0.9,
+      "carbs": 17.6,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Mandarini, freschi (codice 008060)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 80% del prodotto intero)"
+    },
+    {
+      "id": "mela-con-buccia",
+      "name": "Mela, con buccia",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 44,
+      "protein": 0.2,
+      "carbs": 10.0,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Mele, fresche, con buccia (codice 007120)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 85% del prodotto intero); lipidi: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "melagrana",
+      "name": "Melagrana",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 68,
+      "protein": 0.5,
+      "carbs": 15.9,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Melagrane, fresche (codice 007100)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 59% del prodotto intero)"
+    },
+    {
+      "id": "melone-d-estate",
+      "name": "Melone d'estate",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 34,
+      "protein": 0.8,
+      "carbs": 7.4,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Melone, d'estate, fresco (codice 007230)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 47% del prodotto intero)"
+    },
+    {
+      "id": "mirtilli",
+      "name": "Mirtilli",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 49,
+      "protein": 0.9,
+      "carbs": 10.1,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Mirtilli, freschi (codice 007760)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "pera-senza-buccia",
+      "name": "Pera, senza buccia",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 43,
+      "protein": 0.3,
+      "carbs": 8.8,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pere, fresche, senza buccia (codice 007260)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 84% del prodotto intero)"
+    },
+    {
+      "id": "pesca-con-buccia",
+      "name": "Pesca, con buccia",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 28,
+      "protein": 0.7,
+      "carbs": 5.8,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pesche, fresche, con buccia (codice 007290)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 95% del prodotto intero); lipidi: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "pompelmo",
+      "name": "Pompelmo",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 29,
+      "protein": 0.6,
+      "carbs": 6.2,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pompelmo, fresco (codice 008070)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 70% del prodotto intero)"
+    },
+    {
+      "id": "prugne-susine",
+      "name": "Prugne (susine)",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 45,
+      "protein": 0.5,
+      "carbs": 10.5,
+      "fat": 0.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Prugne, fresche (codice 007340)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 90% del prodotto intero)"
+    },
+    {
+      "id": "ribes-fresco",
+      "name": "Ribes, fresco",
+      "category": "Frutta",
+      "unit": "g",
+      "kcal": 52,
+      "protein": 0.9,
+      "carbs": 9.7,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ribes, freschi (codice 007770)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 98% del prodotto intero); lipidi: tracce (tr) in CREA, riportati come 0; kcal CREA (52) superiori del 23% al calcolo 4P+4C+9G (42): differenza attribuibile alla fibra (energia CREA calcolata secondo Southgate)"
+    },
+    {
+      "id": "anacardi",
+      "name": "Anacardi",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 604,
+      "protein": 15.0,
+      "carbs": 33.0,
+      "fat": 46.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Anacardi (codice 008610)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "arachidi-tostate",
+      "name": "Arachidi, tostate",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 620,
+      "protein": 29.0,
+      "carbs": 8.5,
+      "fat": 50.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Arachidi, tostate (codice 008500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 65% del prodotto intero)"
+    },
+    {
+      "id": "burro-di-arachidi",
+      "name": "Burro di arachidi",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 625,
+      "protein": 24.9,
+      "carbs": 8.0,
+      "fat": 53.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 10.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Burro d'arachidi (codice 009010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "castagne",
+      "name": "Castagne",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 174,
+      "protein": 2.9,
+      "carbs": 36.7,
+      "fat": 1.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Castagne (codice 008520)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 85% del prodotto intero)"
+    },
+    {
+      "id": "mandorle",
+      "name": "Mandorle",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 628,
+      "protein": 22.0,
+      "carbs": 4.6,
+      "fat": 55.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Mandorle dolci, secche (codice 008540)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 24% del prodotto intero)"
+    },
+    {
+      "id": "nocciole",
+      "name": "Nocciole",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 671,
+      "protein": 13.8,
+      "carbs": 6.1,
+      "fat": 64.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Nocciole, secche (codice 008550)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 42% del prodotto intero)"
+    },
+    {
+      "id": "noci",
+      "name": "Noci",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 702,
+      "protein": 14.3,
+      "carbs": 5.1,
+      "fat": 68.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Noci, secche (codice 008570)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 39% del prodotto intero)"
+    },
+    {
+      "id": "pinoli",
+      "name": "Pinoli",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 604,
+      "protein": 31.9,
+      "carbs": 4.0,
+      "fat": 50.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pinoli (codice 008590)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 29% del prodotto intero)"
+    },
+    {
+      "id": "pistacchi",
+      "name": "Pistacchi",
+      "category": "Frutta secca e semi",
+      "unit": "g",
+      "kcal": 629,
+      "protein": 18.1,
+      "carbs": 8.1,
+      "fat": 56.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pistacchi (codice 008600)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 50% del prodotto intero)"
+    },
+    {
+      "id": "alici-acciughe-crude",
+      "name": "Alici (acciughe), crude",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 96,
+      "protein": 16.8,
+      "carbs": 1.5,
+      "fat": 2.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Acciuga o alice (codice 120010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 75% del prodotto intero)"
+    },
+    {
+      "id": "calamari-crudi",
+      "name": "Calamari, crudi",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 68,
+      "protein": 12.6,
+      "carbs": 0.6,
+      "fat": 1.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Calamaro (codice 127100)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 65% del prodotto intero)"
+    },
+    {
+      "id": "cozze-crude",
+      "name": "Cozze, crude",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 84,
+      "protein": 11.7,
+      "carbs": 3.4,
+      "fat": 2.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cozza o mitilo (codice 127120)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 32% del prodotto intero)"
+    },
+    {
+      "id": "gamberi-crudi",
+      "name": "Gamberi, crudi",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 71,
+      "protein": 13.6,
+      "carbs": 2.9,
+      "fat": 0.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Gamberi (codice 128100)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 45% del prodotto intero)"
+    },
+    {
+      "id": "merluzzo-o-nasello-crudo",
+      "name": "Merluzzo o nasello, crudo",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 71,
+      "protein": 17.0,
+      "carbs": 0.0,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Merluzzo o nasello (codice 121410)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 76% del prodotto intero)"
+    },
+    {
+      "id": "orata-d-allevamento-filetti-crudi",
+      "name": "Orata d'allevamento, filetti, crudi",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 159,
+      "protein": 19.7,
+      "carbs": 1.2,
+      "fat": 8.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Orata d'allevamento, filetti (codice 121730)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "orata-filetti-crudi",
+      "name": "Orata, filetti, crudi",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 121,
+      "protein": 20.7,
+      "carbs": 1.0,
+      "fat": 3.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Orata, filetti (codice 121720)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "polpo-crudo",
+      "name": "Polpo, crudo",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 57,
+      "protein": 10.6,
+      "carbs": 1.4,
+      "fat": 1.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Polpo (codice 127150)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 90% del prodotto intero)"
+    },
+    {
+      "id": "rombo-crudo",
+      "name": "Rombo, crudo",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 81,
+      "protein": 16.3,
+      "carbs": 1.2,
+      "fat": 1.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Rombo (codice 122300)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 55% del prodotto intero)"
+    },
+    {
+      "id": "salmone-crudo",
+      "name": "Salmone, crudo",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 185,
+      "protein": 18.4,
+      "carbs": 1.0,
+      "fat": 12.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Salmone (codice 122400)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 65% del prodotto intero)"
+    },
+    {
+      "id": "sardine-crude",
+      "name": "Sardine, crude",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 225,
+      "protein": 20.3,
+      "carbs": 1.5,
+      "fat": 15.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Sardine (codice 122800)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 75% del prodotto intero)"
+    },
+    {
+      "id": "seppie-crude",
+      "name": "Seppie, crude",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 72,
+      "protein": 14.0,
+      "carbs": 0.7,
+      "fat": 1.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Seppia (codice 127160)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 50% del prodotto intero)"
+    },
+    {
+      "id": "sgombro-crudo",
+      "name": "Sgombro, crudo",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 170,
+      "protein": 17.0,
+      "carbs": 0.5,
+      "fat": 11.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Sgombro o maccarello (codice 123000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 80% del prodotto intero)"
+    },
+    {
+      "id": "sogliola-cruda",
+      "name": "Sogliola, cruda",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 83,
+      "protein": 16.9,
+      "carbs": 0.8,
+      "fat": 1.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Sogliola (codice 123100)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 48% del prodotto intero)"
+    },
+    {
+      "id": "spigola-branzino-cruda",
+      "name": "Spigola (branzino), cruda",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 82,
+      "protein": 16.5,
+      "carbs": 0.6,
+      "fat": 1.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Spigola (codice 123200)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 54% del prodotto intero)"
+    },
+    {
+      "id": "spigola-d-allevamento-filetti-crudi",
+      "name": "Spigola d'allevamento, filetti, crudi",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 149,
+      "protein": 21.3,
+      "carbs": 0.8,
+      "fat": 6.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Spigola d'allevamento, filetti (codice 123220)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "tonno-al-naturale-sgocciolato",
+      "name": "Tonno al naturale, sgocciolato",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 103,
+      "protein": 25.1,
+      "carbs": 0.0,
+      "fat": 0.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Tonno in salamoia, sgocciolato (codice 123550)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "tonno-fresco-crudo",
+      "name": "Tonno fresco, crudo",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 159,
+      "protein": 21.5,
+      "carbs": 0.1,
+      "fat": 8.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Tonno (codice 123500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 90% del prodotto intero)"
+    },
+    {
+      "id": "tonno-sott-olio-sgocciolato",
+      "name": "Tonno sott'olio, sgocciolato",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 192,
+      "protein": 25.2,
+      "carbs": 0.0,
+      "fat": 10.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Tonno sott'olio, sgocciolato (codice 123610)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "triglia-cruda",
+      "name": "Triglia, cruda",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 123,
+      "protein": 15.8,
+      "carbs": 1.1,
+      "fat": 6.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Triglia (codice 123900)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 60% del prodotto intero)"
+    },
+    {
+      "id": "trota-cruda",
+      "name": "Trota, cruda",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 86,
+      "protein": 14.7,
+      "carbs": 0.0,
+      "fat": 3.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Trota (codice 124000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 55% del prodotto intero)"
+    },
+    {
+      "id": "vongole-crude",
+      "name": "Vongole, crude",
+      "category": "Pesce e frutti di mare",
+      "unit": "g",
+      "kcal": 65,
+      "protein": 9.8,
+      "carbs": 3.9,
+      "fat": 1.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 150.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Vongola (codice 127170)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 25% del prodotto intero)"
+    },
+    {
+      "id": "bresaola-della-valtellina-igp",
+      "name": "Bresaola della Valtellina IGP",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 152,
+      "protein": 33.1,
+      "carbs": 0.4,
+      "fat": 2.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Bresaola della Valtellina IGP (codice 110020)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "coniglio-crudo",
+      "name": "Coniglio, crudo",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 118,
+      "protein": 19.9,
+      "carbs": 0.0,
+      "fat": 4.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Coniglio intero, crudo (codice 107010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 71% del prodotto intero)"
+    },
+    {
+      "id": "coscia-di-pollo-senza-pelle-cotta-al-forno",
+      "name": "Coscia di pollo senza pelle, cotta al forno",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 175,
+      "protein": 29.9,
+      "carbs": 0.0,
+      "fat": 6.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 85.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pollo, fuso, senza pelle, cotto, al forno (codice 106413)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 64% del prodotto intero); cotto come indicato da CREA: fuso, senza pelle, cotto, al forno"
+    },
+    {
+      "id": "coscia-di-pollo-senza-pelle-cruda",
+      "name": "Coscia di pollo senza pelle, cruda",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 107,
+      "protein": 18.5,
+      "carbs": 0.0,
+      "fat": 3.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pollo, fuso, senza pelle, crudo (codice 106410)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 66% del prodotto intero)"
+    },
+    {
+      "id": "maiale-lonza-cruda",
+      "name": "Maiale, lonza, cruda",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 146,
+      "protein": 20.7,
+      "carbs": 0.0,
+      "fat": 7.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Maiale, lombo, crudo (codice 105210)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 79% del prodotto intero)"
+    },
+    {
+      "id": "manzo-fesa-crudo",
+      "name": "Manzo, fesa, crudo",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 103,
+      "protein": 21.8,
+      "carbs": 0.0,
+      "fat": 1.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Bovino adulto o vitellone, fesa, crudo (codice 101160)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "manzo-filetto-crudo",
+      "name": "Manzo, filetto, crudo",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 127,
+      "protein": 20.5,
+      "carbs": 0.0,
+      "fat": 5.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Bovino adulto o vitellone, filetto, crudo (codice 101170)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "manzo-girello-crudo",
+      "name": "Manzo, girello, crudo",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 110,
+      "protein": 21.3,
+      "carbs": 0.0,
+      "fat": 2.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Bovino adulto o vitellone, girello, crudo (codice 101180)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "petto-di-pollo-cotto-in-padella",
+      "name": "Petto di pollo, cotto in padella",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 129,
+      "protein": 30.2,
+      "carbs": 0.0,
+      "fat": 0.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 75.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pollo, petto, cotto, in padella (codice 106506)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 98% del prodotto intero); cotto come indicato da CREA: petto, cotto, in padella"
+    },
+    {
+      "id": "petto-di-pollo-crudo",
+      "name": "Petto di pollo, crudo",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 100,
+      "protein": 23.3,
+      "carbs": 0.0,
+      "fat": 0.8,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pollo, petto, crudo (codice 106500)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 98% del prodotto intero)"
+    },
+    {
+      "id": "prosciutto-cotto",
+      "name": "Prosciutto cotto",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 138,
+      "protein": 15.7,
+      "carbs": 1.7,
+      "fat": 7.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Prosciutto cotto (codice 110400)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: Prosciutto cotto"
+    },
+    {
+      "id": "prosciutto-cotto-sgrassato",
+      "name": "Prosciutto cotto, sgrassato",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 107,
+      "protein": 17.0,
+      "carbs": 1.9,
+      "fat": 3.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Prosciutto cotto, sgrassato (codice 110401)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: sgrassato"
+    },
+    {
+      "id": "prosciutto-crudo-di-parma-dop-sgrassato",
+      "name": "Prosciutto crudo di Parma DOP, sgrassato",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 176,
+      "protein": 29.1,
+      "carbs": 0.4,
+      "fat": 6.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Prosciutto crudo di Parma DOP, sgrassato (codice 110511)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "tacchino-fesa-cotta-al-forno",
+      "name": "Tacchino, fesa, cotta al forno",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 131,
+      "protein": 29.6,
+      "carbs": 0.0,
+      "fat": 1.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 80.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Tacchino, fesa, cotta, al forno (codice 106856)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: fesa, cotta, al forno"
+    },
+    {
+      "id": "tacchino-fesa-cruda",
+      "name": "Tacchino, fesa, cruda",
+      "category": "Carne",
+      "unit": "g",
+      "kcal": 107,
+      "protein": 24.0,
+      "carbs": 0.0,
+      "fat": 1.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Tacchino, fesa, crudo (codice 106850)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "uovo-di-gallina-albume",
+      "name": "Uovo di gallina, albume",
+      "category": "Uova",
+      "unit": "g",
+      "kcal": 43,
+      "protein": 10.7,
+      "carbs": 0.0,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 35.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Uova di gallina, albume (codice 182010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "lipidi e carboidrati: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "uovo-di-gallina-intero",
+      "name": "Uovo di gallina, intero",
+      "category": "Uova",
+      "unit": "g",
+      "kcal": 128,
+      "protein": 12.4,
+      "carbs": 0.0,
+      "fat": 8.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Uova di gallina, intero (codice 181100)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 91% del prodotto intero); carboidrati: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "uovo-di-gallina-tuorlo",
+      "name": "Uovo di gallina, tuorlo",
+      "category": "Uova",
+      "unit": "g",
+      "kcal": 325,
+      "protein": 15.8,
+      "carbs": 0.0,
+      "fat": 29.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 15.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Uova di gallina, tuorlo (codice 183010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "carboidrati: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "feta",
+      "name": "Feta",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 250,
+      "protein": 15.6,
+      "carbs": 1.5,
+      "fat": 20.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Feta (codice 162000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fiocchi-di-latte-formaggio-magro",
+      "name": "Fiocchi di latte (formaggio magro)",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 115,
+      "protein": 9.7,
+      "carbs": 3.2,
+      "fat": 7.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fiocchi di formaggio magro (codice 170010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "fior-di-latte",
+      "name": "Fior di latte",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 268,
+      "protein": 20.6,
+      "carbs": 0.7,
+      "fat": 20.3,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Fior di latte (codice 162010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "grana-padano-dop",
+      "name": "Grana Padano DOP",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 392,
+      "protein": 33.9,
+      "carbs": 0.0,
+      "fat": 28.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Grana Padano, DOP (codice 162410)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "latte-intero",
+      "name": "Latte intero",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 64,
+      "protein": 3.3,
+      "carbs": 4.9,
+      "fat": 3.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Latte di vacca, pastorizzato, intero (codice 135010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "CREA fornisce valori per 100 g, non per 100 ml: unit lasciata in g (nessuna conversione di densità)"
+    },
+    {
+      "id": "latte-parzialmente-scremato",
+      "name": "Latte parzialmente scremato",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 46,
+      "protein": 3.5,
+      "carbs": 5.0,
+      "fat": 1.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Latte di vacca, pastorizzato, parzialmente scremato (codice 135020)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "CREA fornisce valori per 100 g, non per 100 ml: unit lasciata in g (nessuna conversione di densità)"
+    },
+    {
+      "id": "latte-scremato",
+      "name": "Latte scremato",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 36,
+      "protein": 3.6,
+      "carbs": 5.3,
+      "fat": 0.2,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Latte di vacca, pastorizzato, scremato (codice 135030)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "CREA fornisce valori per 100 g, non per 100 ml: unit lasciata in g (nessuna conversione di densità)"
+    },
+    {
+      "id": "mozzarella-di-vacca",
+      "name": "Mozzarella di vacca",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 253,
+      "protein": 18.7,
+      "carbs": 0.7,
+      "fat": 19.5,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Mozzarella di vacca (codice 164820)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "parmigiano-reggiano-dop",
+      "name": "Parmigiano Reggiano DOP",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 397,
+      "protein": 32.4,
+      "carbs": 0.0,
+      "fat": 29.7,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Parmigiano Reggiano DOP (codice 166000)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "carboidrati: tracce (tr) in CREA, riportati come 0"
+    },
+    {
+      "id": "pecorino",
+      "name": "Pecorino",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 404,
+      "protein": 28.8,
+      "carbs": 0.2,
+      "fat": 32.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 50.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Pecorino (codice 166050)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "ricotta-di-vacca",
+      "name": "Ricotta di vacca",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 146,
+      "protein": 8.8,
+      "carbs": 3.5,
+      "fat": 10.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 100.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Ricotta di vacca (codice 166820)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cotto come indicato da CREA: Ricotta di vacca"
+    },
+    {
+      "id": "yogurt-bianco-intero",
+      "name": "Yogurt bianco intero",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 66,
+      "protein": 3.8,
+      "carbs": 4.3,
+      "fat": 3.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Yogurt, da latte intero (codice 150010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "yogurt-greco-0-grassi",
+      "name": "Yogurt greco 0% grassi",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 51,
+      "protein": 9.0,
+      "carbs": 4.0,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Yogurt greco, 0% lipidi (codice 150030)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "yogurt-greco-intero",
+      "name": "Yogurt greco intero",
+      "category": "Latte, latticini e formaggi",
+      "unit": "g",
+      "kcal": 115,
+      "protein": 6.4,
+      "carbs": 2.0,
+      "fat": 9.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Yogurt greco, da latte intero (codice 150020)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "burro",
+      "name": "Burro",
+      "category": "Grassi e condimenti",
+      "unit": "g",
+      "kcal": 758,
+      "protein": 0.8,
+      "carbs": 1.1,
+      "fat": 83.4,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 10.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Burro (codice 190010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "olio-di-girasole",
+      "name": "Olio di girasole",
+      "category": "Grassi e condimenti",
+      "unit": "g",
+      "kcal": 899,
+      "protein": 0.0,
+      "carbs": 0.0,
+      "fat": 99.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 10.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Olio di girasole (codice 009650)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "olio-extravergine-di-oliva",
+      "name": "Olio extravergine di oliva",
+      "category": "Grassi e condimenti",
+      "unit": "g",
+      "kcal": 899,
+      "protein": 0.0,
+      "carbs": 0.0,
+      "fat": 99.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 10.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Olio di oliva extra vergine (codice 009210)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    },
+    {
+      "id": "olive-nere",
+      "name": "Olive nere",
+      "category": "Grassi e condimenti",
+      "unit": "g",
+      "kcal": 243,
+      "protein": 1.6,
+      "carbs": 0.8,
+      "fat": 25.1,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Olive, nere (codice 008810)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 74% del prodotto intero)"
+    },
+    {
+      "id": "olive-verdi",
+      "name": "Olive verdi",
+      "category": "Grassi e condimenti",
+      "unit": "g",
+      "kcal": 148,
+      "protein": 0.8,
+      "carbs": 1.0,
+      "fat": 15.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Olive, verdi (codice 008820)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "valori per 100 g di parte edibile (parte edibile 84% del prodotto intero)"
+    },
+    {
+      "id": "bevanda-di-soia",
+      "name": "Bevanda di soia",
+      "category": "Bevande",
+      "unit": "g",
+      "kcal": 32,
+      "protein": 2.9,
+      "carbs": 0.8,
+      "fat": 1.9,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 125.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Soia, bevanda (codice 509010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "CREA fornisce valori per 100 g, non per 100 ml: unit lasciata in g (nessuna conversione di densità); la tabella CREA non specifica l'assenza di zuccheri aggiunti"
+    },
+    {
+      "id": "cioccolato-fondente-generico",
+      "name": "Cioccolato fondente (generico)",
+      "category": "Dolcificanti e altro",
+      "unit": "g",
+      "kcal": 531,
+      "protein": 6.6,
+      "carbs": 49.7,
+      "fat": 33.6,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 30.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Cioccolato, fondente (codice 203020)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": "cioccolato fondente generico CREA, non distinto per % di cacao (70%/85% non presenti)"
+    },
+    {
+      "id": "miele",
+      "name": "Miele",
+      "category": "Dolcificanti e altro",
+      "unit": "g",
+      "kcal": 304,
+      "protein": 0.6,
+      "carbs": 80.3,
+      "fat": 0.0,
+      "portions": [
+        {
+          "name": "Porzione CREA",
+          "amount": 20.0
+        }
+      ],
+      "source": "CREA, Tabelle di composizione degli alimenti, Miele (codice 210010)",
+      "portionsSource": "CREA, porzione standard indicata nella scheda dell'alimento",
+      "notes": ""
+    }
+  ]
 }
