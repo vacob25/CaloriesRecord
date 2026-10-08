@@ -17,6 +17,8 @@ import {
 } from './foods'
 import { resolveBarcode } from './barcode'
 import { searchProducts } from './openFoodFacts'
+import { listEntriesBetween } from './meals'
+import { listTargetsBetween } from './targets'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
 import { createProfile, getProfile, updateParams, updatePersonal } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
@@ -216,4 +218,19 @@ export function useResolveBarcode() {
 /** Ricerca su Open Food Facts: una mutation, non una query, perché parte solo su richiesta esplicita. */
 export function useSearchOff() {
   return useMutation({ mutationFn: (query: string) => searchProducts(query) })
+}
+
+/** Dati di un periodo per le statistiche: voci, target e pesate (con 6 giorni prima per la media mobile). */
+export function useStatsData(start: string, end: string, weightsFrom: string) {
+  return useQuery({
+    queryKey: ['meal_entries', 'stats', start, end, weightsFrom],
+    queryFn: async () => {
+      const [entries, targets, weights] = await Promise.all([
+        listEntriesBetween(start, end),
+        listTargetsBetween(start, end),
+        listWeights(weightsFrom),
+      ])
+      return { entries, targets, weights }
+    },
+  })
 }
