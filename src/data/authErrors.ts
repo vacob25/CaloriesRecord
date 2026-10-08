@@ -56,5 +56,11 @@ export function describeAuthError(error: AuthErrorLike, step: AuthStep, online =
   if (step === 'verify' && (error.status === 401 || error.status === 403)) {
     return { kind: 'message', message: 'Codice sbagliato o scaduto. Controllalo o chiedine uno nuovo.' }
   }
-  return { kind: 'message', message: 'Qualcosa è andato storto. Riprova tra poco.' }
+  return { kind: 'message', message: `Qualcosa è andato storto. Riprova tra poco. ${technicalDetail(error)}` }
+}
+
+/** Codice e stato dell'errore (mai dati personali): servono a capire il problema guardando il telefono. */
+function technicalDetail(error: AuthErrorLike): string {
+  const parts = [error.code ?? error.name ?? 'sconosciuto', error.status !== undefined ? `stato ${error.status}` : null]
+  return `(Dettaglio: ${parts.filter(Boolean).join(', ')})`
 }

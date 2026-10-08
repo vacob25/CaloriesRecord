@@ -40,10 +40,17 @@ describe('describeAuthError', () => {
     })
   })
 
-  it('errore sconosciuto: messaggio generico', () => {
+  it('errore sconosciuto: messaggio generico con codice e stato per capire il problema', () => {
     expect(describeAuthError({ code: 'unexpected_failure', status: 500 }, 'send')).toEqual({
       kind: 'message',
-      message: expect.stringContaining('Riprova'),
+      message: 'Qualcosa è andato storto. Riprova tra poco. (Dettaglio: unexpected_failure, stato 500)',
+    })
+  })
+
+  it('errore senza codice: usa il nome dell’errore', () => {
+    expect(describeAuthError({ name: 'TypeError' }, 'send')).toEqual({
+      kind: 'message',
+      message: 'Qualcosa è andato storto. Riprova tra poco. (Dettaglio: TypeError)',
     })
   })
 })
