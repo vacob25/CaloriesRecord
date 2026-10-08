@@ -151,6 +151,11 @@ Un solo asse; punti blu = pesate grezze (con anello bianco di 2 px), linea blu d
 **ADR-042 · Scanner: fotocamera da un tocco, codice scritto come riserva**
 La fotocamera parte dal pulsante "Avvia fotocamera" (iOS richiede un gesto). Formati EAN-13, EAN-8, UPC-A, UPC-E. Pulsante torcia solo se il dispositivo la espone al browser (su iPhone Safari potrebbe non esserci): per questo con poca luce c'è sempre "Oppure scrivi il codice". Permesso negato → spiegazione su come riattivarlo + codice a mano + ricerca per nome. Verificato in Chromium con una fotocamera finta che mostra un vero EAN-13: zxing lo legge.
 
+## Decise allo step 9 (8 ottobre 2026)
+
+**ADR-043 · Statistiche: colori e definizioni**
+Barre delle calorie: verde = rispettato, arancio = sotto target (DESIGN.md); "oltre il target" in grigio, perché il design non gli dà un colore e in un bulk non è un allarme. L'arancio su bianco ha contrasto 2,6:1 (script della skill dataviz): per questo c'è sempre la tabella dei giorni con lo stato scritto. Un giorno registrato ma senza target (non si è aperta l'app quel giorno) conta nella media ma non nel rapporto "rispettati". Peso del periodo = variazione della media mobile tra il primo e l'ultimo giorno, in kg/settimana (§8); "—" se manca una delle due medie. Non si naviga oltre il periodo attuale.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
