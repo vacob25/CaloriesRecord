@@ -1,17 +1,18 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 
-import { Field } from '../../components/Field'
-import { FormMessage } from '../../components/States'
-import { primaryButtonClass } from '../../components/ui'
-import { errorMessage } from '../../data/dbErrors'
-import { useSaveWeight, useWeights } from '../../data/queries'
-import { addDays } from '../../lib/dates'
-import { formatNumber } from '../../lib/numbers'
-import { validateWeight } from '../../lib/profileValidation'
-import { needsJumpConfirmation } from '../../lib/weight'
+import { Field } from './Field'
+import { FormMessage } from './States'
+import { primaryButtonClass } from './ui'
+import { errorMessage } from '../data/dbErrors'
+import { useSaveWeight, useWeights } from '../data/queries'
+import { addDays } from '../lib/dates'
+import { formatNumber } from '../lib/numbers'
+import { validateWeight } from '../lib/profileValidation'
+import { needsJumpConfirmation } from '../lib/weight'
 
 /** Pill del peso di oggi: un tocco apre l'inserimento (upsert: la seconda pesata sostituisce la prima). */
-export function WeightPill({ date }: { date: string }) {
+export function WeightPill({ date, showTrendLink = true }: { date: string; showTrendLink?: boolean }) {
   const weights = useWeights(addDays(date, -1))
   const save = useSaveWeight()
   const [open, setOpen] = useState(false)
@@ -86,6 +87,11 @@ export function WeightPill({ date }: { date: string }) {
                 {save.isPending ? 'Salvataggio…' : 'Salva'}
               </button>
             </form>
+            {showTrendLink && (
+              <Link to="/peso" className="mt-2 flex min-h-11 items-center justify-center text-[15px] font-semibold text-green-dark">
+                Vedi l’andamento del peso
+              </Link>
+            )}
           </div>
         </>
       )}

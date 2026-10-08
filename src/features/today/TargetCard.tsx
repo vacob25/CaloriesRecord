@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { MacroBar } from '../../components/MacroBar'
 import { Ring } from '../../components/Ring'
 import { ErrorState, FormMessage } from '../../components/States'
+import { WeightPill } from '../../components/WeightPill'
 import { cardClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useDayTarget, useSetTrainingType } from '../../data/queries'
@@ -12,7 +13,6 @@ import { TRAINING_LABEL, TRAINING_TYPES, type TrainingType } from '../../lib/lab
 import { formatNumber } from '../../lib/numbers'
 import type { Nutrients } from '../../lib/nutrition'
 import { progress, ringStatus } from '../../lib/targets'
-import { WeightPill } from './WeightPill'
 
 interface TargetCardProps {
   date: string

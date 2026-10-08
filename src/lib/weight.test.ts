@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
 import { addDays } from './dates'
-import { ageOn, lastLogOnOrBefore, movingAverage7, needsJumpConfirmation, slopeKgPerWeek, weightForDay } from './weight'
+import {
+  ageOn,
+  averageChange,
+  distanceToGoal,
+  lastLogOnOrBefore,
+  movingAverage7,
+  needsJumpConfirmation,
+  slopeKgPerWeek,
+  weightForDay,
+  weightSeries,
+} from './weight'
 
 const day0 = '2026-10-01'
 const series = (values: number[], start = day0) => values.map((kg, i) => ({ date: addDays(start, i), kg }))
@@ -69,5 +79,38 @@ describe('ageOn', () => {
     expect(ageOn('2006-10-08', '2026-10-07')).toBe(19)
     expect(ageOn('2006-10-08', '2026-10-08')).toBe(20)
     expect(ageOn('2004-02-29', '2026-03-01')).toBe(22)
+  })
+})
+
+describe('weightSeries', () => {
+  it('un elemento per giorno; media solo con ≥ 4 pesate (ACCETTAZIONE: altrimenti solo punti)', () => {
+    const logs = series([75, 75.2, 75.4])
+    const points = weightSeries(logs, '2026-10-01', '2026-10-04')
+    expect(points.map((p) => p.kg)).toEqual([75, 75.2, 75.4, null])
+    expect(points.every((p) => p.average === null)).toBe(true)
+    const more = weightSeries(series([75, 75.2, 75.4, 75.6]), '2026-10-01', '2026-10-04')
+    expect(more[3]?.average).toBeCloseTo(75.3, 2)
+  })
+})
+
+describe('averageChange', () => {
+  it('differenza tra prima e ultima media', () => {
+    const points = weightSeries(series([75, 75, 75, 75, 75.4, 75.8, 76.2, 76.6]), '2026-10-01', '2026-10-08')
+    const change = averageChange(points)
+    // media dal 4° giorno (75,00) all'8° (giorni 2-8: 529 / 7 = 75,57): +0,57 kg in 4 giorni
+    expect(change?.days).toBe(4)
+    expect(change?.kg).toBeCloseTo(0.57, 2)
+  })
+
+  it('senza almeno due medie → null', () => {
+    expect(averageChange(weightSeries(series([75, 76]), '2026-10-01', '2026-10-02'))).toBeNull()
+  })
+})
+
+describe('distanceToGoal', () => {
+  it('direzione e kg mancanti', () => {
+    expect(distanceToGoal(75, 80)).toEqual({ kg: 5, direction: 'up' })
+    expect(distanceToGoal(82, 80)).toEqual({ kg: 2, direction: 'down' })
+    expect(distanceToGoal(80.02, 80)).toEqual({ kg: 0, direction: 'reached' })
   })
 })

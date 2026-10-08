@@ -5,6 +5,7 @@ import { GramsSheet } from '../../components/GramsSheet'
 import { MealPicker } from '../../components/MealPicker'
 import { ErrorState, FormMessage, ListSkeleton } from '../../components/States'
 import { Toast } from '../../components/Toast'
+import { WeightPill } from '../../components/WeightPill'
 import { cardClass, dangerButtonClass } from '../../components/ui'
 import { useToday } from '../../components/useToday'
 import { errorMessage } from '../../data/dbErrors'
@@ -17,7 +18,6 @@ import { groupByMeal, rescaleEntry } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
 import { sumNutrients } from '../../lib/nutrition'
 import { TargetCard } from './TargetCard'
-import { WeightPill } from './WeightPill'
 
 interface AddedState {
   added?: { id: string; mealType: MealType }

@@ -6,11 +6,11 @@ import { FoodFormScreen } from '../features/foods/FoodFormScreen'
 import { FoodsScreen } from '../features/foods/FoodsScreen'
 import { RecipeFormScreen } from '../features/foods/RecipeFormScreen'
 import { ProfileScreen } from '../features/profile/ProfileScreen'
-import { StatsScreen } from '../features/stats/StatsScreen'
 import { TodayScreen } from '../features/today/TodayScreen'
 import { OnboardingScreen } from '../features/profile/OnboardingScreen'
 import { Layout } from './Layout'
 import { ProfileGate } from './ProfileGate'
+import { StatsPage, WeightPage } from './lazyPages'
 import { PublicOnly, RequireAuth } from './routeGuards'
 
 export const router = createBrowserRouter([
@@ -47,7 +47,8 @@ export const router = createBrowserRouter([
       { path: 'cibi/ricette/:id', element: <RecipeFormScreen /> },
       { path: 'cibi/:id', element: <FoodFormScreen /> },
       { path: 'aggiungi', element: <AddMealScreen /> },
-      { path: 'statistiche', element: <StatsScreen /> },
+      { path: 'statistiche', element: <StatsPage /> },
+      { path: 'peso', element: <WeightPage /> },
       { path: 'profilo', element: <ProfileScreen /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],

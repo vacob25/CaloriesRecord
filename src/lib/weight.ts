@@ -77,3 +77,39 @@ export function ageOn(birthDate: string, day: string): number {
   const years = Number(day.slice(0, 4)) - Number(birthDate.slice(0, 4))
   return day.slice(5) >= birthDate.slice(5) ? years : years - 1
 }
+
+export interface WeightPoint {
+  date: string
+  /** Pesata grezza del giorno (punto), se c'è. */
+  kg: number | null
+  /** Media mobile 7 giorni (linea), se ci sono abbastanza pesate. */
+  average: number | null
+}
+
+/** Serie per il grafico: un elemento per giorno nell'intervallo, con punto grezzo e media. */
+export function weightSeries(logs: readonly WeightLog[], from: string, to: string): WeightPoint[] {
+  const byDate = new Map(logs.map((log) => [log.date, log.kg]))
+  const points: WeightPoint[] = []
+  for (let day = from; day <= to; day = addDays(day, 1)) {
+    const average = movingAverage7(logs, day)
+    points.push({ date: day, kg: byDate.get(day) ?? null, average: average === null ? null : Math.round(average * 100) / 100 })
+  }
+  return points
+}
+
+/** Variazione della media mobile nell'intervallo (prima e ultima media disponibili). */
+export function averageChange(points: readonly WeightPoint[]): { kg: number; days: number } | null {
+  const withAverage = points.filter((point) => point.average !== null)
+  const first = withAverage[0]
+  const last = withAverage[withAverage.length - 1]
+  if (!first || !last || first === last || first.average === null || last.average === null) return null
+  const days = (Date.parse(last.date) - Date.parse(first.date)) / 86_400_000
+  return { kg: last.average - first.average, days }
+}
+
+/** Distanza dal peso obiettivo: quanti kg mancano e in che direzione. */
+export function distanceToGoal(currentKg: number, goalKg: number): { kg: number; direction: 'up' | 'down' | 'reached' } {
+  const diff = goalKg - currentKg
+  if (Math.abs(diff) < 0.05) return { kg: 0, direction: 'reached' }
+  return { kg: Math.abs(diff), direction: diff > 0 ? 'up' : 'down' }
+}
