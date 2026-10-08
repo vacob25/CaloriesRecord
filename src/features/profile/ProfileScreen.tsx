@@ -18,6 +18,7 @@ import {
   type PersonalFormInput,
 } from '../../lib/profileValidation'
 import { PersonalFields } from './PersonalFields'
+import { RecalibrationCard } from './RecalibrationCard'
 
 const text = (value: number | null) => (value === null ? '' : String(value).replace('.', ','))
 
@@ -39,6 +40,7 @@ export function ProfileScreen() {
       {profile.isError && <ErrorState message={errorMessage(profile.error)} onRetry={() => void profile.refetch()} />}
       {profile.data && (
         <>
+          <RecalibrationCard />
           <PersonalSection profile={profile.data} />
           <ParamsSection profile={profile.data} />
         </>

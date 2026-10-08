@@ -19,6 +19,7 @@ import { resolveBarcode } from './barcode'
 import { searchProducts } from './openFoodFacts'
 import { listEntriesBetween } from './meals'
 import { listTargetsBetween } from './targets'
+import { acceptProposal, rejectProposal, runWeeklyRecalibration, type TdeeEstimate } from './recalibration'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
 import { createProfile, getProfile, updateParams, updatePersonal } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
@@ -40,6 +41,7 @@ export const queryKeys = {
   targets: ['daily_targets'] as const,
   targetForDay: (date: string) => ['daily_targets', date] as const,
   weights: ['weight_logs'] as const,
+  recalibration: (today: string) => ['tdee_estimates', today] as const,
 }
 
 export function useFoods() {
@@ -232,5 +234,22 @@ export function useStatsData(start: string, end: string, weightsFrom: string) {
       ])
       return { entries, targets, weights }
     },
+  })
+}
+
+/** Ricalibrazione della settimana (eseguita alla prima apertura: Oggi e Profilo condividono la stessa cache). */
+export function useRecalibration(today: string) {
+  return useQuery({ queryKey: queryKeys.recalibration(today), queryFn: () => runWeeklyRecalibration(today), staleTime: 10 * 60_000 })
+}
+
+export function useDecideProposal(today: string) {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: async ({ estimate, accept, currentBmrKcal }: { estimate: TdeeEstimate; accept: boolean; currentBmrKcal: number | null }) => {
+      if (accept && currentBmrKcal !== null) await acceptProposal(estimate, currentBmrKcal)
+      else await rejectProposal(estimate.id)
+    },
+    // Niente ricalcolo del target di oggi: la proposta vale dal giorno dopo (§7).
+    onSuccess: () => invalidate(queryKeys.recalibration(today), queryKeys.profile),
   })
 }

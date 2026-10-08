@@ -9,7 +9,7 @@ import { WeightPill } from '../../components/WeightPill'
 import { cardClass, dangerButtonClass } from '../../components/ui'
 import { useToday } from '../../components/useToday'
 import { errorMessage } from '../../data/dbErrors'
-import { useDeleteEntry, useEntries, useUpdateEntry } from '../../data/queries'
+import { useDeleteEntry, useEntries, useRecalibration, useUpdateEntry } from '../../data/queries'
 import type { MealEntry } from '../../data/types'
 import { UNDO_SECONDS } from '../../lib/constants'
 import { formatLongDate } from '../../lib/dates'
@@ -29,6 +29,9 @@ export function TodayScreen() {
   const location = useLocation()
   const navigate = useNavigate()
   const deleteEntry = useDeleteEntry(today)
+  // Esecuzione settimanale "pigra" della ricalibrazione alla prima apertura (step 10).
+  const recalibration = useRecalibration(today)
+  const pendingProposal = recalibration.data?.estimate?.status === 'pending'
   const [editing, setEditing] = useState<MealEntry | null>(null)
 
   const added = (location.state as AddedState | null)?.added
@@ -50,6 +53,15 @@ export function TodayScreen() {
         </div>
         <WeightPill date={today} />
       </header>
+
+      {pendingProposal && (
+        <Link
+          to="/profilo#ricalibrazione"
+          className="mx-5 mt-4 flex min-h-12 items-center justify-between rounded-card bg-green-tint px-4 text-[15px] font-semibold text-green-dark"
+        >
+          Nuova proposta di ricalibrazione <span aria-hidden="true">›</span>
+        </Link>
+      )}
 
       <TargetCard date={today} eaten={total} />
 
