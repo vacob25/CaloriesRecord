@@ -141,6 +141,23 @@ begin
   exception when foreign_key_violation then null;
   end;
 
+  -- B non può modificare la ricetta di A con save_recipe (migrazione 002), se presente.
+  if to_regprocedure('public.save_recipe(uuid, text, numeric, numeric, numeric, numeric, numeric, jsonb)') is not null then
+    begin
+      perform public.save_recipe(a_recipe, 'x', 100, 1, 1, 1, 1,
+        jsonb_build_array(jsonb_build_object('ingredient_food_id', b_food, 'grams', 1)));
+      raise exception 'FALLITO: B ha modificato la ricetta di A con save_recipe';
+    exception when no_data_found then null;
+    end;
+    -- ...né usare un cibo di A come ingrediente di una sua ricetta.
+    begin
+      perform public.save_recipe(null, 'Ricetta di B', 100, 1, 1, 1, 1,
+        jsonb_build_array(jsonb_build_object('ingredient_food_id', a_ingredient, 'grams', 1)));
+      raise exception 'FALLITO: B ha usato un cibo di A in una sua ricetta';
+    exception when foreign_key_violation or check_violation then null;
+    end;
+  end if;
+
   -- ─── 4. Senza login (anon): niente lettura, niente scrittura ─────────────
   reset role;
   perform set_config('request.jwt.claims', json_build_object('role', 'anon')::text, true);
@@ -158,6 +175,13 @@ begin
     raise exception 'FALLITO: senza login si scrive in foods';
   exception when insufficient_privilege then null;
   end;
+  if to_regprocedure('public.save_recipe(uuid, text, numeric, numeric, numeric, numeric, numeric, jsonb)') is not null then
+    begin
+      perform public.save_recipe(null, 'x', 100, 1, 1, 1, 1, '[]'::jsonb);
+      raise exception 'FALLITO: senza login si chiama save_recipe';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
 
   -- ─── 5. Pulizia ──────────────────────────────────────────────────────────
   reset role;
