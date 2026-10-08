@@ -24,6 +24,7 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 - Policy per `authenticated` limitate a `user_id = (select auth.uid())` per select, insert, update, delete (modello in `docs/DATA_MODEL.md`). In insert, `user_id` ha default `auth.uid()` e un `with check` che impedisce di scrivere per altri.
 - Le viste devono rispettare la RLS (`security_invoker = true`); in v1 meglio non usare viste.
 - Nessuna funzione `security definer` senza una ragione scritta in `DECISIONS.md`.
+- Funzioni chiamate dall'app (es. `save_recipe`, ADR-029): `security invoker`, `set search_path = ''`, `revoke execute … from public, anon` e `grant execute … to authenticated`. Lo script RLS verifica anche loro.
 
 ### Verifica RLS con due utenti (da fare allo step 3 e a ogni nuova tabella)
 **Script pronto:** `supabase/checks/rls_two_users.sql`. Supabase → SQL Editor → New query → incolla tutto il file → Run. Esito atteso nell'ultima riga: `RLS verificata: tutti i controlli superati`. Se un controllo fallisce compare un errore che inizia con `FALLITO:` e non resta niente nel database. Lo script crea due utenti finti (`@example.invalid`), "diventa" ciascuno di loro come farebbe l'app dopo il login (ruolo `authenticated` + `auth.uid()`), fa i controlli qui sotto e poi li cancella; non usa dati reali e si può rieseguire. Quando aggiungi una tabella, aggiungila anche allo script.

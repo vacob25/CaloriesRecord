@@ -20,7 +20,7 @@ iPhone (Safari, PWA) ──► Vercel (file statici)
 | vitest | test | deciso |
 | @zxing/browser | barcode da fotocamera | deciso (step 8) |
 | react-router-dom | navigazione tra schermate | deciso (ADR-006) |
-| @tanstack/react-query | cache e stato dei dati server | deciso (ADR-007) |
+| @tanstack/react-query | cache e stato dei dati server | deciso (ADR-007, installato allo step 4) |
 | zod | validazione di input e risposte API | deciso (ADR-008, installato allo step 3) |
 | @vitejs/plugin-react, @tailwindcss/vite | plugin di build per React e Tailwind v4 | deciso (step 2) |
 | oxlint | lint (comando `npm run lint`) | deciso (ADR-016) |
@@ -42,6 +42,8 @@ src/
     foods.ts  meals.ts  weight.ts  targets.ts  profile.ts
     openFoodFacts.ts
     types.ts        tipi generati/derivati dallo schema
+    queries.ts      hook TanStack Query condivisi tra le feature (useFoods, …) e chiavi della cache
+    dbErrors.ts     errori del database tradotti in italiano
   features/       una cartella per area, con componenti e hook propri
     today/  add-meal/  foods/  weight/  stats/  profile/  auth/
   components/     componenti UI condivisi (Ring, MacroBar, Sheet, Button...)
@@ -61,7 +63,8 @@ docs/
 5. Le risposte di Open Food Facts si validano e si convertono in un tipo interno prima di usarle: non fidarti dei campi (possono mancare o essere sbagliati).
 
 ## Flusso dati
-- Lettura: componente → hook (`useMealsForDay(date)`) → `data/meals.ts` → Supabase. Cache per chiave `[tabella, data]`.
+- Lettura: componente → hook (`useMealsForDay(date)`) → `data/meals.ts` → Supabase. Cache per chiave `[tabella, data]`. Gli hook usati da più feature stanno in `data/queries.ts` (regola 3: una feature non importa da un'altra).
+- All'uscita (logout) la cache di TanStack Query si svuota: nessun dato dell'utente resta in memoria.
 - Scrittura: componente → mutation → `data/…` → invalida le chiavi toccate. Aggiornamento ottimistico solo su aggiunta/cancellazione di una voce pasto.
 - Il target del giorno si legge da `daily_targets`; se manca per quella data si crea (vedi DOMAIN_RULES.md, "Target del giorno") copiando i parametri del profilo.
 
