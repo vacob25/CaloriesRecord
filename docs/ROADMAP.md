@@ -12,7 +12,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 4 | Cibi e ricette | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 002 su Supabase e prova sull'iPhone) |
 | 5 | Registro pasti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 6 | Target e macro | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
-| 7 | Peso | da fare |
+| 7 | Peso | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 8 | Open Food Facts e barcode | da fare |
 | 9 | Statistiche | da fare |
 | 10 | Ricalibrazione | da fare |

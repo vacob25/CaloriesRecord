@@ -16,7 +16,7 @@ iPhone (Safari, PWA) ──► Vercel (file statici)
 | tailwindcss | stile | deciso |
 | vite-plugin-pwa | manifest e service worker | deciso |
 | @supabase/supabase-js | database e login | deciso (installato allo step 3) |
-| recharts | grafici | deciso |
+| recharts | grafici | deciso (installato allo step 7; caricato solo nelle schermate Peso e Statistiche) |
 | vitest | test | deciso |
 | @zxing/browser | barcode da fotocamera | deciso (step 8) |
 | react-router-dom | navigazione tra schermate | deciso (ADR-006) |

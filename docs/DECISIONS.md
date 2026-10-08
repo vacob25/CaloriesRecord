@@ -133,9 +133,14 @@ Il target di un giorno si crea alla prima apertura e poi non cambia (DATA_MODEL)
 **ADR-038 · Limiti dei dati personali**
 Altezza 100-250 cm, età 14-100 anni, pesi 30-250 kg (DOMAIN_RULES §10). Proposta accettata dall'utente.
 
+## Decise allo step 7 (8 ottobre 2026)
+
+**ADR-040 · Grafico del peso**
+Un solo asse; punti blu = pesate grezze (con anello bianco di 2 px), linea blu di 2 px = media mobile 7 giorni, tratteggio blu = traguardo (blu = peso e traguardo, DESIGN.md; contrasto verificato con lo script della skill dataviz). Testi e assi nei colori del testo, mai nel colore della serie. Alternativa testuale ("Media in salita di 0,6 kg in 3 settimane") e l'elenco delle pesate come vista a tabella. La pill del peso è in `components/` perché la usano Oggi e Peso.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
-- **Step 11:** il JavaScript è ~690 kB (~200 kB compressi) e Vite avvisa oltre 500 kB: valutare il caricamento separato delle schermate (lazy routes). Il service worker lo mette comunque in cache dopo la prima apertura.
+- **Step 11:** allo step 7 Peso e Statistiche si caricano a parte (Recharts ~380 kB, `app/lazyPages.tsx`). Il pacchetto principale resta ~730 kB (~210 kB compressi: React, supabase-js, zod, TanStack Query): valutare `zod/mini` o altri tagli. Il service worker lo mette comunque in cache dopo la prima apertura.
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
 - **Step 3 (in corso):** sessione nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: dopo 1 giorno e dopo 1 settimana.
 - **Step 4 (applicata la proposta):** solo grammi in v1, con scorciatoia da `serving_g`; per i liquidi (latte, olio) si scrivono i grammi, la densità è ignorata. Da rivedere se dà fastidio nell'uso reale.
