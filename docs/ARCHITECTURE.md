@@ -6,7 +6,8 @@ Single-page app React servita come PWA. Nessun backend proprio: il browser parla
 iPhone (Safari, PWA) ──► Vercel (file statici)
         │
         ├──► Supabase: Auth (email e password) + Postgres (RLS)
-        └──► Open Food Facts (ricerca, barcode)
+        └──► Open Food Facts: world.openfoodfacts.org (barcode, API v3.4)
+             e search.openfoodfacts.org (ricerca per nome) — ADR-041
 ```
 
 ## Dipendenze
@@ -18,7 +19,7 @@ iPhone (Safari, PWA) ──► Vercel (file statici)
 | @supabase/supabase-js | database e login | deciso (installato allo step 3) |
 | recharts | grafici | deciso (installato allo step 7; caricato solo nelle schermate Peso e Statistiche) |
 | vitest | test | deciso |
-| @zxing/browser | barcode da fotocamera | deciso (step 8) |
+| @zxing/browser (+ @zxing/library, sua dipendenza obbligatoria) | barcode da fotocamera | deciso (installato allo step 8; caricato solo nello scanner) |
 | react-router-dom | navigazione tra schermate | deciso (ADR-006) |
 | @tanstack/react-query | cache e stato dei dati server | deciso (ADR-007, installato allo step 4) |
 | zod | validazione di input e risposte API | deciso (ADR-008, installato allo step 3) |

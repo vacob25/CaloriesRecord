@@ -138,7 +138,21 @@ Altezza 100-250 cm, età 14-100 anni, pesi 30-250 kg (DOMAIN_RULES §10). Propos
 **ADR-040 · Grafico del peso**
 Un solo asse; punti blu = pesate grezze (con anello bianco di 2 px), linea blu di 2 px = media mobile 7 giorni, tratteggio blu = traguardo (blu = peso e traguardo, DESIGN.md; contrasto verificato con lo script della skill dataviz). Testi e assi nei colori del testo, mai nel colore della serie. Alternativa testuale ("Media in salita di 0,6 kg in 3 settimane") e l'elenco delle pesate come vista a tabella. La pill del peso è in `components/` perché la usano Oggi e Peso.
 
+## Decise allo step 8 (8 ottobre 2026)
+
+**ADR-041 · Open Food Facts: endpoint, versione e limiti** (verificati sulla documentazione ufficiale l'8/10/2026: `docs/api/index.md`, `ref-api-and-product-schema-change-log.md` e gli schemi `docs/api/ref/` del repository openfoodfacts/openfoodfacts-server; `app/api.py` e `app/_types.py` di openfoodfacts/search-a-licious)
+- Barcode: `GET https://world.openfoodfacts.org/api/v3.4/product/{codice}` con `fields=code,product_name,product_name_it,brands,nutriments,serving_quantity,serving_quantity_unit`. Si chiede **v3.4** apposta: la v3.5 ha una nuova struttura dei nutrienti "ancora in sviluppo attivo"; chiedendo una versione precedente il server restituisce la struttura vecchia e stabile (`nutriments.energy-kcal_100g`, `proteins_100g`, `carbohydrates_100g`, `fat_100g`). Non trovato = HTTP 404 o `status: "failure"`.
+- Ricerca per nome: la ricerca testuale non è nell'API v2/v3 del server; si usa Search-a-licious, `POST https://search.openfoodfacts.org/search` (`q`, `langs`, `page_size`, `fields`; risposta `hits`). Solo con il pulsante "Cerca su Open Food Facts", mai mentre si scrive.
+- Limiti: 15 letture prodotto e 10 ricerche al minuto per IP (per utente se le richieste partono dal telefono). L'app li conta (in `sessionStorage`) e si ferma prima, con un messaggio: superarli può portare al ban dell'IP.
+- Identificazione: la documentazione chiede uno User-Agent `NomeApp/Versione (email)`, ma **un browser non permette di impostarlo**. Si manda `app_name=CaloriesRecord` (parametro che OFF usa per identificare le app). Vedi punto aperto.
+- Dati non fidati: ogni risposta passa da zod (`lib/openFoodFacts.ts`, testato con una fixture inventata) e dalla validazione §9. Campi mancanti o valori impossibili → modulo "Nuovo cibo" precompilato con i campi mancanti VUOTI e una nota: mai zeri silenziosi. Porzione usata solo se in grammi.
+- Alla prima scelta il prodotto si salva tra i propri cibi (fonte `open_food_facts`); un codice già tra i propri cibi non chiama OFF (funziona anche senza rete). Nessun dato personale inviato.
+
+**ADR-042 · Scanner: fotocamera da un tocco, codice scritto come riserva**
+La fotocamera parte dal pulsante "Avvia fotocamera" (iOS richiede un gesto). Formati EAN-13, EAN-8, UPC-A, UPC-E. Pulsante torcia solo se il dispositivo la espone al browser (su iPhone Safari potrebbe non esserci): per questo con poca luce c'è sempre "Oppure scrivi il codice". Permesso negato → spiegazione su come riattivarlo + codice a mano + ricerca per nome. Verificato in Chromium con una fotocamera finta che mostra un vero EAN-13: zxing lo legge.
+
 ## Punti aperti (rispondere prima dello step indicato)
+- **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
 - **Step 11:** allo step 7 Peso e Statistiche si caricano a parte (Recharts ~380 kB, `app/lazyPages.tsx`). Il pacchetto principale resta ~730 kB (~210 kB compressi: React, supabase-js, zod, TanStack Query): valutare `zod/mini` o altri tagli. Il service worker lo mette comunque in cache dopo la prima apertura.
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.

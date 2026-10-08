@@ -51,7 +51,7 @@ Cosa controlla (a mano sarebbe così):
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.
-- Open Food Facts: chiamate in sola lettura, senza inviare dati personali.
+- Open Food Facts: chiamate in sola lettura, senza inviare dati personali (solo codice a barre o testo cercato) e senza credenziali (ADR-041). Il conteggio delle richieste sta in `sessionStorage` (solo orari, nessun dato personale).
 - Dipendenze: `npm audit` a ogni step e prima di un deploy. Nessun pacchetto sconosciuto o con pochi download senza averlo detto all'utente.
 - Vercel: variabili d'ambiente solo dalle impostazioni del progetto; le anteprime (preview) non devono usare credenziali di produzione se in futuro si aggiungono segreti.
 

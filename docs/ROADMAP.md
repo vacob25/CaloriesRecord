@@ -13,7 +13,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 5 | Registro pasti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 6 | Target e macro | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 7 | Peso | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
-| 8 | Open Food Facts e barcode | da fare |
+| 8 | Open Food Facts e barcode | in prova (fatto; provato con OFF simulato e fotocamera finta con un vero EAN-13; manca: 5 prodotti reali con l'iPhone, anche con poca luce) |
 | 9 | Statistiche | da fare |
 | 10 | Ricalibrazione | da fare |
 | 11 | Rifinitura e uso reale | da fare |
