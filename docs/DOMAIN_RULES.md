@@ -86,3 +86,9 @@ Limiti da dichiarare all'utente: 7700 kcal/kg è una semplificazione (l'aumento 
 - Grammi: > 0 e ≤ 5000. Kcal/100 g: 0-900 (olio puro ~ 884). Macro/100 g: 0-100 e la somma proteine + carboidrati + grassi ≤ 100 g (tolleranza 1%).
 - Se kcal dichiarate e kcal ricalcolate dai macro differiscono di oltre il 20%, avviso "valori incoerenti, controlla l'etichetta" (non blocco).
 - Peso: 30-250 kg. Un salto di oltre 2 kg dal giorno prima chiede conferma.
+
+## 10. Dati personali (decisi con l'utente l'8/10/2026, ADR-038)
+- Altezza: 100-250 cm.
+- Età (calcolata dalla data di nascita al giorno considerato): 14-100 anni. Sotto i 14 anni Mifflin-St Jeor non è validata.
+- Peso attuale e peso obiettivo: 30-250 kg, come §9. Il peso obiettivo è facoltativo.
+- Parametri del profilo: nessun limite di dominio stabilito oltre a valori > 0 (fattore di attività) e ≥ 0 (surplus, bonus, g/kg); resta l'avviso di §2 se il surplus supera il 20%.

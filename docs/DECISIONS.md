@@ -122,12 +122,22 @@ Se cambi i grammi di una voce già registrata, kcal e macro si ricalcolano in pr
 **ADR-036 · "Aggiunto · Annulla" per 6 secondi**
 DESIGN.md dice "per alcuni secondi": 6 s (`UNDO_SECONDS`).
 
+## Decise allo step 6 (8 ottobre 2026, con l'utente)
+
+**ADR-037 · Il peso si chiede già alla prima apertura**
+Il target dello step 6 richiede il peso, ma la registrazione del peso è allo step 7. La schermata "dati personali" chiede anche il peso di oggi e lo salva come prima pesata (`weight_logs`). Il peso usato per BMR e macro segue già la regola dello step 7: media mobile 7 giorni se ci sono almeno 4 pesate, altrimenti l'ultima pesata (`lib/weight.ts`, con test).
+
+**ADR-039 · Una modifica del profilo vale già da oggi**
+Il target di un giorno si crea alla prima apertura e poi non cambia (DATA_MODEL). Se però cambi un parametro nel Profilo, il target di OGGI si ricalcola subito (mantenendo il tipo di giorno): altrimenti la modifica si vedrebbe solo domani e sembrerebbe non funzionare. I giorni passati non si toccano mai (criterio dello step 6, verificato). Diverso per la ricalibrazione (step 10), che per DOMAIN_RULES §7 vale dal giorno dopo.
+
+**ADR-038 · Limiti dei dati personali**
+Altezza 100-250 cm, età 14-100 anni, pesi 30-250 kg (DOMAIN_RULES §10). Proposta accettata dall'utente.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
 - **Step 11:** il JavaScript è ~690 kB (~200 kB compressi) e Vite avvisa oltre 500 kB: valutare il caricamento separato delle schermate (lazy routes). Il service worker lo mette comunque in cache dopo la prima apertura.
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
 - **Step 3 (in corso):** sessione nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: dopo 1 giorno e dopo 1 settimana.
 - **Step 4 (applicata la proposta):** solo grammi in v1, con scorciatoia da `serving_g`; per i liquidi (latte, olio) si scrivono i grammi, la densità è ignorata. Da rivedere se dà fastidio nell'uso reale.
-- **Step 6:** limiti di validazione della schermata dati personali (altezza minima/massima, età minima/massima, peso obiettivo) da decidere con l'utente e scrivere in `DOMAIN_RULES.md` prima del codice.
 - **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.
 - **Step 10:** valore di `ENERGY_PER_KG` (7700): tenere come costante modificabile e rivalutare dopo qualche mese di dati reali.
