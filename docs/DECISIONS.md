@@ -172,6 +172,20 @@ Alla prima apertura di una settimana (lun-dom, Roma) si salva una riga in `tdee_
 - Banner "Serve la connessione" in tutte le schermate quando il telefono è offline (DESIGN.md, Stati comuni).
 - Prestazioni: separate solo le schermate pesanti (Peso/Statistiche con Recharts, scanner con zxing). Provato a separare anche Cibi/Profilo/Benvenuto: risparmio 4 kB, non vale l'attesa in più → annullato.
 
+## Decise l'8/10/2026 con l'utente (step 13-16)
+
+**ADR-047 · Peso: pesata libera + promemoria dopo 5 giorni**
+L'utente voleva "registrare il peso ogni 5 giorni". Con una pesata ogni 5 giorni media mobile (≥ 4 in 7 giorni), pendenza e ricalibrazione (≥ 10 in 28 giorni) non sarebbero mai disponibili. Scelta dell'utente: le regole restano, la voce Peso diventa più visibile e compare un promemoria se non ci si pesa da 5 giorni, con un riepilogo degli ultimi 5 giorni.
+
+**ADR-048 · Porzioni casalinghe e liquidi in ml**
+Ogni cibo ha `unit` (g o ml) e `portions` (lista di nome + quantità). Per i liquidi i valori sono per 100 ml, come sulle etichette: non serve nessuna densità. Nelle ricette un ingrediente in ml conta come grammi per il peso totale (approssimazione dichiarata, densità ≈ 1). Supera la proposta "solo grammi" del punto aperto dello step 4.
+
+**ADR-049 · Acqua: contenitori e obiettivo scelto dall'utente**
+Contenitori rapidi predefiniti: bicchiere 200 ml, bottiglietta 500 ml, bottiglia 1,5 L (formati comuni in Italia), più contenitori personalizzati salvati nel database. Obiettivo giornaliero solo se lo imposta l'utente: nessun valore inventato. L'acqua ha una tabella sua (`water_entries`) e non entra nel diario dei pasti.
+
+**ADR-050 · Catalogo di ingredienti da una fonte verificabile**
+Da questo ambiente le banche dati ufficiali (CREA, USDA, IEO) non sono raggiungibili e i valori non si scrivono a memoria. Il catalogo si produce in un'altra chat con ricerca web (testo in `docs/prompts/catalogo-ingredienti.md`), con la fonte per ogni voce; qui si valida con zod e le regole §9 prima di importarlo. È un file JSON statico nell'app (dati pubblici): niente tabella condivisa nel database, così la RLS per utente resta semplice; la voce scelta si copia tra i propri cibi.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
@@ -179,6 +193,6 @@ Alla prima apertura di una settimana (lun-dom, Roma) si salva una riga in `tdee_
 - **Step 11 (tuo):** icone dell'app provvisorie (anello bianco su verde, generate allo step 2) e nessuna schermata di avvio iOS dedicata: decidere icona e schermata definitive.
 - **Step 11 (tuo):** 2 settimane di uso reale con l'elenco dei problemi (criterio di accettazione).
 - **Step 3 (in corso):** sessione nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: dopo 1 giorno e dopo 1 settimana.
-- **Step 4 (applicata la proposta):** solo grammi in v1, con scorciatoia da `serving_g`; per i liquidi (latte, olio) si scrivono i grammi, la densità è ignorata. Da rivedere se dà fastidio nell'uso reale.
+- **Step 4 (superato da ADR-048):** in v1 solo grammi; dallo step 14 i liquidi si registrano in ml con valori per 100 ml.
 - **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.
 - **Step 10:** valore di `ENERGY_PER_KG` (7700): tenere come costante modificabile e rivalutare dopo qualche mese di dati reali.

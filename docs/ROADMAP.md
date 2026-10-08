@@ -18,6 +18,10 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 10 | Ricalibrazione | in prova (fatto e provato contro Postgres + PostgREST locali; manca: conferma di ADR-044 e uso reale di qualche settimana) |
 | 11 | Rifinitura e uso reale | in corso (parte tecnica fatta: accessibilità 0 violazioni, aree ≥ 44 px, banner offline, npm audit pulito; mancano: icona e avvio definitivi, 2 settimane di uso reale) |
 | 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
+| 13 | Peso più visibile e promemoria | da fare |
+| 14 | Porzioni casalinghe e liquidi in ml | da fare |
+| 15 | Acqua | da fare |
+| 16 | Catalogo di ingredienti mediterranei | da fare (dati dall'altra chat) |
 
 Gli step 1-7 portano a un primo uso reale quotidiano. 8-12 arrivano nelle settimane dopo (lo step 12 si può anticipare).
 
@@ -108,6 +112,34 @@ Accettazione:
 - Login con codice funzionante **dentro la PWA installata**: si chiede il codice, lo si inserisce nell'app, si resta collegati.
 - `signInWithOtp` con `shouldCreateUser: false`; `verifyOtp` con `type: 'email'`; un'email non registrata non viene rivelata.
 - Codice sbagliato/scaduto, troppi tentativi e rete assente hanno messaggi chiari; la sessione resiste come allo step 3.
+
+## Step 13 · Peso più visibile e promemoria (richiesta dell'utente, 8/10/2026)
+Le regole di calcolo del peso (§4) NON cambiano: pesarsi spesso resta il modo per avere media, pendenza e ricalibrazione.
+Fare: voce "Peso" raggiungibile anche da Statistiche; promemoria in Oggi se l'ultima pesata ha più di 5 giorni (o non ce n'è nessuna); in Peso un riepilogo "ultimi 5 giorni" (pesate, media, variazione rispetto ai 5 giorni prima).
+Accettazione:
+- Con l'ultima pesata di 6 giorni fa compare il promemoria; dopo aver registrato il peso sparisce.
+- Il riepilogo degli ultimi 5 giorni torna con un calcolo a mano.
+
+## Step 14 · Porzioni casalinghe e liquidi in ml
+Fare: ogni cibo ha un'unità (g o ml: per i liquidi i valori sono per 100 ml, come nelle etichette) e una lista di porzioni con nome e quantità ("1 uovo medio = 50 g", "1 cucchiaio = 10 g", "1 bicchiere = 200 ml"); nel pannello si sceglie la porzione e quante (es. 2 uova) e la quantità si calcola da sola, restando modificabile; snapshot della voce con l'unità; migrazione 003.
+Accettazione:
+- "2 uova medie" registra 100 g con i valori giusti.
+- Un latte in ml registra 200 ml con i valori per 100 ml dell'etichetta.
+- Le voci già registrate non cambiano se cambi le porzioni del cibo.
+
+## Step 15 · Acqua
+Fare: card Acqua in Oggi con un tocco per bicchiere (200 ml), bottiglietta (500 ml), bottiglia (1,5 L) e per i propri contenitori salvati (es. borraccia), più una quantità libera; obiettivo giornaliero impostato dall'utente nel Profilo (nessun valore predefinito); annulla l'ultima aggiunta; l'acqua non ha calorie e non entra nel diario dei pasti. Migrazione 003.
+Accettazione:
+- Tre tocchi diversi sommano correttamente nel giorno (giorno locale Europe/Rome).
+- Un contenitore personalizzato resta salvato e compare tra i tasti rapidi.
+- Senza obiettivo si vede solo il totale; con obiettivo "bevuti / obiettivo".
+
+## Step 16 · Catalogo di ingredienti mediterranei
+Fare: catalogo di alimenti semplici (niente piatti composti) con kcal e macro per 100 g e porzioni casalinghe, prodotto in un'altra chat con il testo di `docs/prompts/catalogo-ingredienti.md` e fonte per ogni voce (CREA come fonte principale); file JSON nel repo (dati pubblici, nessun dato personale), validato con zod e regole §9 da un test; scheda "Catalogo" in Aggiungi pasto; alla prima scelta la voce si salva tra i propri cibi.
+Accettazione:
+- Il test di validazione del catalogo passa su tutte le voci (nessuna con macro > 100 g o kcal incoerenti senza nota).
+- Ogni voce ha la fonte.
+- Scegliere una voce del catalogo la salva tra i propri cibi una sola volta.
 
 ---
 
