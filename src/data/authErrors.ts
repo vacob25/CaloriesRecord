@@ -1,6 +1,7 @@
 /** Ciò che serve di un errore di Supabase Auth per spiegarlo all'utente. */
 export interface AuthErrorLike {
   name?: string
+  message?: string
   code?: string
   status?: number
 }
@@ -13,6 +14,8 @@ export type AuthErrorResult =
   | { kind: 'message'; message: string }
 
 export const OFFLINE_MESSAGE = 'Serve la connessione. Controlla la rete e riprova.'
+export const UNREACHABLE_MESSAGE =
+  'Non riesco a raggiungere il server di login. Se la connessione funziona, controlla l’indirizzo VITE_SUPABASE_URL. (Dettaglio: server non raggiungibile)'
 
 /**
  * Traduce un errore di Supabase Auth in un messaggio in italiano.
@@ -20,8 +23,19 @@ export const OFFLINE_MESSAGE = 'Serve la connessione. Controlla la rete e riprov
  * lo trattiamo come un invio riuscito, così da fuori non si può scoprire quali email esistono.
  */
 export function describeAuthError(error: AuthErrorLike, step: AuthStep, online = true): AuthErrorResult {
-  if (!online || error.name === 'AuthRetryableFetchError' || error.status === 0) {
+  if (!online) {
     return { kind: 'message', message: OFFLINE_MESSAGE }
+  }
+  // Il telefono è online ma la richiesta non arriva al server: di solito VITE_SUPABASE_URL è sbagliato.
+  if (error.name === 'AuthRetryableFetchError' && !error.status) {
+    return { kind: 'message', message: UNREACHABLE_MESSAGE }
+  }
+  // Il server risponde ma con un guasto (5xx): non è colpa della rete del telefono.
+  if (error.status !== undefined && error.status >= 500) {
+    return {
+      kind: 'message',
+      message: `Il server di login non risponde. Riprova tra poco. ${technicalDetail(error)}`,
+    }
   }
 
   switch (error.code) {
@@ -62,5 +76,8 @@ export function describeAuthError(error: AuthErrorLike, step: AuthStep, online =
 /** Codice e stato dell'errore (mai dati personali): servono a capire il problema guardando il telefono. */
 function technicalDetail(error: AuthErrorLike): string {
   const parts = [error.code ?? error.name ?? 'sconosciuto', error.status !== undefined ? `stato ${error.status}` : null]
+  // Il testo del server (es. "Error sending magic link email") dice la causa; troncato per non riempire lo schermo.
+  const serverText = error.message?.trim().slice(0, 100)
+  if (serverText) parts.push(`"${serverText}"`)
   return `(Dettaglio: ${parts.filter(Boolean).join(', ')})`
 }

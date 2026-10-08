@@ -1,6 +1,6 @@
 import { isAuthRetryableFetchError, type Session } from '@supabase/supabase-js'
 
-import { describeAuthError, type AuthStep } from './authErrors'
+import { describeAuthError, type AuthErrorLike, type AuthStep } from './authErrors'
 import { getSupabase } from './supabase'
 
 export type { Session }
@@ -14,7 +14,7 @@ function isOnline(): boolean {
 
 function toResult(error: unknown, step: AuthStep): AuthActionResult {
   if (!error) return { ok: true }
-  const described = describeAuthError(error as { name?: string; code?: string; status?: number }, step, isOnline())
+  const described = describeAuthError(error as AuthErrorLike, step, isOnline())
   return described.kind === 'silent' ? { ok: true } : { ok: false, message: described.message }
 }
 
