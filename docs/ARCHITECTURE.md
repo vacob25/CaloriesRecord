@@ -15,13 +15,13 @@ iPhone (Safari, PWA) ──► Vercel (file statici)
 | react, react-dom, vite, typescript | base | deciso |
 | tailwindcss | stile | deciso |
 | vite-plugin-pwa | manifest e service worker | deciso |
-| @supabase/supabase-js | database e login | deciso |
+| @supabase/supabase-js | database e login | deciso (installato allo step 3) |
 | recharts | grafici | deciso |
 | vitest | test | deciso |
 | @zxing/browser | barcode da fotocamera | deciso (step 8) |
 | react-router-dom | navigazione tra schermate | deciso (ADR-006) |
 | @tanstack/react-query | cache e stato dei dati server | deciso (ADR-007) |
-| zod | validazione di input e risposte API | deciso (ADR-008) |
+| zod | validazione di input e risposte API | deciso (ADR-008, installato allo step 3) |
 | @vitejs/plugin-react, @tailwindcss/vite | plugin di build per React e Tailwind v4 | deciso (step 2) |
 | oxlint | lint (comando `npm run lint`) | deciso (ADR-016) |
 | @fontsource-variable/plus-jakarta-sans | font servito dall'app, non da Google | deciso (ADR-017) |

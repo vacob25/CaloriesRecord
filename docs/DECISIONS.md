@@ -62,14 +62,35 @@ Pro: un solo schema per form e risposte API, tipi derivati. Contro: dipendenza i
 **ADR-017 · Font Plus Jakarta Sans servito dall'app (@fontsource)**
 Il file del font finisce nel build e nella cache del service worker: la shell si apre con il font giusto anche con rete lenta, e il browser non fa richieste a Google (privacy, `SECURITY.md`). Scartato: link a Google Fonts. Costo: ~60 kB di font nel precache.
 
-**ADR-018 · Tailwind v4 con token in CSS (`@theme`)**
+**ADR-020 · Tailwind v4 con token in CSS (`@theme`)** (era numerata 018 per errore: il numero 018 è della chiave publishable)
 I token di `DESIGN.md` stanno in `src/styles/index.css`. La palette di default di Tailwind è disattivata (`--color-*: initial`): si possono usare solo i colori del design. Non esiste `tailwind.config.js`.
 
 **ADR-019 · Barra di stato iOS `default`**
 Con `black-translucent` il testo della barra di stato è bianco e su fondo chiaro (#F4F6F9) sarebbe illeggibile. `default` dà barra chiara con testo scuro e il contenuto parte sotto di essa.
 
+## Decise allo step 3 (8 ottobre 2026)
+
+**ADR-021 · Grant: prima `revoke all`, poi solo i 4 permessi**
+La migrazione toglie ogni permesso ad `anon` e `authenticated` e poi concede ad `authenticated` solo select/insert/update/delete. Motivo: nei progetti con i vecchi permessi di default `authenticated` riceveva anche `TRUNCATE`, che svuota una tabella ignorando la RLS (verificato su Postgres locale). Completa ADR-018.
+
+**ADR-022 · Chiavi esterne composte `(id, user_id)` verso `foods`**
+`recipe_items` e `meal_entries` puntano a `foods (id, user_id)`, non solo a `foods (id)`. Una chiave esterna normale non passa dalla RLS: B potrebbe collegare una sua voce a un cibo di A conoscendone l'id. Con la chiave composta il cibo deve essere dello stesso utente. Per `meal_entries` si usa `on delete set null (food_id)` (Postgres ≥ 15) per azzerare solo `food_id` e non `user_id`.
+
+**ADR-023 · Sessione: "senza rete" è diverso da "uscito"**
+Con il token scaduto e la rete assente supabase-js conserva la sessione ma la comunica come nulla. L'app la legge con `getSession()` e, se l'errore è di rete, mostra "Serve la connessione" invece del login; il rientro è automatico quando torna la rete (al massimo ~60 s: supabase-js tiene in cache un rinnovo fallito per 60 s). Solo un errore vero del server (token revocato) porta al login. Scartato: usare l'evento `INITIAL_SESSION`, che in quel caso fa sembrare l'utente disconnesso.
+
+**ADR-024 · Login in attesa salvato sul telefono**
+Email e orario dell'invio del codice stanno in `localStorage` per al massimo 1 ora (validità del codice), e si cancellano all'accesso. Motivo: su iOS, passando a Mail per leggere il codice, la PWA può essere ricaricata e si perderebbe il passaggio. Non è un dato importante: se iOS lo cancella si richiede il codice.
+
+**ADR-025 · Email non registrata: stessa risposta di una registrata**
+Con `shouldCreateUser: false` Supabase risponde con un errore se l'email non esiste. L'app lo tratta come un invio riuscito ("Se l'indirizzo è giusto, la mail arriva…"), così dall'esterno non si può scoprire quale email ha un account. Costo: se sbagli a scrivere l'email, il codice semplicemente non arriva.
+
+**ADR-026 · `profiles`: sesso, data di nascita e altezza obbligatori**
+`not null` nel database: un profilo esiste solo quando questi tre dati sono stati inseriti (servono al BMR). Nessun limite numerico oltre a `> 0` sull'altezza, finché `DOMAIN_RULES.md` non ne fissa.
+
 ## Punti aperti (rispondere prima dello step indicato)
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
+- **Step 3 (da decidere):** la ROADMAP mette nello step 3 la schermata "dati personali" alla prima apertura, ma la richiesta dello step 3 non la elencava e il punto qui sotto la colloca allo step 6. Non è stata fatta. Servono anche i limiti di validazione (altezza, data di nascita), che `DOMAIN_RULES.md` non definisce.
 - **Step 3:** verificare sull'iPhone che con l'OTP la sessione nella PWA duri (chiudere/riaprire, dopo 1 giorno, dopo 1 settimana) e che il servizio email predefinito di Supabase regga l'uso quotidiano; altrimenti SMTP personalizzato.
 - **Step 4:** unità "porzione" per i cibi: solo grammi con scorciatoia da `serving_g`, o anche millilitri per i liquidi? (Latte, olio.) Proposta: solo grammi in v1, con densità ignorata e dichiarata.
 - **Step 6:** sesso e data di nascita si inseriscono nell'app alla prima apertura (schermata profilo) e restano nel database, non nel repo.

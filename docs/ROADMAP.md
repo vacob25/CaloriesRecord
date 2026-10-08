@@ -7,8 +7,8 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | # | Step | Stato |
 | --- | --- | --- |
 | 1 | Design | fatto |
-| 2 | Setup, PWA, deploy | in prova (manca deploy e prova su iPhone) |
-| 3 | Database e login | da fare |
+| 2 | Setup, PWA, deploy | fatto |
+| 3 | Database e login | in prova (manca: migrazione e verifica RLS su Supabase, prova sull'iPhone, schermata profilo da decidere) |
 | 4 | Cibi e ricette | da fare |
 | 5 | Registro pasti | da fare |
 | 6 | Target e macro | da fare |
