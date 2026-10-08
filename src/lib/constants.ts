@@ -63,3 +63,7 @@ export const HEIGHT_MIN_CM = 100
 export const HEIGHT_MAX_CM = 250
 export const AGE_MIN_YEARS = 14
 export const AGE_MAX_YEARS = 100
+
+/** Limiti di Open Food Facts per IP/utente (documentazione ufficiale, ADR-041). */
+export const OFF_PRODUCT_READS_PER_MINUTE = 15
+export const OFF_SEARCHES_PER_MINUTE = 10
