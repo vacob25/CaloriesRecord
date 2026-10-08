@@ -63,7 +63,10 @@ export function validateWaterGoal(input: string): Result<number | null> {
   const liters = parseDecimal(input)
   if (liters === null || liters <= 0) return { ok: false, message: 'Scrivi l’obiettivo in litri, es. 2,5.' }
   if (liters > WATER_GOAL_MAX_L) return { ok: false, message: `Al massimo ${WATER_GOAL_MAX_L} L.` }
-  return { ok: true, value: Math.round(round(liters, 2) * 1000) }
+  const ml = Math.round(liters * 1000)
+  // "0,0004" diventerebbe 0 ml, che il database rifiuta.
+  if (ml < 1) return { ok: false, message: 'Scrivi l’obiettivo in litri, es. 2,5.' }
+  return { ok: true, value: ml }
 }
 
 /** ml salvati → testo in litri per il campo ("2,5"). */

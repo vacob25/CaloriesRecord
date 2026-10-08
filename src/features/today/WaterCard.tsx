@@ -66,7 +66,10 @@ export function WaterCard({ date }: { date: string }) {
             <button
               type="button"
               disabled={busy || !water.isSuccess}
-              onClick={() => add.mutate(container.ml)}
+              onClick={() => {
+                remove.reset()
+                add.mutate(container.ml)
+              }}
               className="flex min-h-20 w-full flex-col items-center justify-center gap-0.5 rounded-button border border-line bg-bg px-1 py-2 text-blue disabled:opacity-60"
             >
               <span className="sr-only">Aggiungi </span>
@@ -95,7 +98,10 @@ export function WaterCard({ date }: { date: string }) {
           <button
             type="button"
             disabled={busy}
-            onClick={() => remove.mutate(last.id)}
+            onClick={() => {
+              add.reset()
+              remove.mutate(last.id)
+            }}
             aria-label={`Annulla l'ultima aggiunta d'acqua (${formatWater(last.ml)})`}
             className="min-h-11 px-2 text-[15px] font-semibold text-green-dark disabled:opacity-60"
           >

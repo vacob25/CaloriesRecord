@@ -49,10 +49,15 @@ function guard(kind: 'product' | 'search'): void {
   }
 }
 
-async function request(url: string, init?: RequestInit): Promise<Response> {
+/** Senza rete si risponde subito, senza consumare il limite di richieste al minuto. */
+function requireOnline(): void {
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
     throw new DataError('Serve la connessione per cercare su Open Food Facts.')
   }
+}
+
+async function request(url: string, init?: RequestInit): Promise<Response> {
+  requireOnline()
   try {
     const response = await fetch(url, { ...init, signal: AbortSignal.timeout(TIMEOUT_MS) })
     if (response.status === 429) throw new DataError('Open Food Facts chiede di rallentare: riprova tra un minuto.')
@@ -79,6 +84,7 @@ export type OffLookup = { found: false } | { found: true; conversion: OffConvers
 
 /** Prodotto per codice a barre (API v3.4: struttura `nutriments` stabile). */
 export async function lookupBarcode(code: string): Promise<OffLookup> {
+  requireOnline()
   guard('product')
   const params = new URLSearchParams({ fields: FIELDS.join(','), app_name: APP_NAME })
   const response = await request(`${OFF_BASE}/api/v3.4/product/${encodeURIComponent(code)}?${params}`)
@@ -91,6 +97,7 @@ export async function lookupBarcode(code: string): Promise<OffLookup> {
 
 /** Ricerca per nome con Search-a-licious. Solo su richiesta esplicita, mai mentre si scrive (limite 10/min). */
 export async function searchProducts(query: string): Promise<OffSearchHit[]> {
+  requireOnline()
   guard('search')
   // POST: il testo cercato non finisce negli indirizzi registrati nei log (scelta del servizio "per la privacy").
   const response = await request(`${SEARCH_BASE}/search`, {

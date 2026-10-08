@@ -141,3 +141,11 @@ describe('liquidi in ml (step 14)', () => {
     expect(validateGrams('5001', 'ml')).toEqual({ ok: false, message: 'Al massimo 5000 ml.' })
   })
 })
+
+describe('arrotondamento prima del controllo (revisione)', () => {
+  it('0,04 g diventerebbe 0: rifiutato', () => {
+    expect(validateGrams('0,04')).toEqual({ ok: false, message: 'I grammi devono essere più di 0.' })
+    expect(validateGrams('0,05')).toEqual({ ok: true, value: 0.1 })
+    expect(validateGrams('5000,04')).toEqual({ ok: true, value: 5000 })
+  })
+})

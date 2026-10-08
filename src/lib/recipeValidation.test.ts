@@ -37,3 +37,15 @@ describe('validateRecipe', () => {
     expect(validateRecipe({ name: 'X', cookedWeightG: '0', items: [{ key: 'a', grams: '100' }] }).ok).toBe(false)
   })
 })
+
+describe('revisione: peso cotto e ml', () => {
+  const base = { name: 'Ricetta', items: [{ key: 'a', grams: '100' }] }
+  it('peso cotto quasi zero o oltre la colonna: errore nel modulo', () => {
+    expect(validateRecipe({ ...base, cookedWeightG: '0,04' })).toMatchObject({ ok: false, errors: { cookedWeightG: 'Il peso cotto deve essere più di 0.' } })
+    expect(validateRecipe({ ...base, cookedWeightG: '1000000' })).toMatchObject({ ok: false, errors: { cookedWeightG: 'Al massimo 999999.9 g.' } })
+  })
+  it('ingrediente in ml: messaggio in ml', () => {
+    const result = validateRecipe({ name: 'R', cookedWeightG: '500', items: [{ key: 'a', grams: '0', unit: 'ml' }] })
+    expect(result).toMatchObject({ ok: false, errors: { itemGrams: { a: 'I ml devono essere più di 0.' } } })
+  })
+})

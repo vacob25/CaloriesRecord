@@ -26,7 +26,9 @@ export function parsePortions(value: unknown): Portion[] {
   if (!Array.isArray(value)) return []
   return value.flatMap((item) => {
     const parsed = portionSchema.safeParse(item)
-    return parsed.success ? [{ name: parsed.data.name, amount: round(parsed.data.amount, 1) }] : []
+    if (!parsed.success) return []
+    const amount = round(parsed.data.amount, 1)
+    return amount > 0 ? [{ name: parsed.data.name, amount }] : []
   })
 }
 
@@ -73,13 +75,14 @@ export function validatePortionRows(
   const value: Portion[] = []
   for (const row of rows) {
     const name = row.name.trim()
-    const amount = parseDecimal(row.amount)
+    const parsedAmount = parseDecimal(row.amount)
+    const amount = parsedAmount === null ? null : round(parsedAmount, 1)
     if (!name && row.amount.trim() === '') continue
     if (!name) errors[row.key] = 'Dai un nome alla porzione (es. "1 cucchiaio").'
     else if (name.length > PORTION_NAME_MAX) errors[row.key] = `Nome troppo lungo (al massimo ${PORTION_NAME_MAX} caratteri).`
     else if (amount === null || amount <= 0) errors[row.key] = 'Scrivi la quantità della porzione.'
     else if (amount > GRAMS_MAX) errors[row.key] = `Al massimo ${GRAMS_MAX}.`
-    else value.push({ name, amount: round(amount, 1) })
+    else value.push({ name, amount })
   }
   return Object.keys(errors).length > 0 ? { ok: false, errors } : { ok: true, value }
 }

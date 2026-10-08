@@ -56,3 +56,10 @@ describe('acqua (step 15)', () => {
     expect(goalToText(null)).toBe('')
   })
 })
+
+describe('obiettivo quasi zero (revisione)', () => {
+  it('0,0004 L sarebbe 0 ml: rifiutato', () => {
+    expect(validateWaterGoal('0,0004')).toMatchObject({ ok: false })
+    expect(validateWaterGoal('0,001')).toEqual({ ok: true, value: 1 })
+  })
+})

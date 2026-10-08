@@ -34,6 +34,8 @@ export function describeDbError(error: DbErrorLike, online = true): string {
     case '23514':
       if (text.includes('ricetta')) return error.message ?? 'Valori della ricetta non validi.'
       return 'Alcuni valori non sono validi. Controllali e riprova.'
+    case '22003':
+      return 'Un numero è troppo grande per essere salvato. Controlla i valori (es. il peso cotto della ricetta).'
     case '42501':
       return 'Permesso negato: la sessione potrebbe essere scaduta. Esci e accedi di nuovo.'
     case 'P0002':

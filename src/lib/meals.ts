@@ -50,6 +50,20 @@ export function defaultGrams(lastGrams: number | undefined, servingG: number | n
   return lastGrams ?? servingG ?? DEFAULT_GRAMS
 }
 
+/**
+ * Quantità proposta con le porzioni casalinghe (step 14): ultima usata → porzione abituale →
+ * 1 × la prima porzione casalinga (già selezionata) → 100.
+ */
+export function defaultQuantity(
+  lastGrams: number | undefined,
+  servingG: number | null,
+  portions: readonly { amount: number }[],
+): { amount: number; portionIndex: number | null } {
+  const first = portions[0]
+  if (lastGrams === undefined && servingG === null && first) return { amount: first.amount, portionIndex: 0 }
+  return { amount: defaultGrams(lastGrams, servingG), portionIndex: null }
+}
+
 export interface EntryLike extends Nutrients {
   mealType: MealType
 }

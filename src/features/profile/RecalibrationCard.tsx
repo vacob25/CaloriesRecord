@@ -5,9 +5,9 @@ import { cardClass, primaryButtonClass, secondaryButtonClass } from '../../compo
 import { useToday } from '../../components/useToday'
 import { errorMessage } from '../../data/dbErrors'
 import { useDecideProposal, useRecalibration } from '../../data/queries'
-import { formatNumber } from '../../lib/numbers'
-
-const signed = (value: number, decimals: number) => `${value > 0 ? '+' : ''}${formatNumber(value, decimals)}`
+import { ENERGY_PER_KG, RECAL_BAND_MAX, RECAL_BAND_MIN, RECAL_FAT_WARNING_KG_WEEK, RECAL_MAX_CHANGE } from '../../lib/constants'
+import { formatNumber, formatSigned as signed } from '../../lib/numbers'
+import { dayTarget } from '../../lib/nutrition'
 
 /** Scheda "Ricalibrazione" (step 10): proposta da confermare, mai automatica. */
 export function RecalibrationCard() {
@@ -35,7 +35,7 @@ export function RecalibrationCard() {
       <details className="mt-4">
         <summary className="flex min-h-11 cursor-pointer items-center text-[13px] font-semibold text-green-dark">Limiti del calcolo</summary>
         <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] text-ink-2">
-          <li>1 kg = 7700 kcal è una semplificazione: la massa magra costa meno del grasso, quindi la stima può risultare un po’ bassa.</li>
+          <li>1 kg = {ENERGY_PER_KG} kcal è una semplificazione: la massa magra costa meno del grasso, quindi la stima può risultare un po’ bassa.</li>
           <li>Acqua, sale e carboidrati spostano il peso di 1-2 kg in pochi giorni: conta la tendenza.</li>
           <li>Se registri male le calorie, la stima è sbagliata: vale quanto i dati che inserisci.</li>
         </ul>
@@ -54,12 +54,12 @@ function Body({
   const { estimate, evaluation, currentMaintenanceKcal, currentBmrKcal, surplusPct } = state
 
   if (estimate?.status === 'pending' && estimate.proposedMaintenanceKcal !== null && estimate.avgIntakeKcal !== null && estimate.slopeKgWeek !== null) {
-    const restTarget = Math.round((estimate.proposedMaintenanceKcal * (1 + surplusPct)) / 10) * 10
+    const restTarget = dayTarget(estimate.proposedMaintenanceKcal, surplusPct, 'rest', 0)
     return (
       <div className="mt-3">
         <p className="text-[15px] text-ink">
           Negli ultimi {estimate.windowDays} giorni hai mangiato in media <strong>{formatNumber(estimate.avgIntakeKcal)} kcal</strong> e il peso è
-          andato a <strong>{signed(estimate.slopeKgWeek, 2)} kg/settimana</strong> (obiettivo +0,20 / +0,40).
+          andato a <strong>{signed(estimate.slopeKgWeek, 2)} kg/settimana</strong> (banda {signed(RECAL_BAND_MIN, 2)} / {signed(RECAL_BAND_MAX, 2)}).
         </p>
         <p className="mt-2 text-[15px] text-ink">
           Mantenimento stimato dai tuoi dati: {formatNumber(estimate.estimatedMaintenanceKcal ?? 0)} kcal. Attuale:{' '}
@@ -68,9 +68,9 @@ function Body({
         <p className="mt-2 text-[15px] font-bold text-ink">
           Proposta: mantenimento {formatNumber(estimate.proposedMaintenanceKcal)} kcal → target nei giorni di riposo {formatNumber(restTarget)} kcal.
         </p>
-        <p className="mt-1 text-[13px] text-muted">La proposta resta entro ±5% del mantenimento attuale. Se accetti, vale da domani.</p>
-        {estimate.slopeKgWeek > 0.5 && (
-          <FormMessage kind="warning">il peso sale più di 0,5 kg a settimana: l’eccesso è soprattutto grasso, per questo la proposta abbassa il mantenimento.</FormMessage>
+        <p className="mt-1 text-[13px] text-muted">La proposta resta entro ±{formatNumber(RECAL_MAX_CHANGE * 100)}% del mantenimento attuale. Se accetti, vale da domani.</p>
+        {estimate.slopeKgWeek > RECAL_FAT_WARNING_KG_WEEK && (
+          <FormMessage kind="warning">il peso sale più di {formatNumber(RECAL_FAT_WARNING_KG_WEEK, 2)} kg a settimana: l’eccesso è soprattutto grasso, per questo la proposta abbassa il mantenimento.</FormMessage>
         )}
         {decide.isError && <FormMessage kind="error">{errorMessage(decide.error)}</FormMessage>}
         <div className="mt-4 grid grid-cols-2 gap-3">

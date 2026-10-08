@@ -39,6 +39,12 @@ begin
   where table_schema = 'public' and grantee = 'anon';
   if n > 0 then raise exception 'FALLITO: ci sono % permessi su tabelle di public per anon', n; end if;
 
+  -- ADR-021: agli utenti loggati solo select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER).
+  select count(*) into n from information_schema.role_table_grants
+  where table_schema = 'public' and grantee = 'authenticated'
+    and privilege_type not in ('SELECT', 'INSERT', 'UPDATE', 'DELETE');
+  if n > 0 then raise exception 'FALLITO: % permessi in più per authenticated (ammessi solo i 4 di ADR-021)', n; end if;
+
   -- ─── 1. Due utenti di prova ──────────────────────────────────────────────
   insert into auth.users (id, email, aud, role) values
     (a, 'rls-a-' || a || '@example.invalid', 'authenticated', 'authenticated'),

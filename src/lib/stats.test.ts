@@ -63,7 +63,7 @@ describe('periodStats', () => {
       entry('2026-10-06', 999, { foodId: 'f2', foodName: 'Riso' }),
       entry('2026-10-07', 50, { foodId: 'f1', foodName: 'Pasta' }),
     ]
-    expect(periodStats(start, end, entries, targets, []).topFoods).toEqual([
+    expect(periodStats(start, end, entries, targets, []).topFoods.map(({ name, count }) => ({ name, count }))).toEqual([
       { name: 'Biscotti', count: 2 },
       { name: 'Pasta', count: 1 },
       { name: 'Riso', count: 1 },
@@ -95,5 +95,21 @@ describe('periodStats', () => {
 
   it('peso senza media a inizio o fine periodo → null', () => {
     expect(periodStats(start, end, [], targets, [{ date: '2026-10-11', kg: 75 }]).weightKgPerWeek).toBeNull()
+  })
+})
+
+describe('variazione del peso in un periodo non finito (revisione)', () => {
+  // Una pesata al giorno, +0,1 kg/giorno = 0,70 kg/settimana.
+  const weights = Array.from({ length: 11 }, (_, i) => ({ date: addDays('2026-09-28', i), kg: 75 + 0.1 * i }))
+
+  it('settimana in corso (oggi giovedì): misurata fino a oggi', () => {
+    const stats = periodStats('2026-10-05', '2026-10-11', [], new Map(), weights, 5, '2026-10-08')
+    expect(stats.weightKgPerWeek).toBeCloseTo(0.7, 6)
+  })
+
+  it('periodo già concluso: oggi non cambia nulla', () => {
+    const done = periodStats('2026-10-02', '2026-10-08', [], new Map(), weights)
+    expect(periodStats('2026-10-02', '2026-10-08', [], new Map(), weights, 5, '2026-10-20')).toEqual(done)
+    expect(done.weightKgPerWeek).not.toBeNull()
   })
 })

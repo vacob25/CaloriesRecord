@@ -8,6 +8,7 @@ import { useToday } from '../../components/useToday'
 import { WeightChart } from '../../components/WeightChart'
 import { errorMessage } from '../../data/dbErrors'
 import { useProfile, useStatsData } from '../../data/queries'
+import { RESPECTED_MAX_RATIO, RESPECTED_MIN_RATIO } from '../../lib/constants'
 import { addDays, formatShortDate } from '../../lib/dates'
 import { DAY_STATUS_LABEL, MEAL_LABEL, MEAL_TYPES } from '../../lib/labels'
 import { formatNumber } from '../../lib/numbers'
@@ -36,6 +37,8 @@ export function StatsScreen() {
         data.data.entries,
         new Map(data.data.targets.map((t) => [t.date, t.targetKcal])),
         data.data.weights,
+        5,
+        today,
       )
     : null
   const points = data.data ? weightSeries(data.data.weights, weightStart, weightEnd) : []
@@ -48,6 +51,7 @@ export function StatsScreen() {
       <ScreenHeader title="Statistiche" />
       <Link
         to="/peso"
+        state={{ from: '/statistiche' }}
         className="mx-5 mt-3 flex min-h-12 items-center justify-between rounded-card bg-surface px-4 text-[15px] font-semibold text-ink shadow-[0_1px_3px_rgba(21,23,30,0.08)]"
       >
         <span>
@@ -106,7 +110,7 @@ export function StatsScreen() {
             <KeyNumber
               label="Giorni rispettati"
               value={stats.respected.of > 0 ? `${stats.respected.count} su ${stats.respected.of}` : '—'}
-              note="tra −5% e +10% del target"
+              note={`tra −${formatNumber((1 - RESPECTED_MIN_RATIO) * 100)}% e +${formatNumber((RESPECTED_MAX_RATIO - 1) * 100)}% del target`}
             />
             <KeyNumber
               label="Peso"
@@ -191,7 +195,7 @@ export function StatsScreen() {
             </h2>
             <ol className="mt-2 divide-y divide-line">
               {stats.topFoods.map((food) => (
-                <li key={food.name} className="flex min-h-11 items-center justify-between gap-2 py-1 text-[15px]">
+                <li key={food.key} className="flex min-h-11 items-center justify-between gap-2 py-1 text-[15px]">
                   <span className="truncate">{food.name}</span>
                   <span className="shrink-0 text-[13px] text-ink-2">
                     {food.count} {food.count === 1 ? 'volta' : 'volte'}

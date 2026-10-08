@@ -73,7 +73,7 @@ export function OffSearch({ query, returnTo, onPick }: OffSearchProps) {
                   </span>
                 </span>
                 <span className="shrink-0 text-[13px] text-ink-2">
-                  {hit.kcal === null ? '—' : <><span className="font-bold">{formatNumber(hit.kcal)}</span> kcal/100 g</>}
+                  {hit.kcal === null ? '—' : <><span className="font-bold">{formatNumber(hit.kcal)}</span> kcal/100 {hit.unit}</>}
                 </span>
               </button>
             </li>

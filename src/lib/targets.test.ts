@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeDayTarget, progress, ringStatus, withTrainingType } from './targets'
+import { computeDayTarget, estimatedGainKgPerWeek, progress, ringStatus, withTrainingType } from './targets'
 
 // Profilo di esempio FITTIZIO (DOMAIN_RULES.md): uomo, 75 kg, 180 cm, 20 anni il giorno considerato.
 const profile = {
@@ -58,5 +58,16 @@ describe('progress', () => {
     expect(progress(75, 150)).toBe(0.5)
     expect(progress(200, 150)).toBe(1)
     expect(progress(10, 0)).toBe(0)
+  })
+})
+
+describe('estimatedGainKgPerWeek (§2, revisione)', () => {
+  it('profilo fittizio: 2848 kcal, +10% → circa 0,26 kg/settimana', () => {
+    // 2848 · 0,10 · 7 / 7700 = 0,2589…
+    expect(estimatedGainKgPerWeek(2848, 1.6, 1.6, 0.1)).toBeCloseTo(0.2589, 4)
+  })
+  it('fattore cambiato nel modulo: il mantenimento si riscala', () => {
+    // 2848 / 1,6 · 1,8 = 3204; · 0,20 · 7 / 7700 = 0,5825…
+    expect(estimatedGainKgPerWeek(2848, 1.6, 1.8, 0.2)).toBeCloseTo(0.5825, 4)
   })
 })

@@ -137,5 +137,10 @@ export function macros(targetKcal: number, weightKg: number, proteinGPerKg: numb
   const protein = round(proteinGPerKg * weightKg)
   const fat = round(fatGPerKg * weightKg)
   const carbs = round((targetKcal - KCAL_PER_G_PROTEIN * protein - KCAL_PER_G_FAT * fat) / KCAL_PER_G_CARBS)
-  return { protein, fat, carbs, lowCarbs: carbs < MIN_CARBS_G_PER_KG * weightKg }
+  return { protein, fat, carbs, lowCarbs: isLowCarbs(carbs, weightKg) }
+}
+
+/** §3: carboidrati sotto la soglia minima per kg di peso (avviso). */
+export function isLowCarbs(carbsG: number, weightKg: number): boolean {
+  return carbsG < MIN_CARBS_G_PER_KG * weightKg
 }

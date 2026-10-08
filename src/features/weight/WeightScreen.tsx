@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { ScreenHeader } from '../../components/ScreenHeader'
 import { EmptyState, ErrorState, FormMessage, ListSkeleton } from '../../components/States'
@@ -10,7 +10,8 @@ import { WeightPill } from '../../components/WeightPill'
 import { errorMessage } from '../../data/dbErrors'
 import { useDeleteWeight, useProfile, useWeights } from '../../data/queries'
 import { addDays, formatLongDate } from '../../lib/dates'
-import { formatNumber } from '../../lib/numbers'
+import { TARGET_RATE_MAX_KG_WEEK, TARGET_RATE_MIN_KG_WEEK } from '../../lib/constants'
+import { formatNumber, formatSigned } from '../../lib/numbers'
 import {
   distanceToGoal,
   lastLogOnOrBefore,
@@ -28,6 +29,8 @@ const RANGES = [
 
 /** /peso — pesate grezze e media mobile, distanza dal traguardo, pendenza. */
 export function WeightScreen() {
+  // Si torna da dove si è arrivati: Oggi (pillola del peso) o Statistiche (step 13).
+  const backTo = (useLocation().state as { from?: string } | null)?.from ?? '/'
   const today = useToday()
   const [range, setRange] = useState<28 | 90>(28)
   // 6 giorni in più prima dell'intervallo: servono alla media mobile del primo giorno.
@@ -47,7 +50,7 @@ export function WeightScreen() {
 
   return (
     <>
-      <ScreenHeader title="Peso" backTo="/" action={<WeightPill date={today} showTrendLink={false} />} />
+      <ScreenHeader title="Peso" backTo={backTo} action={<WeightPill date={today} showTrendLink={false} />} />
       <p className="px-5 pt-1 text-[13px] font-semibold text-ink-2">Conta la tendenza, non la singola pesata.</p>
 
       {weights.isPending && <ListSkeleton rows={3} />}
@@ -65,7 +68,7 @@ export function WeightScreen() {
             <Stat
               label="Andamento"
               value={slope === null ? '—' : `${slope > 0 ? '+' : ''}${formatNumber(slope, 2)} kg/sett.`}
-              note={slope === null ? 'servono 10 pesate in 28 giorni' : 'obiettivo +0,20 / +0,35'}
+              note={slope === null ? 'servono 10 pesate in 28 giorni' : `obiettivo ${formatSigned(TARGET_RATE_MIN_KG_WEEK, 2)} / ${formatSigned(TARGET_RATE_MAX_KG_WEEK, 2)}`}
             />
             <Stat
               label="Al traguardo"

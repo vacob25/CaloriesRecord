@@ -43,7 +43,7 @@ export interface PeriodStats {
   /** kcal per pasto / totale del periodo (0-1). */
   mealShare: Record<MealType, number>
   /** Cibi più frequenti per numero di voci (food_id, o nome se il cibo è stato cancellato). */
-  topFoods: { name: string; count: number }[]
+  topFoods: { key: string; name: string; count: number }[]
   /** Variazione della media mobile tra inizio e fine periodo, in kg/settimana (null se manca una delle due). */
   weightKgPerWeek: number | null
 }
@@ -56,6 +56,8 @@ export function periodStats(
   targets: ReadonlyMap<string, number>,
   weights: readonly WeightLog[],
   topLimit = 5,
+  /** Oggi: per un periodo non ancora finito la variazione del peso si misura fino a oggi, non alla fine del periodo. */
+  today?: string,
 ): PeriodStats {
   const inPeriod = entries.filter((e) => e.entryDate >= start && e.entryDate <= end)
   const days = daysBetween(start, end).map((date) => {
@@ -79,10 +81,10 @@ export function periodStats(
     for (const entry of inPeriod) mealShare[entry.mealType] += entry.kcal / totals.kcal
   }
 
-  const counts = new Map<string, { name: string; count: number }>()
+  const counts = new Map<string, { key: string; name: string; count: number }>()
   for (const entry of inPeriod) {
     const key = entry.foodId ?? `name:${entry.foodName}`
-    const current = counts.get(key) ?? { name: entry.foodName, count: 0 }
+    const current = counts.get(key) ?? { key, name: entry.foodName, count: 0 }
     current.count += 1
     counts.set(key, current)
   }
@@ -91,8 +93,9 @@ export function periodStats(
     .slice(0, topLimit)
 
   const startAverage = movingAverage7(weights, start)
-  const endAverage = movingAverage7(weights, end)
-  const spanDays = daysBetween(start, end).length - 1
+  const weightEnd = today !== undefined && today < end ? today : end
+  const endAverage = movingAverage7(weights, weightEnd)
+  const spanDays = daysBetween(start, weightEnd).length - 1
   const weightKgPerWeek =
     startAverage !== null && endAverage !== null && spanDays > 0 ? ((endAverage - startAverage) / spanDays) * 7 : null
 

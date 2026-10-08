@@ -17,7 +17,8 @@ export function UpdatePrompt() {
     <div
       role="status"
       className="fixed inset-x-0 z-20 mx-auto flex max-w-[480px] items-center gap-3 px-5"
-      style={{ bottom: 'calc(var(--spacing-nav) + env(safe-area-inset-bottom) + 12px)' }}
+      // Più in alto dell'avviso "Aggiunto · Annulla" (stessa base + la sua altezza): mai uno sopra l'altro.
+      style={{ bottom: 'calc(var(--spacing-nav) + env(safe-area-inset-bottom) + 76px)' }}
     >
       <div className="flex w-full items-center gap-2 rounded-button bg-ink py-2 pl-4 pr-2 text-surface shadow-lg">
         <p className="flex-1 text-[13px] font-semibold">Nuova versione disponibile</p>

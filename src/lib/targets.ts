@@ -1,3 +1,4 @@
+import { ENERGY_PER_KG } from './constants'
 import type { Sex, TrainingType } from './labels'
 import { bmr, dayTarget, macros, maintenance, type Macros } from './nutrition'
 import { ageOn } from './weight'
@@ -64,4 +65,18 @@ export function ringStatus(eatenKcal: number, targetKcal: number): { remaining: 
 /** Avanzamento di una barra macro (0-1). */
 export function progress(eaten: number, goal: number): number {
   return goal > 0 ? Math.min(1, Math.max(0, eaten / goal)) : 0
+}
+
+/**
+ * §2: ritmo stimato in kg/settimana dai parametri del profilo (surplus dei giorni di riposo).
+ * Il mantenimento di oggi si riscala sul nuovo fattore di attività scritto nel modulo.
+ */
+export function estimatedGainKgPerWeek(
+  maintenanceToday: number,
+  currentActivityFactor: number,
+  newActivityFactor: number,
+  newSurplusPct: number,
+): number {
+  const newMaintenance = (maintenanceToday / currentActivityFactor) * newActivityFactor
+  return (newMaintenance * newSurplusPct * 7) / ENERGY_PER_KG
 }

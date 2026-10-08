@@ -7,6 +7,7 @@ import { FormMessage } from './States'
 import { primaryButtonClass } from './ui'
 import { errorMessage } from '../data/dbErrors'
 import { useSaveWeight, useWeights } from '../data/queries'
+import { WEIGHT_JUMP_CONFIRM_KG } from '../lib/constants'
 import { addDays } from '../lib/dates'
 import { formatNumber } from '../lib/numbers'
 import { validateWeight } from '../lib/profileValidation'
@@ -70,7 +71,7 @@ export function WeightPill({ date, showTrendLink = true }: { date: string; showT
               />
               {confirmJump && (
                 <FormMessage kind="warning">
-                  più di 2 kg di differenza da ieri. Se è giusto, tocca di nuovo Salva.
+                  più di {WEIGHT_JUMP_CONFIRM_KG} kg di differenza da ieri. Se è giusto, tocca di nuovo Salva.
                 </FormMessage>
               )}
               {save.isError && <FormMessage kind="error">{errorMessage(save.error)}</FormMessage>}

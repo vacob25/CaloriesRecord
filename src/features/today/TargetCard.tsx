@@ -8,10 +8,9 @@ import { cardClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useDayTarget, useSetTrainingType } from '../../data/queries'
 import type { DailyTarget } from '../../data/types'
-import { MIN_CARBS_G_PER_KG } from '../../lib/constants'
 import { TRAINING_LABEL, TRAINING_TYPES, type TrainingType } from '../../lib/labels'
 import { formatNumber } from '../../lib/numbers'
-import type { Nutrients } from '../../lib/nutrition'
+import { isLowCarbs, type Nutrients } from '../../lib/nutrition'
 import { progress, ringStatus } from '../../lib/targets'
 
 interface TargetCardProps {
@@ -42,7 +41,7 @@ export function TargetCard({ date, eaten }: TargetCardProps) {
 
 function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; weightKg: number | null; eaten: Nutrients; date: string }) {
   const ring = ringStatus(eaten.kcal, target.targetKcal)
-  const lowCarbs = weightKg !== null && target.carbs < MIN_CARBS_G_PER_KG * weightKg
+  const lowCarbs = weightKg !== null && isLowCarbs(target.carbs, weightKg)
   const centerLabel =
     ring.over > 0 ? `Oltre di ${formatNumber(ring.over)} kcal` : `${formatNumber(ring.remaining)} kcal restanti`
 

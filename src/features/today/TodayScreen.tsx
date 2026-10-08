@@ -9,7 +9,7 @@ import { WeightPill } from '../../components/WeightPill'
 import { cardClass, dangerButtonClass } from '../../components/ui'
 import { useToday } from '../../components/useToday'
 import { errorMessage } from '../../data/dbErrors'
-import { useDeleteEntry, useEntries, useRecalibration, useUpdateEntry } from '../../data/queries'
+import { useDeleteEntry, useEntries, useFoods, useRecalibration, useUpdateEntry } from '../../data/queries'
 import type { MealEntry } from '../../data/types'
 import { UNDO_SECONDS } from '../../lib/constants'
 import { formatLongDate } from '../../lib/dates'
@@ -130,7 +130,9 @@ export function TodayScreen() {
 
       {editing && (
         <EditEntrySheet
-          key={editing.id}
+          // Chiavi con prefisso: pannello e avviso sono fratelli e possono riguardare la stessa voce
+          // (si tocca subito la voce appena aggiunta). Con la stessa chiave React si blocca.
+          key={`modifica-${editing.id}`}
           entry={editing}
           onClose={() => setEditing(null)}
           onDelete={() => {
@@ -142,7 +144,7 @@ export function TodayScreen() {
 
       {added && isMealType(added.mealType) && (
         <Toast
-          key={added.id}
+          key={`aggiunto-${added.id}`}
           message={`Aggiunto a ${MEAL_LABEL[added.mealType].toLowerCase()}`}
           actionLabel="Annulla"
           onAction={() => {
@@ -160,6 +162,10 @@ export function TodayScreen() {
 /** Tocco su una voce: cambia grammi o pasto, oppure elimina. */
 function EditEntrySheet({ entry, onClose, onDelete }: { entry: MealEntry; onClose: () => void; onDelete: () => void }) {
   const update = useUpdateEntry()
+  const foods = useFoods()
+  // Porzioni del cibo se esiste ancora con la stessa unità (i valori restano quelli salvati: si scala lo snapshot).
+  const food = entry.foodId ? foods.data?.find((candidate) => candidate.id === entry.foodId) : undefined
+  const portions = food && food.unit === entry.unit ? food.portions : []
   const [meal, setMeal] = useState<MealType>(entry.mealType)
   const [confirming, setConfirming] = useState(false)
 
@@ -169,6 +175,7 @@ function EditEntrySheet({ entry, onClose, onDelete }: { entry: MealEntry; onClos
       subtitle="Valori salvati al momento della registrazione"
       initialGrams={entry.grams}
       unit={entry.unit}
+      portions={portions}
       preview={(grams) => rescaleEntry(entry, grams)}
       submitLabel="Salva"
       busy={update.isPending}

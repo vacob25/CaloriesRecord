@@ -64,3 +64,13 @@ describe('validatePortionRows', () => {
     if (!result.ok) expect(Object.keys(result.errors)).toEqual(['a', 'b', 'c'])
   })
 })
+
+describe('porzioni quasi zero (revisione)', () => {
+  it('0,04 si arrotonda a 0: rifiutata nel modulo e scartata dal database', () => {
+    expect(validatePortionRows([{ key: 'a', name: 'pizzico', amount: '0,04' }])).toEqual({
+      ok: false,
+      errors: { a: 'Scrivi la quantità della porzione.' },
+    })
+    expect(parsePortions([{ name: 'pizzico', amount: 0.04 }])).toEqual([])
+  })
+})

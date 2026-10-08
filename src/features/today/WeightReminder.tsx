@@ -1,13 +1,16 @@
 import { WeightPill } from '../../components/WeightPill'
-import { useWeights } from '../../data/queries'
+import { useDayTarget, useWeights } from '../../data/queries'
 import { addDays } from '../../lib/dates'
 import { daysSinceLastWeight, needsWeightReminder } from '../../lib/weight'
 
 /** Promemoria se non ti pesi da 5 giorni o più (ADR-047). Le regole del peso restano: meglio pesarsi spesso. */
 export function WeightReminder({ today }: { today: string }) {
   const weights = useWeights(addDays(today, -60))
+  const target = useDayTarget(today)
   if (!weights.data || !needsWeightReminder(weights.data, today)) return null
   const since = daysSinceLastWeight(weights.data, today)
+  // La card del target sta già chiedendo il peso: non serve un secondo invito.
+  if (target.data?.status === 'needsWeight') return null
   return (
     <section aria-label="Promemoria peso" className="mx-5 mt-4 flex items-center justify-between gap-3 rounded-card border-2 border-blue/30 bg-surface px-4 py-3">
       <p className="text-[13px] font-semibold text-ink-2">

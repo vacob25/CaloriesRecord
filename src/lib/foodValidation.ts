@@ -18,8 +18,10 @@ export const gramsSchema = z
   .max(GRAMS_MAX, { message: `Al massimo ${GRAMS_MAX} g.` })
 
 export function validateGrams(input: string, unit: FoodUnit = 'g'): { ok: true; value: number } | { ok: false; message: string } {
-  const parsed = gramsSchema.safeParse(parseDecimal(input) ?? undefined)
-  if (parsed.success) return { ok: true, value: round(parsed.data, 1) }
+  // Si arrotonda PRIMA del controllo: "0,04" diventerebbe 0 g, che il database rifiuta.
+  const raw = parseDecimal(input)
+  const parsed = gramsSchema.safeParse(raw === null ? undefined : round(raw, 1))
+  if (parsed.success) return { ok: true, value: parsed.data }
   const message = parsed.error.issues[0]?.message ?? 'Quantità non valida.'
   // Per i liquidi gli stessi limiti valgono in ml.
   return { ok: false, message: unit === 'ml' ? message.replace('i grammi', 'i ml').replace('I grammi', 'I ml').replace(' g.', ' ml.') : message }

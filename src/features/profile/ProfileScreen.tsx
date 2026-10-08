@@ -7,21 +7,36 @@ import { cardClass, primaryButtonClass, secondaryButtonClass } from '../../compo
 import { useToday } from '../../components/useToday'
 import { signOut } from '../../data/auth'
 import { errorMessage } from '../../data/dbErrors'
-import { useProfile, useUpdateProfile } from '../../data/queries'
+import { useDayTarget, useProfile, useUpdateProfile } from '../../data/queries'
 import type { Profile } from '../../data/types'
 import {
   validateParams,
   validatePersonal,
   type ParamsField,
   type ParamsFormInput,
+  type ParamsValues,
   type PersonalField,
   type PersonalFormInput,
 } from '../../lib/profileValidation'
+import { GAIN_RATE_WARNING_KG_WEEK } from '../../lib/constants'
+import { formatNumber, fractionToPercent } from '../../lib/numbers'
+import { estimatedGainKgPerWeek } from '../../lib/targets'
 import { PersonalFields } from './PersonalFields'
 import { RecalibrationCard } from './RecalibrationCard'
 import { WaterSection } from './WaterSection'
 
 const text = (value: number | null) => (value === null ? '' : String(value).replace('.', ','))
+
+const paramsKey = (p: Pick<Profile, keyof ParamsValues>) =>
+  [p.activityFactor, p.surplusPct, p.trainingBonusKcal, p.proteinGPerKg, p.fatGPerKg].join('|')
+
+const paramsForm = (p: Profile): ParamsFormInput => ({
+  activityFactor: text(p.activityFactor),
+  surplusPct: text(fractionToPercent(p.surplusPct)),
+  trainingBonusKcal: String(p.trainingBonusKcal),
+  proteinGPerKg: text(p.proteinGPerKg),
+  fatGPerKg: text(p.fatGPerKg),
+})
 
 export function ProfileScreen() {
   const profile = useProfile()
@@ -135,13 +150,19 @@ const PARAM_FIELDS: { field: ParamsField; label: string; suffix?: string; hint: 
 function ParamsSection({ profile }: { profile: Profile }) {
   const today = useToday()
   const update = useUpdateProfile()
-  const [form, setForm] = useState<ParamsFormInput>({
-    activityFactor: text(profile.activityFactor),
-    surplusPct: text(Math.round(profile.surplusPct * 1000) / 10),
-    trainingBonusKcal: String(profile.trainingBonusKcal),
-    proteinGPerKg: text(profile.proteinGPerKg),
-    fatGPerKg: text(profile.fatGPerKg),
-  })
+  const target = useDayTarget(today)
+  const [form, setForm] = useState<ParamsFormInput>(() => paramsForm(profile))
+  // Se i parametri cambiano altrove (es. ricalibrazione accettata) il modulo si riallinea: altrimenti
+  // "Salva parametri" riscriverebbe il fattore vecchio. Si aggiorna lo stato durante il render (pattern React),
+  // senza rimontare il modulo: messaggi "Salvato" e avvisi restano.
+  const currentKey = paramsKey(profile)
+  const [seenKey, setSeenKey] = useState(currentKey)
+  // Valori appena salvati da questo modulo: quando il profilo ricaricato li riporta, non si tocca ciò che si sta scrivendo.
+  const [savedKey, setSavedKey] = useState<string | null>(null)
+  if (currentKey !== seenKey) {
+    setSeenKey(currentKey)
+    if (currentKey !== savedKey) setForm(paramsForm(profile))
+  }
   const [errors, setErrors] = useState<Partial<Record<ParamsField, string>>>({})
   const [warnings, setWarnings] = useState<string[]>([])
 
@@ -150,7 +171,17 @@ function ParamsSection({ profile }: { profile: Profile }) {
     const result = validateParams(form)
     if (!result.ok) return setErrors(result.errors)
     setErrors({})
-    setWarnings(result.warnings)
+    const extra: string[] = []
+    // §2: avviso se il ritmo stimato supera +0,5 kg/settimana (serve il mantenimento di oggi).
+    if (target.data?.status === 'ready') {
+      const rate = estimatedGainKgPerWeek(target.data.target.maintenanceKcal, profile.activityFactor, result.value.activityFactor, result.value.surplusPct)
+      if (rate > GAIN_RATE_WARNING_KG_WEEK) {
+        extra.push(`Con questi parametri il ritmo stimato è circa +${formatNumber(rate, 2)} kg/settimana, oltre +0,5: l’aumento sarebbe soprattutto grasso.`)
+      }
+    }
+    setWarnings([...result.warnings, ...extra])
+    // Il profilo ricaricato dopo questo salvataggio avrà questi valori: non deve riscrivere ciò che si sta digitando.
+    setSavedKey(paramsKey(result.value))
     update.mutate({ params: result.value, today })
   }
 

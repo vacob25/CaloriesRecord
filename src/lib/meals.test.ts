@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { defaultGrams, entrySnapshot, groupByMeal, mealForHour, recentFoods, rescaleEntry, stepGrams } from './meals'
+import { defaultGrams, defaultQuantity, entrySnapshot, groupByMeal, mealForHour, recentFoods, rescaleEntry, stepGrams } from './meals'
 
 describe('mealForHour', () => {
   it.each([
@@ -87,5 +87,17 @@ describe('recentFoods', () => {
     ]
     expect(recentFoods(foods).map((f) => f.name)).toEqual(['oggi', 'ieri', 'settimana scorsa'])
     expect(recentFoods(foods, 2).map((f) => f.name)).toEqual(['oggi', 'ieri'])
+  })
+})
+
+describe('defaultQuantity (porzioni, revisione)', () => {
+  const eggs = [{ amount: 50 }, { amount: 60 }]
+  it('senza storia né porzione abituale: 1 × la prima porzione, selezionata', () => {
+    expect(defaultQuantity(undefined, null, eggs)).toEqual({ amount: 50, portionIndex: 0 })
+  })
+  it('ultima quantità e porzione abituale vengono prima', () => {
+    expect(defaultQuantity(100, null, eggs)).toEqual({ amount: 100, portionIndex: null })
+    expect(defaultQuantity(undefined, 30, eggs)).toEqual({ amount: 30, portionIndex: null })
+    expect(defaultQuantity(undefined, null, [])).toEqual({ amount: 100, portionIndex: null })
   })
 })

@@ -52,7 +52,7 @@ describe('convertOffProduct', () => {
     expect(result).toMatchObject({ kind: 'incomplete', missing: ['valori non validi (controlla l’etichetta)'] })
   })
 
-  it('porzione in ml ignorata (solo grammi in v1); valori non numerici ignorati', () => {
+  it('valori non numerici ignorati; porzione in ml tenuta in ml (ADR-048)', () => {
     const result = convertOffProduct({
       code: '2',
       product_name: 'Bevanda',
@@ -61,7 +61,7 @@ describe('convertOffProduct', () => {
       nutriments: { 'energy-kcal_100g': 42, proteins_100g: 0, carbohydrates_100g: 10.6, fat_100g: 'n/d' },
     })
     expect(result.kind).toBe('incomplete')
-    if (result.kind === 'incomplete') expect(result.form.servingG).toBe('')
+    if (result.kind === 'incomplete') expect(result.form).toMatchObject({ servingG: '250', unit: 'ml', fat: '' })
   })
 })
 
@@ -84,4 +84,28 @@ describe('parseSearchResponse', () => {
 describe('isPlausibleBarcode', () => {
   it.each(['12345678', '8001234567890', '00012345678905'])('%s valido', (code) => expect(isPlausibleBarcode(code)).toBe(true))
   it.each(['1234567', '123456789012345', '80012345678a0', ''])('%s non valido', (code) => expect(isPlausibleBarcode(code)).toBe(false))
+})
+
+describe('liquidi da Open Food Facts (revisione)', () => {
+  it('porzione in ml: cibo in ml con la porzione', () => {
+    const result = convertOffProduct({
+      code: '0000000000024',
+      product_name: 'Latte di prova',
+      serving_quantity: 250,
+      serving_quantity_unit: 'ml',
+      nutriments: { 'energy-kcal_100g': 64, proteins_100g: 3.3, carbohydrates_100g: 4.9, fat_100g: 3.6 },
+    })
+    expect(result).toMatchObject({ kind: 'complete', values: { unit: 'ml', servingG: 250 } })
+  })
+
+  it('unità sconosciuta della porzione: grammi, senza porzione', () => {
+    const result = convertOffProduct({
+      code: '0000000000031',
+      product_name: 'Prodotto di prova',
+      serving_quantity: 2,
+      serving_quantity_unit: 'pezzi',
+      nutriments: { 'energy-kcal_100g': 100, proteins_100g: 10, carbohydrates_100g: 10, fat_100g: 2 },
+    })
+    expect(result).toMatchObject({ kind: 'complete', values: { unit: 'g', servingG: null } })
+  })
 })

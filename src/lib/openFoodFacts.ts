@@ -65,14 +65,19 @@ export function convertOffProduct(raw: unknown, barcodeFallback = ''): OffConver
   const product: OffProductRaw = parsed.success ? parsed.data : {}
   const name = product.product_name_it ?? product.product_name ?? ''
   const nutriments = product.nutriments ?? {}
-  // Porzione solo se in grammi: in v1 i cibi sono solo in grammi (DECISIONS, punto step 4).
-  const servingG = product.serving_quantity_unit === undefined || product.serving_quantity_unit === 'g' ? product.serving_quantity : undefined
+  // Liquidi (ADR-048): se OFF dà la porzione in ml, il prodotto si registra in ml.
+  // I valori `_100g` di OFF sono già "per 100 g o per 100 ml per i liquidi" (documentazione nutriments).
+  const unit = product.serving_quantity_unit === 'ml' ? 'ml' : 'g'
+  const servingG =
+    product.serving_quantity_unit === undefined || product.serving_quantity_unit === 'g' || product.serving_quantity_unit === 'ml'
+      ? product.serving_quantity
+      : undefined
 
   const form: FoodFormInput = {
     name,
     brand: product.brands?.split(',')[0]?.trim() ?? '',
     barcode: product.code ?? barcodeFallback,
-    unit: 'g',
+    unit,
     basis: '100g',
     servingG: servingG !== undefined && servingG > 0 ? text(servingG) : '',
     kcal: text(nutriments['energy-kcal_100g']),
@@ -108,8 +113,9 @@ export interface OffSearchHit {
   code: string
   name: string
   brand: string
-  /** kcal/100 g se presenti (solo per mostrarle nell'elenco). */
+  /** kcal per 100 g (o 100 ml per i liquidi) se presenti (solo per mostrarle nell'elenco). */
   kcal: number | null
+  unit: 'g' | 'ml'
   conversion: OffConversion
 }
 
@@ -131,6 +137,7 @@ export function parseSearchResponse(body: unknown): OffSearchHit[] {
       name,
       brand: product.data.brands?.split(',')[0]?.trim() ?? '',
       kcal: product.data.nutriments?.['energy-kcal_100g'] ?? null,
+      unit: product.data.serving_quantity_unit === 'ml' ? 'ml' : 'g',
       conversion,
     })
   }

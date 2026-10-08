@@ -36,6 +36,7 @@ import {
   listWater,
   updateWaterGoal,
 } from './water'
+import { DataError } from './dbErrors'
 import { deleteWeight, listWeights, saveWeight } from './weights'
 
 /**
@@ -58,6 +59,10 @@ export const queryKeys = {
   waterForDay: (date: string) => ['water_entries', date] as const,
   containers: ['drink_containers'] as const,
   catalog: ['catalog'] as const,
+  /** Statistiche: dipendono da voci, target e pesate (stanno sotto meal_entries per le voci). */
+  stats: ['meal_entries', 'stats'] as const,
+  /** Tutte le valutazioni di ricalibrazione (prefisso). */
+  tdee: ['tdee_estimates'] as const,
 }
 
 export function useFoods() {
@@ -193,7 +198,7 @@ export function useCreateProfile() {
       if (values.weightKg !== null) await saveWeight(today, values.weightKg)
       await createProfile(values)
     },
-    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.weights),
+    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.weights, queryKeys.tdee),
   })
 }
 
@@ -206,7 +211,8 @@ export function useUpdateProfile() {
       if (params) await updateParams(params)
       await recomputeTarget(today)
     },
-    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets),
+    // Anche statistiche (target del giorno) e ricalibrazione (BMR e mantenimento attuali).
+    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
   })
 }
 
@@ -214,7 +220,7 @@ export function useSetTrainingType(date: string) {
   const invalidate = useInvalidate()
   return useMutation({
     mutationFn: (type: TrainingType) => setTrainingType(date, type),
-    onSuccess: () => invalidate(queryKeys.targets),
+    onSuccess: () => invalidate(queryKeys.targets, queryKeys.stats),
   })
 }
 
@@ -226,7 +232,7 @@ export function useSaveWeight() {
   const invalidate = useInvalidate()
   return useMutation({
     mutationFn: ({ day, kg }: { day: string; kg: number }) => saveWeight(day, kg),
-    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets),
+    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
   })
 }
 
@@ -234,7 +240,7 @@ export function useDeleteWeight() {
   const invalidate = useInvalidate()
   return useMutation({
     mutationFn: (day: string) => deleteWeight(day),
-    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets),
+    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
   })
 }
 
@@ -251,7 +257,7 @@ export function useSearchOff() {
 /** Dati di un periodo per le statistiche: voci, target e pesate (con 6 giorni prima per la media mobile). */
 export function useStatsData(start: string, end: string, weightsFrom: string) {
   return useQuery({
-    queryKey: ['meal_entries', 'stats', start, end, weightsFrom],
+    queryKey: [...queryKeys.stats, start, end, weightsFrom],
     queryFn: async () => {
       const [entries, targets, weights] = await Promise.all([
         listEntriesBetween(start, end),
@@ -272,8 +278,10 @@ export function useDecideProposal(today: string) {
   const invalidate = useInvalidate()
   return useMutation({
     mutationFn: async ({ estimate, accept, currentBmrKcal }: { estimate: TdeeEstimate; accept: boolean; currentBmrKcal: number | null }) => {
-      if (accept && currentBmrKcal !== null) await acceptProposal(estimate, currentBmrKcal)
-      else await rejectProposal(estimate.id)
+      if (!accept) return rejectProposal(estimate.id)
+      // Mai trasformare un "Accetta" in un rifiuto: senza BMR non si può calcolare il nuovo fattore.
+      if (currentBmrKcal === null) throw new DataError('Serve una pesata recente per calcolare il nuovo fattore di attività.')
+      await acceptProposal(estimate, currentBmrKcal)
     },
     // Niente ricalcolo del target di oggi: la proposta vale dal giorno dopo (§7).
     onSuccess: () => invalidate(queryKeys.recalibration(today), queryKeys.profile),

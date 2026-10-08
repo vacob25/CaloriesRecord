@@ -30,3 +30,13 @@ export function formatNumber(value: number, decimals = 0): string {
   }
   return formatter.format(value)
 }
+
+/** 0,105 → 10,5 (percentuale a 1 decimale, per i moduli). */
+export function fractionToPercent(fraction: number): number {
+  return round(fraction * 100, 1)
+}
+
+/** "+0,25", "−0,1" (segno sempre esplicito per le variazioni). */
+export function formatSigned(value: number, decimals: number): string {
+  return `${value > 0 ? '+' : ''}${formatNumber(value, decimals)}`
+}

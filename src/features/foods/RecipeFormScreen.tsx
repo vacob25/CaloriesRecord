@@ -7,7 +7,7 @@ import { ScreenHeader } from '../../components/ScreenHeader'
 import { ErrorState, FormMessage, ListSkeleton } from '../../components/States'
 import { cardClass, inputClass, primaryButtonClass, secondaryButtonClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
-import { useDeleteFood, useFoods, useRecipe, useSaveRecipe } from '../../data/queries'
+import { useCatalog, useDeleteFood, useFoods, useRecipe, useSaveCatalogFood, useSaveRecipe } from '../../data/queries'
 import type { Food, Recipe } from '../../data/types'
 import { validateGrams } from '../../lib/foodValidation'
 import { formatNumber, parseDecimal } from '../../lib/numbers'
@@ -66,16 +66,19 @@ function RecipeForm({ recipe }: { recipe: Recipe | null }) {
   const rawTotal = totalGrams(validItems)
 
   function addIngredient(food: Food) {
-    setItems((current) => [
-      ...current,
-      { key: newKey(), ingredient: food, grams: food.servingG ? decimalText(food.servingG) : '' },
-    ])
+    // Quantità proposta: porzione abituale, altrimenti la prima porzione casalinga, altrimenti vuota.
+    const amount = food.servingG ?? food.portions[0]?.amount
+    setItems((current) => [...current, { key: newKey(), ingredient: food, grams: amount === undefined ? '' : decimalText(amount) }])
     setPicking(false)
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const result = validateRecipe({ name, cookedWeightG, items })
+    const result = validateRecipe({
+      name,
+      cookedWeightG,
+      items: items.map((item) => ({ key: item.key, grams: item.grams, unit: item.ingredient.unit })),
+    })
     if (!result.ok) {
       setErrors(result.errors)
       return
@@ -221,6 +224,16 @@ function IngredientPicker({
   const [query, setQuery] = useState('')
   const candidates = (foods.data ?? []).filter((food) => food.source !== 'recipe' && food.id !== excludeId)
   const visible = filterByQuery(candidates, query).slice(0, 30)
+  // Catalogo (step 16): con almeno 2 lettere; la voce scelta diventa un proprio cibo e poi un ingrediente.
+  const searchingCatalog = query.trim().length >= 2
+  const catalog = useCatalog(searchingCatalog)
+  const saveCatalog = useSaveCatalogFood()
+  const ownNames = new Set((foods.data ?? []).map((food) => food.name.trim().toLowerCase()))
+  const fromCatalog = searchingCatalog
+    ? filterByQuery(catalog.data ?? [], query)
+        .filter((item) => !ownNames.has(item.name.toLowerCase()))
+        .slice(0, 20)
+    : []
 
   return (
     <div className={`${cardClass} mt-3 p-3`}>
@@ -244,8 +257,8 @@ function IngredientPicker({
       </div>
       {foods.isPending && <p className="mt-3 text-[13px] text-muted">Caricamento…</p>}
       {foods.isError && <p className="mt-3 text-[13px] font-semibold">{errorMessage(foods.error)}</p>}
-      {foods.isSuccess && candidates.length === 0 && (
-        <p className="mt-3 text-[13px] text-muted">Prima crea i cibi da usare come ingredienti (Cibi → Nuovo cibo).</p>
+      {foods.isSuccess && candidates.length === 0 && !searchingCatalog && (
+        <p className="mt-3 text-[13px] text-muted">Cerca nel catalogo (es. "pasta") o crea i cibi da Cibi → Nuovo cibo.</p>
       )}
       <ul className="mt-2 divide-y divide-line">
         {visible.map((food) => (
@@ -261,6 +274,27 @@ function IngredientPicker({
           </li>
         ))}
       </ul>
+      {fromCatalog.length > 0 && (
+        <>
+          <h3 className="mt-3 text-[13px] font-semibold text-ink-2">Dal catalogo</h3>
+          <ul className="mt-1 divide-y divide-line">
+            {fromCatalog.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  disabled={saveCatalog.isPending}
+                  onClick={() => saveCatalog.mutate(item, { onSuccess: onPick })}
+                  className="flex min-h-12 w-full items-center justify-between gap-2 py-2 text-left disabled:opacity-60"
+                >
+                  <span className="min-w-0 truncate text-[15px] font-semibold">{item.name}</span>
+                  <span className="shrink-0 text-[13px] text-muted">{formatNumber(item.kcal)} kcal/100 {item.unit}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {saveCatalog.isError && <p className="mt-3 text-[13px] font-semibold">{errorMessage(saveCatalog.error)}</p>}
     </div>
   )
 }

@@ -18,6 +18,8 @@ interface GramsSheetProps {
   unit?: FoodUnit
   /** Porzioni casalinghe del cibo: si sceglie la porzione e quante (passi di ½). */
   portions?: readonly Portion[]
+  /** Porzione già selezionata all'apertura (1 ×), es. quando la quantità proposta viene da lì. */
+  initialPortionIndex?: number | null
   /** Valori della porzione per i grammi indicati (calcolati in lib/, mai qui). */
   preview: (grams: number) => Nutrients
   submitLabel: string
@@ -33,13 +35,15 @@ const decimalText = (value: number) => String(value).replace('.', ',')
 
 /** Pannello inferiore: grammi con − / + a passi di 10 g, campo numerico e anteprima dal vivo. */
 export function GramsSheet(props: GramsSheetProps) {
-  const { title, subtitle, initialGrams, servingG, unit = 'g', portions = [], preview, submitLabel, busy, error, onSubmit, onClose, children } =
+  const { title, subtitle, initialGrams, servingG, unit = 'g', portions = [], initialPortionIndex = null, preview, submitLabel, busy, error, onSubmit, onClose, children } =
     props
   const titleId = useId()
   const [text, setText] = useState(decimalText(initialGrams))
   const [fieldError, setFieldError] = useState<string | null>(null)
   /** Porzione scelta e quante; si azzera appena la quantità si cambia a mano. */
-  const [chosen, setChosen] = useState<{ index: number; count: number } | null>(null)
+  const [chosen, setChosen] = useState<{ index: number; count: number } | null>(
+    initialPortionIndex !== null && portions[initialPortionIndex] ? { index: initialPortionIndex, count: 1 } : null,
+  )
   const current = parseDecimal(text)
   const valid = validateGrams(text, unit)
   const values = valid.ok ? preview(valid.value) : null

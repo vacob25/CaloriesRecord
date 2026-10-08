@@ -35,7 +35,11 @@ export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
     setErrors(next)
     if (!ml.ok || (containerName && !containerName.ok)) return
     try {
-      if (containerName) await create.mutateAsync({ name: containerName.value, ml: ml.value })
+      if (containerName) {
+        await create.mutateAsync({ name: containerName.value, ml: ml.value })
+        // Contenitore salvato: se ora fallisce l'aggiunta, "Aggiungi" di nuovo non deve ricrearlo.
+        setSave(false)
+      }
       await add.mutateAsync(ml.value)
       onClose()
     } catch {
@@ -43,7 +47,8 @@ export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
     }
   }
 
-  const error = add.error ?? create.error
+  // Solo l'ultimo errore: dopo un nuovo tentativo riuscito quello vecchio sparisce.
+  const error = add.isError ? add.error : create.isError && save ? create.error : null
   const busy = add.isPending || create.isPending
 
   return (

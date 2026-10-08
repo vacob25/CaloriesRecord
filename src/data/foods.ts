@@ -94,7 +94,8 @@ export async function saveCatalogFood(values: FoodValues, portions: Portion[]): 
   const { data, error } = await getSupabase()
     .from('foods')
     .select(FOOD_COLUMNS)
-    .eq('name', values.name)
+    // Stesso nome senza distinguere maiuscole (ilike con i caratteri jolly neutralizzati).
+    .ilike('name', values.name.replace(/[\\%_]/g, (char) => `\\${char}`))
     .eq('unit', values.unit)
     .neq('source', 'recipe')
     .limit(1)

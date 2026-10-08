@@ -11,7 +11,7 @@ import { useAddEntry, useFoods, useLastGrams } from '../../data/queries'
 import type { Food } from '../../data/types'
 import { localDate, localHour } from '../../lib/dates'
 import { FOOD_SOURCE_LABEL, isMealType, MEAL_LABEL, type MealType } from '../../lib/labels'
-import { defaultGrams, entrySnapshot, mealForHour, recentFoods } from '../../lib/meals'
+import { defaultQuantity, entrySnapshot, mealForHour, recentFoods } from '../../lib/meals'
 import { formatNumber } from '../../lib/numbers'
 import { per100Label } from '../../lib/portions'
 import { filterByQuery } from '../../lib/search'
@@ -67,8 +67,8 @@ export function AddMealScreen() {
   const [selected, setSelected] = useState<Food | null>(null)
 
   const all = foods.data ?? []
-  // Al primo ingresso: Recenti se ce ne sono, altrimenti tutti i cibi.
-  const tab: Tab = chosenTab ?? (recentFoods(all).length > 0 ? 'recent' : 'mine')
+  // Al primo ingresso: Recenti se ce ne sono, altrimenti i propri cibi, altrimenti il catalogo.
+  const tab: Tab = chosenTab ?? (recentFoods(all).length > 0 ? 'recent' : all.length > 0 || !foods.isSuccess ? 'mine' : 'catalog')
   const searching = query.trim() !== ''
   const visible = searching ? filterByQuery(all, query) : foodsForTab(all, tab)
   const inCatalog = !searching && tab === 'catalog'
@@ -79,6 +79,7 @@ export function AddMealScreen() {
   const chosenId = params.get('cibo')
   const fromReturn = chosenId ? (all.find((food) => food.id === chosenId) ?? null) : null
   const current = selected ?? fromReturn
+  const proposed = current ? defaultQuantity(lastGrams.data?.[current.id], current.servingG, current.portions) : null
 
   function closeSheet() {
     setSelected(null)
@@ -151,10 +152,10 @@ export function AddMealScreen() {
       )}
 
       {foods.isPending && !inCatalog && <ListSkeleton />}
-      {foods.isError && <ErrorState message={errorMessage(foods.error)} onRetry={() => void foods.refetch()} />}
-      {foods.isSuccess && all.length === 0 && !inCatalog && (
-        <EmptyState text="Non hai ancora nessun cibo. Crealo una volta, poi lo registri in un tocco.">
-          <Link to="/cibi/nuovo" className={`${primaryButtonClass} flex items-center justify-center`}>
+      {foods.isError && !inCatalog && <ErrorState message={errorMessage(foods.error)} onRetry={() => void foods.refetch()} />}
+      {foods.isSuccess && all.length === 0 && !inCatalog && !searching && (
+        <EmptyState text="Non hai ancora nessun cibo. Scegline uno dal Catalogo, oppure crealo: poi lo registri in un tocco.">
+          <Link to="/cibi/nuovo" state={{ returnTo }} className={`${primaryButtonClass} flex items-center justify-center`}>
             Crea un cibo
           </Link>
         </EmptyState>
@@ -216,12 +217,14 @@ export function AddMealScreen() {
         />
       )}
 
-      {current && (
+      {/* Si apre quando gli "ultimi grammi" sono caricati: GramsSheet legge la quantità solo all'apertura. */}
+      {current && !lastGrams.isPending && (
         <GramsSheet
           key={current.id}
           title={current.name}
           subtitle={`${formatNumber(current.per100g.kcal)} kcal ${per100Label(current.unit)}`}
-          initialGrams={defaultGrams(lastGrams.data?.[current.id], current.servingG)}
+          initialGrams={proposed?.amount ?? 100}
+          initialPortionIndex={proposed?.portionIndex ?? null}
           servingG={current.servingG}
           unit={current.unit}
           portions={current.portions}

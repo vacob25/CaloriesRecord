@@ -96,3 +96,11 @@ export const WATER_ML_MAX = 5000
 /** Obiettivo acqua: solo un limite contro gli errori di battitura, non un consiglio (il valore lo sceglie l'utente). */
 export const WATER_GOAL_MAX_L = 10
 export const CONTAINER_NAME_MAX = 30
+
+/** Peso cotto di una ricetta: nessun tetto di dominio (ADR-031), solo il limite tecnico della colonna numeric(8,1). */
+export const COOKED_WEIGHT_MAX_G = 999999.9
+/** §2: avviso (non blocco) se il ritmo stimato dai parametri supera +0,5 kg/settimana. */
+export const GAIN_RATE_WARNING_KG_WEEK = 0.5
+/** Ritmo voluto del bulk (CLAUDE.md): +0,20 / +0,35 kg a settimana. Diverso dalla banda di tolleranza della ricalibrazione (§7). */
+export const TARGET_RATE_MIN_KG_WEEK = 0.2
+export const TARGET_RATE_MAX_KG_WEEK = 0.35
