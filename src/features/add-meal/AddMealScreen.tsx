@@ -157,7 +157,8 @@ export function AddMealScreen() {
       )}
 
       {visible.length > 0 && (
-        <ul role={searching ? undefined : 'tabpanel'} className="space-y-2 px-5 pt-3">
+        <div role={searching ? undefined : 'tabpanel'}>
+        <ul className="space-y-2 px-5 pt-3">
           {visible.map((food) => (
             <li key={food.id}>
               <button
@@ -181,6 +182,7 @@ export function AddMealScreen() {
             </li>
           ))}
         </ul>
+        </div>
       )}
 
       {searching && (

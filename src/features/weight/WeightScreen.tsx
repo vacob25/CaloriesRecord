@@ -101,12 +101,9 @@ export function WeightScreen() {
         </>
       )}
       {goal === null && profile.isSuccess && (
-        <p className="px-5 pt-4 text-[13px] text-muted">
-          <Link to="/profilo" className="font-semibold text-green-dark underline">
-            Imposta il peso obiettivo
-          </Link>{' '}
-          per vedere la distanza dal traguardo.
-        </p>
+        <Link to="/profilo" className="mx-5 mt-4 flex min-h-11 items-center text-[15px] font-semibold text-green-dark underline">
+          Imposta il peso obiettivo per vedere la distanza dal traguardo
+        </Link>
       )}
     </>
   )

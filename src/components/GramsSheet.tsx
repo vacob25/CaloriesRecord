@@ -1,9 +1,10 @@
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useId, useState, type FormEvent, type ReactNode } from 'react'
 
 import { validateGrams } from '../lib/foodValidation'
 import { stepGrams } from '../lib/meals'
 import { formatNumber, parseDecimal } from '../lib/numbers'
 import type { Nutrients } from '../lib/nutrition'
+import { SheetFrame } from './SheetFrame'
 import { FormMessage } from './States'
 import { primaryButtonClass } from './ui'
 
@@ -35,12 +36,6 @@ export function GramsSheet(props: GramsSheetProps) {
   const valid = validateGrams(text)
   const values = valid.ok ? preview(valid.value) : null
 
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose()
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
-
   function step(direction: 1 | -1) {
     const base = current !== null && current > 0 ? current : initialGrams
     setText(decimalText(stepGrams(base, direction)))
@@ -60,21 +55,9 @@ export function GramsSheet(props: GramsSheetProps) {
     'flex size-12 shrink-0 items-center justify-center rounded-full border border-line bg-bg text-[24px] font-bold text-ink disabled:opacity-40'
 
   return (
-    <>
-      <button type="button" aria-label="Chiudi" onClick={onClose} className="fixed inset-0 z-30 bg-ink/30" />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="fixed inset-x-0 z-40 mx-auto max-w-[480px] rounded-t-sheet bg-surface px-5 pt-5 pb-5 shadow-[0_-4px_20px_rgba(21,23,30,0.12)]"
-        style={{ bottom: 'calc(var(--spacing-nav) + env(safe-area-inset-bottom))' }}
-      >
+    <SheetFrame title={title} subtitle={subtitle} onClose={onClose}>
+      {() => (
         <form onSubmit={handleSubmit} noValidate>
-          <h2 id={titleId} className="truncate text-[18px] font-extrabold">
-            {title}
-          </h2>
-          {subtitle && <p className="text-[13px] text-muted">{subtitle}</p>}
-
           <label htmlFor={`${titleId}-grams`} className="mt-4 block text-[13px] font-semibold text-ink-2">
             Grammi
           </label>
@@ -129,7 +112,7 @@ export function GramsSheet(props: GramsSheetProps) {
             {busy ? 'Salvataggio…' : submitLabel}
           </button>
         </form>
-      </div>
-    </>
+      )}
+    </SheetFrame>
   )
 }

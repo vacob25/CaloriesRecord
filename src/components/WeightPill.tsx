@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Field } from './Field'
+import { SheetFrame } from './SheetFrame'
 import { FormMessage } from './States'
 import { primaryButtonClass } from './ui'
 import { errorMessage } from '../data/dbErrors'
@@ -51,19 +52,9 @@ export function WeightPill({ date, showTrendLink = true }: { date: string; showT
         {todayLog ? `${formatNumber(todayLog.kg, 1)} kg` : 'Registra peso'}
       </button>
       {open && (
-        <>
-          <button type="button" aria-label="Chiudi" onClick={() => setOpen(false)} className="fixed inset-0 z-30 bg-ink/30" />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="weight-title"
-            className="fixed inset-x-0 z-40 mx-auto max-w-[480px] rounded-t-sheet bg-surface p-5"
-            style={{ bottom: 'calc(var(--spacing-nav) + env(safe-area-inset-bottom))' }}
-          >
-            <h2 id="weight-title" className="text-[18px] font-extrabold">
-              Peso di oggi
-            </h2>
-            <p className="text-[13px] text-muted">Conta la tendenza, non la singola pesata.</p>
+        <SheetFrame title="Peso di oggi" subtitle="Conta la tendenza, non la singola pesata." onClose={() => setOpen(false)}>
+          {() => (
+            <>
             <form onSubmit={handleSubmit} noValidate className="mt-3">
               <Field
                 id="weight-today"
@@ -92,8 +83,9 @@ export function WeightPill({ date, showTrendLink = true }: { date: string; showT
                 Vedi l’andamento del peso
               </Link>
             )}
-          </div>
-        </>
+            </>
+          )}
+        </SheetFrame>
       )}
     </>
   )
