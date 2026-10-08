@@ -7,6 +7,7 @@ import { RouterProvider } from 'react-router-dom'
 
 import { AuthProvider } from './app/AuthProvider'
 import { ConfigErrorScreen } from './app/ConfigErrorScreen'
+import { DataProvider } from './app/DataProvider'
 import { router } from './app/router'
 import { UpdatePrompt } from './app/UpdatePrompt'
 import { supabaseEnv } from './data/supabase'
@@ -18,8 +19,10 @@ createRoot(root).render(
   <StrictMode>
     {supabaseEnv.ok ? (
       <AuthProvider>
-        <RouterProvider router={router} />
-        <UpdatePrompt />
+        <DataProvider>
+          <RouterProvider router={router} />
+          <UpdatePrompt />
+        </DataProvider>
       </AuthProvider>
     ) : (
       <ConfigErrorScreen problems={supabaseEnv.problems} />
