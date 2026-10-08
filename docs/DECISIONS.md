@@ -97,7 +97,7 @@ L'OTP via email dipende da un servizio di invio (SMTP/Resend) che ha dato proble
 ## Punti aperti (rispondere prima dello step indicato)
 - **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
 - **Step 11:** icone dell'app provvisorie (anello bianco su verde, generate allo step 2): sostituirle con quelle definitive.
-- **Step 3:** verificare sull'iPhone che la sessione nella PWA duri (chiudere/riaprire, dopo 1 giorno, dopo 1 settimana).
+- **Step 3 (in corso):** sessione nella PWA verificata alla chiusura e riapertura (8/10/2026). Da annotare: dopo 1 giorno e dopo 1 settimana.
 - **Step 4:** unità "porzione" per i cibi: solo grammi con scorciatoia da `serving_g`, o anche millilitri per i liquidi? (Latte, olio.) Proposta: solo grammi in v1, con densità ignorata e dichiarata.
 - **Step 6:** limiti di validazione della schermata dati personali (altezza minima/massima, età minima/massima, peso obiettivo) da decidere con l'utente e scrivere in `DOMAIN_RULES.md` prima del codice.
 - **Step 8:** requisiti e limiti attuali di Open Food Facts da verificare nella documentazione ufficiale.

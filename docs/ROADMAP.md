@@ -8,7 +8,7 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | --- | --- | --- |
 | 1 | Design | fatto |
 | 2 | Setup, PWA, deploy | fatto |
-| 3 | Database e login | in prova (fatte: migrazione 001 e verifica RLS su Supabase l'8/10/2026; manca: prova sull'iPhone) |
+| 3 | Database e login | fatto (8/10/2026: login con password nella PWA installata, Esci e rientro, riapertura; da annotare: sessione dopo 1 giorno e 1 settimana) |
 | 4 | Cibi e ricette | da fare |
 | 5 | Registro pasti | da fare |
 | 6 | Target e macro | da fare |
