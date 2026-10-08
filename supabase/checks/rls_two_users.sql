@@ -22,10 +22,15 @@ declare
   n int;
   t text;
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
+  -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
+  extra text[] := array['water_entries', 'drink_containers'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
   if n <> 7 then raise exception 'FALLITO: trovate % tabelle su 7. La migrazione 001 è stata eseguita?', n; end if;
+  foreach t in array extra loop
+    if to_regclass('public.' || t) is not null then tables := tables || t; end if;
+  end loop;
 
   select count(*) into n from pg_tables where schemaname = 'public' and not rowsecurity;
   if n > 0 then raise exception 'FALLITO: % tabelle in public senza RLS attiva', n; end if;
@@ -55,6 +60,10 @@ begin
   insert into public.daily_targets (target_date, training_type, target_kcal, protein_g, carbs_g, fat_g, maintenance_kcal)
     values (current_date, 'rest', 3130, 150, 464, 75, 2848);
   insert into public.tdee_estimates (week_start, window_days, status) values (current_date, 21, 'none');
+  if 'water_entries' = any (tables) then
+    insert into public.water_entries (entry_date, ml) values (current_date, 200);
+    insert into public.drink_containers (name, ml) values ('Borraccia di prova', 750);
+  end if;
 
   foreach t in array tables loop
     execute format('select count(*) from public.%I', t) into n;
@@ -118,6 +127,19 @@ begin
     raise exception 'FALLITO: B ha inserito in tdee_estimates a nome di A';
   exception when insufficient_privilege then null;
   end;
+
+  if 'water_entries' = any (tables) then
+    begin
+      execute format('insert into public.water_entries (user_id, entry_date, ml) values (%L, current_date, 100)', a);
+      raise exception 'FALLITO: B ha inserito in water_entries a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      execute format('insert into public.drink_containers (user_id, name, ml) values (%L, %L, 100)', a, 'x');
+      raise exception 'FALLITO: B ha inserito in drink_containers a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
 
   -- B non può "regalare" una sua riga ad A.
   insert into public.foods (name, kcal_100g, protein_100g, carbs_100g, fat_100g) values ('Cibo di B', 1, 1, 1, 1)
