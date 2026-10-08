@@ -28,6 +28,8 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 ### Verifica RLS con due utenti (da fare allo step 3 e a ogni nuova tabella)
 **Script pronto:** `supabase/checks/rls_two_users.sql`. Supabase → SQL Editor → New query → incolla tutto il file → Run. Esito atteso nell'ultima riga: `RLS verificata: tutti i controlli superati`. Se un controllo fallisce compare un errore che inizia con `FALLITO:` e non resta niente nel database. Lo script crea due utenti finti (`@example.invalid`), "diventa" ciascuno di loro come farebbe l'app dopo il login (ruolo `authenticated` + `auth.uid()`), fa i controlli qui sotto e poi li cancella; non usa dati reali e si può rieseguire. Quando aggiungi una tabella, aggiungila anche allo script.
 
+**Esiti:** 8/10/2026, dopo la migrazione 001 sul progetto Supabase reale → `RLS verificata: tutti i controlli superati`.
+
 Cosa controlla (a mano sarebbe così):
 1. Crea due utenti di prova (A e B) con email diverse.
 2. Come A inserisci una riga in ogni tabella.
