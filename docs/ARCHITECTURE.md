@@ -43,19 +43,21 @@ src/
     portions.ts  water.ts         porzioni casalinghe, acqua
     foodValidation.ts  recipeValidation.ts  profileValidation.ts   validazione dei moduli (§9, §10)
     openFoodFacts.ts  catalog.ts  conversione e validazione di OFF e del catalogo
-    rateLimit.ts  auth.ts  numbers.ts  labels.ts   limiti OFF, login, numeri in italiano, etichette
+    rateLimit.ts  auth.ts  numbers.ts  labels.ts   limiti OFF, login/registrazione/pulizia storage, numeri, etichette
+    exportData.ts                         esportazione dei propri dati e conferma eliminazione (step 18)
     constants.ts                  tutte le costanti di dominio
     __fixtures__/                 risposta OFF inventata per i test
   data/           accesso ai dati (unico posto che conosce Supabase/OFF)
     supabase.ts  env.ts           client e variabili d'ambiente
-    auth.ts  authErrors.ts  dbErrors.ts   login ed errori tradotti in italiano
+    auth.ts  authErrors.ts  dbErrors.ts   login, registrazione, uscita ed errori in italiano
+    account.ts                            esporta i miei dati, elimina account (step 18)
     foods.ts  meals.ts  profile.ts  weights.ts  targets.ts  recalibration.ts  water.ts
     openFoodFacts.ts  barcode.ts  chiamate a OFF; codice a barre: prima i propri cibi, poi OFF
     queries.ts                    hook TanStack Query condivisi (useFoods, useEntries, …) e chiavi della cache
     types.ts                      tipi delle righe del database
     catalog/ingredienti.json      catalogo degli ingredienti (ADR-050), con il suo test
   features/       una cartella per area, con componenti e hook propri
-    today/  add-meal/  foods/  weight/  stats/  profile/  auth/
+    today/  add-meal/  foods/  weight/  stats/  profile/  auth/  privacy/
   components/     UI condivisa: SheetFrame, GramsSheet, ConfirmButton, FavoriteButton, Field, Icon,
                   MacroBar, MealPicker, OfflineBanner, Ring, ScreenHeader, States, Toast,
                   WaterIcon, WeightChart, WeightPill, ui.ts, useToday.ts

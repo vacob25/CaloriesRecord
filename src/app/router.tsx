@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import { AddMealScreen } from '../features/add-meal/AddMealScreen'
 import { LoginScreen } from '../features/auth/LoginScreen'
+import { SignupScreen } from '../features/auth/SignupScreen'
+import { PrivacyScreen } from '../features/privacy/PrivacyScreen'
 import { FoodFormScreen } from '../features/foods/FoodFormScreen'
 import { FoodsScreen } from '../features/foods/FoodsScreen'
 import { RecipeFormScreen } from '../features/foods/RecipeFormScreen'
@@ -22,6 +24,16 @@ export const router = createBrowserRouter([
       </PublicOnly>
     ),
   },
+  {
+    path: '/registrati',
+    element: (
+      <PublicOnly>
+        <SignupScreen />
+      </PublicOnly>
+    ),
+  },
+  // Pubblica: leggibile prima di registrarsi e anche da loggati.
+  { path: '/privacy', element: <PrivacyScreen /> },
   {
     path: '/benvenuto',
     element: (

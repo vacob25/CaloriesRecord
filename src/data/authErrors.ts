@@ -17,8 +17,13 @@ export const TOO_MANY_ATTEMPTS_MESSAGE = 'Troppi tentativi. Aspetta qualche minu
  * Email sbagliata e password sbagliata danno lo stesso messaggio: così da fuori
  * non si può scoprire quale email ha un account.
  */
+export const NOT_INVITED_MESSAGE = 'Registrazione solo su invito: questa email non è nell’elenco dei tester. Chiedi all’amministratore di aggiungerla.'
+
 export function describeAuthError(error: AuthErrorLike, online = true): string {
   if (!online) return OFFLINE_MESSAGE
+  // Hook "Before User Created" (migrazione 005): rifiuto con 403 e il nostro messaggio. Con alcune versioni
+  // del server il rifiuto arriva come errore generico della hook: si riconosce dal testo.
+  if (isInviteRejection(error)) return NOT_INVITED_MESSAGE
   // Il telefono è online ma la richiesta non arriva al server: di solito VITE_SUPABASE_URL è sbagliato.
   if (error.name === 'AuthRetryableFetchError' && !error.status) return UNREACHABLE_MESSAGE
   // Il server risponde ma con un guasto (5xx): non è colpa della rete del telefono.
@@ -38,6 +43,13 @@ export function describeAuthError(error: AuthErrorLike, online = true): string {
       return TOO_MANY_ATTEMPTS_MESSAGE
     case 'email_address_invalid':
       return 'Inserisci un indirizzo email valido.'
+    case 'signup_disabled':
+      return 'Le registrazioni sono chiuse in questo momento. Chiedi all’amministratore.'
+    case 'user_already_exists':
+    case 'email_exists':
+      return 'Esiste già un account con questa email: vai su Accedi.'
+    case 'weak_password':
+      return 'Password troppo debole: almeno 8 caratteri, meglio una frase.'
     case 'email_provider_disabled':
     case 'provider_disabled':
       return 'L’accesso con email e password è disattivato in Supabase (Authentication → Sign In / Providers).'
@@ -47,6 +59,12 @@ export function describeAuthError(error: AuthErrorLike, online = true): string {
   // Versioni del server senza codice: 400 al login = credenziali sbagliate.
   if (error.status === 400 && !error.code) return WRONG_CREDENTIALS_MESSAGE
   return `Qualcosa è andato storto. Riprova tra poco. ${technicalDetail(error)}`
+}
+
+function isInviteRejection(error: AuthErrorLike): boolean {
+  const text = (error.message ?? '').toLowerCase()
+  if (error.status === 403 && text.includes('invito')) return true
+  return text.includes('hook') && (error.code === 'unexpected_failure' || error.status === 500 || error.status === 400)
 }
 
 /** Codice, stato e testo del server (mai dati personali): servono a capire il problema guardando il telefono. */

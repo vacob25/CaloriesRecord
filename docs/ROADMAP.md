@@ -17,12 +17,13 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 9 | Statistiche | in prova (fatto e provato contro Postgres + PostgREST locali con una settimana calcolata a mano; manca: prova sull'iPhone) |
 | 10 | Ricalibrazione | in prova (fatto e provato contro Postgres + PostgREST locali; manca: conferma di ADR-044 e uso reale di qualche settimana) |
 | 11 | Rifinitura e uso reale | in corso (parte tecnica fatta: accessibilità 0 violazioni, aree ≥ 44 px, banner offline, npm audit pulito; mancano: icona e avvio definitivi, 2 settimane di uso reale) |
-| 12 | Login con codice OTP | da fare (rinviato dallo step 3, ADR-028) |
+| 12 | Login con codice OTP | superato da ADR-064 (password definitiva; codici via email solo se un giorno si compra un dominio) |
 | 13 | Peso più visibile e promemoria | in prova (fatto e provato contro Postgres + PostgREST locali; manca: prova sull'iPhone) |
 | 14 | Porzioni casalinghe e liquidi in ml | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 15 | Acqua | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 003 su Supabase e prova sull'iPhone) |
 | 16 | Catalogo di ingredienti mediterranei | in prova (195 voci CREA importate e validate; manca: prova sull'iPhone e le voci non trovate: uva, vitello, zucchero, tè, più quelle assenti dal CREA come bulgur, edamame, semi, patata dolce) |
 | 17 | Snack, acqua a contatori, peso giornaliero, Cibi con preferiti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 004 su Supabase e prova sull'iPhone) |
+| 18 | Tester invitati: registrazione, privacy, esporta, elimina account | in prova (fatto e provato contro Postgres + PostgREST locali con la hook vera; manca: migrazione 005 e impostazioni in Supabase, prova sull'iPhone) |
 
 Gli step 1-7 portano a un primo uso reale quotidiano. Gli step 8-10 e 13-16 sono fatti e in prova, l'11 è in corso (vedi tabella); lo step 12 (OTP) resta da fare e si può anticipare in qualunque momento.
 
@@ -154,5 +155,15 @@ Accettazione:
 
 ---
 
+
+## Step 18 · Tester invitati (richiesta dell'utente del 9/10/2026)
+Fare: migrazione 005 (`allowed_emails`, hook "Before User Created", `delete_my_account`, indice mancante); schermata Registrati con consenso esplicito (dati sulla salute) salvato nei metadati; link "Registrati", "Password dimenticata?" e "Privacy" su Accedi; pagina pubblica `/privacy`; nel Profilo "Esporta i miei dati" ed "Elimina account" (scrivere ELIMINA); all'uscita pulizia di cache, localStorage e sessionStorage. Script RLS esteso e script curl senza sessione. Nessuna nuova funzione dell'app.
+Accettazione:
+- Email non invitata: rifiutata con "Registrazione solo su invito…"; email invitata (maiuscole diverse comprese): account creato e si arriva al Benvenuto.
+- Senza consenso o con password sotto 8 caratteri non parte nessuna richiesta.
+- Il nuovo utente non vede nessun dato degli altri; l'esportazione contiene solo i suoi dati, da tutte le tabelle.
+- Dopo "Esci" nel browser non resta nessuna chiave con dati dell'utente.
+- "Elimina account" cancella l'utente e tutte le sue righe e niente degli altri.
+- `rls_two_users.sql` e `no_session.sh` passano sul progetto reale.
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

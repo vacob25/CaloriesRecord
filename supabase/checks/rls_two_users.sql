@@ -5,7 +5,9 @@
 --   2. "diventa" A, come farebbe l'app dopo il login, e inserisce una riga in ogni tabella;
 --   3. "diventa" B e prova a leggere, modificare, cancellare le righe di A e a scriverne a nome di A;
 --   4. "diventa" un visitatore senza login (anon) e prova a leggere e scrivere;
---   5. cancella i due utenti di prova (e a cascata tutte le loro righe).
+--   5. (migrazione 005) invito: email non invitata rifiutata, invitata accettata; elenco invisibile all'app;
+--      delete_my_account di A cancella tutto di A e niente di B; anon non può chiamarla;
+--   6. cancella i due utenti di prova (e a cascata tutte le loro righe).
 -- Se un controllo fallisce si ferma con un errore che inizia con "FALLITO" e annulla tutto.
 -- Se va tutto bene l'ultima riga mostra: "RLS verificata: tutti i controlli superati".
 --
@@ -21,6 +23,9 @@ declare
   b_food uuid;
   n int;
   t text;
+  b_before jsonb := '{}'::jsonb;
+  hook_result jsonb;
+  invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
   extra text[] := array['water_entries', 'drink_containers'];
@@ -211,7 +216,91 @@ begin
     end;
   end if;
 
-  -- ─── 5. Pulizia ──────────────────────────────────────────────────────────
+  -- ─── 5. Migrazione 005: inviti ed eliminazione dell'account ──────────────
+  reset role;
+  if to_regprocedure('public.delete_my_account()') is not null then
+    -- 5a. La hook accetta solo le email nell'elenco (senza distinguere maiuscole).
+    insert into public.allowed_emails (email) values (invited);
+    set local role supabase_auth_admin;
+    hook_result := public.hook_before_user_created(jsonb_build_object('user', jsonb_build_object('email', upper(invited))));
+    if hook_result <> '{}'::jsonb then raise exception 'FALLITO: email invitata rifiutata: %', hook_result; end if;
+    hook_result := public.hook_before_user_created(jsonb_build_object('user', jsonb_build_object('email', 'mai-invitato@example.invalid')));
+    if (hook_result -> 'error' ->> 'http_code') is distinct from '403' then
+      raise exception 'FALLITO: email non invitata accettata: %', hook_result;
+    end if;
+    hook_result := public.hook_before_user_created('{}'::jsonb);
+    if hook_result -> 'error' is null then raise exception 'FALLITO: registrazione senza email accettata'; end if;
+    reset role;
+    delete from public.allowed_emails where email = invited;
+
+    -- 5b. L'elenco degli invitati e la hook non sono raggiungibili dall'app.
+    perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+    set local role authenticated;
+    begin
+      perform count(*) from public.allowed_emails;
+      raise exception 'FALLITO: un utente loggato legge allowed_emails';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      perform public.hook_before_user_created('{}'::jsonb);
+      raise exception 'FALLITO: un utente loggato chiama la hook';
+    exception when insufficient_privilege then null;
+    end;
+    reset role;
+    perform set_config('request.jwt.claims', json_build_object('role', 'anon')::text, true);
+    set local role anon;
+    begin
+      perform count(*) from public.allowed_emails;
+      raise exception 'FALLITO: senza login si legge allowed_emails';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      perform public.delete_my_account();
+      raise exception 'FALLITO: senza login si chiama delete_my_account';
+    exception when insufficient_privilege then null;
+    end;
+    reset role;
+
+    -- 5c. B ha una riga in ogni tabella; si contano prima dell'eliminazione di A.
+    perform set_config('request.jwt.claims', json_build_object('sub', b, 'role', 'authenticated')::text, true);
+    set local role authenticated;
+    insert into public.profiles (sex, birth_date, height_cm) values ('female', date '1996-01-01', 165.0);
+    insert into public.foods (name, source, kcal_100g, protein_100g, carbs_100g, fat_100g, cooked_weight_g)
+      values ('Ricetta di B', 'recipe', 100, 5, 10, 3, 300) returning id into a_recipe;
+    insert into public.recipe_items (recipe_food_id, ingredient_food_id, grams) values (a_recipe, b_food, 50);
+    insert into public.meal_entries (entry_date, meal_type, food_id, food_name, grams, kcal, protein_g, carbs_g, fat_g)
+      values (current_date, 'dinner', b_food, 'Cibo di B', 100, 1, 1, 1, 1);
+    insert into public.weight_logs (log_date, weight_kg) values (current_date, 60.0);
+    insert into public.daily_targets (target_date, training_type, target_kcal, protein_g, carbs_g, fat_g, maintenance_kcal)
+      values (current_date, 'rest', 2000, 120, 250, 60, 1800);
+    insert into public.tdee_estimates (week_start, window_days, status) values (current_date, 21, 'none');
+    if 'water_entries' = any (tables) then
+      insert into public.water_entries (entry_date, ml) values (current_date, 500);
+      insert into public.drink_containers (name, ml) values ('Bottiglia di B', 1000);
+    end if;
+    reset role;
+    foreach t in array tables loop
+      execute format('select count(*) from public.%I where user_id = %L', t, b) into n;
+      if n = 0 then raise exception 'FALLITO: B non ha righe in % prima del test', t; end if;
+      b_before := b_before || jsonb_build_object(t, n);
+    end loop;
+
+    -- 5d. A elimina il proprio account: sparisce tutto di A, niente di B.
+    perform set_config('request.jwt.claims', json_build_object('sub', a, 'role', 'authenticated')::text, true);
+    set local role authenticated;
+    perform public.delete_my_account();
+    reset role;
+    select count(*) into n from auth.users where id = a;
+    if n > 0 then raise exception 'FALLITO: delete_my_account non ha cancellato l''utente A'; end if;
+    foreach t in array tables loop
+      execute format('select count(*) from public.%I where user_id = %L', t, a) into n;
+      if n > 0 then raise exception 'FALLITO: dopo delete_my_account restano % righe di A in %', n, t; end if;
+      execute format('select count(*) from public.%I where user_id = %L', t, b) into n;
+      if n <> (b_before ->> t)::int then raise exception 'FALLITO: delete_my_account di A ha toccato le righe di B in %', t; end if;
+    end loop;
+  end if;
+
+  -- ─── 6. Pulizia ──────────────────────────────────────────────────────────
   reset role;
   perform set_config('request.jwt.claims', '', true);
   delete from auth.users where id in (a, b); -- cancella a cascata anche le loro righe
@@ -222,3 +311,7 @@ end;
 $$;
 
 select 'RLS verificata: tutti i controlli superati' as esito;
+
+-- Elenco finale: ogni tabella di public con la RLS attiva (deve dire "sì" ovunque).
+select tablename as tabella, case when rowsecurity then 'sì' else 'NO' end as rls_attiva
+from pg_tables where schemaname = 'public' order by tablename;

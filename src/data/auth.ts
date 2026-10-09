@@ -1,5 +1,6 @@
 import { isAuthRetryableFetchError, type Session } from '@supabase/supabase-js'
 
+import { clearUserStorage, type ConsentMetadata } from '../lib/auth'
 import { describeAuthError, type AuthErrorLike } from './authErrors'
 import { getSupabase } from './supabase'
 
@@ -35,7 +36,40 @@ export async function signInWithPassword(email: string, password: string): Promi
  * supabase-js cancella la sessione salvata anche se la rete non risponde.
  */
 export async function signOut(): Promise<void> {
-  await getSupabase().auth.signOut({ scope: 'local' })
+  try {
+    await getSupabase().auth.signOut({ scope: 'local' })
+  } finally {
+    // Anche se la rete non risponde: niente dati del vecchio utente nel browser (la cache la svuota DataProvider).
+    clearBrowserStorage()
+  }
+}
+
+/** Toglie da localStorage e sessionStorage le chiavi con dati dell'utente (lib/auth.ts, USER_STORAGE_PREFIXES). */
+export function clearBrowserStorage(): void {
+  for (const storage of [globalThis.localStorage, globalThis.sessionStorage]) {
+    try {
+      if (storage) clearUserStorage(storage)
+    } catch {
+      // Storage non disponibile (es. navigazione privata): niente da pulire.
+    }
+  }
+}
+
+export type SignUpResult = { ok: true; signedIn: boolean } | { ok: false; message: string }
+
+/**
+ * Registrazione di un tester (step 18, ADR-064). Il controllo dell'invito lo fa Supabase con la hook
+ * "Before User Created" (migrazione 005): l'app non vede l'elenco. Il consenso va nei metadati dell'utente.
+ * Con "Confirm email" spento la risposta contiene già la sessione: si entra subito.
+ */
+export async function signUp(email: string, password: string, consent: ConsentMetadata): Promise<SignUpResult> {
+  try {
+    const { data, error } = await getSupabase().auth.signUp({ email, password, options: { data: { ...consent } } })
+    if (error) return { ok: false, message: describeAuthError(error as AuthErrorLike, isOnline()) }
+    return { ok: true, signedIn: data.session !== null }
+  } catch (error) {
+    return { ok: false, message: describeAuthError((error ?? new Error('errore')) as AuthErrorLike, isOnline()) }
+  }
 }
 
 export type InitialSession = { status: 'ready'; session: Session | null } | { status: 'offline' }

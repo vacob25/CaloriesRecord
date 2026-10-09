@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   describeAuthError,
+  NOT_INVITED_MESSAGE,
   OFFLINE_MESSAGE,
   TOO_MANY_ATTEMPTS_MESSAGE,
   UNREACHABLE_MESSAGE,
@@ -52,5 +53,20 @@ describe('describeAuthError', () => {
   it('errore senza codice né stato: usa il nome dell’errore; testo lungo troncato', () => {
     expect(describeAuthError({ name: 'TypeError' })).toBe('Qualcosa è andato storto. Riprova tra poco. (Dettaglio: TypeError)')
     expect(describeAuthError({ code: 'x', status: 418, message: 'a'.repeat(300) }).length).toBeLessThan(220)
+  })
+})
+
+describe('registrazione su invito (step 18)', () => {
+  it('rifiuto della hook: messaggio chiaro', () => {
+    expect(describeAuthError({ status: 403, message: 'Registrazione solo su invito: questa email non è nell\'elenco dei tester.' })).toBe(NOT_INVITED_MESSAGE)
+    expect(describeAuthError({ status: 500, code: 'unexpected_failure', message: 'Invalid payload sent to hook' })).toBe(NOT_INVITED_MESSAGE)
+  })
+  it('registrazioni chiuse, email già usata, password debole', () => {
+    expect(describeAuthError({ status: 422, code: 'signup_disabled' })).toContain('registrazioni sono chiuse')
+    expect(describeAuthError({ status: 422, code: 'user_already_exists' })).toContain('Esiste già un account')
+    expect(describeAuthError({ status: 422, code: 'weak_password' })).toContain('almeno 8 caratteri')
+  })
+  it('errore sconosciuto: codice tecnico in piccolo', () => {
+    expect(describeAuthError({ status: 418, code: 'qualcosa_di_nuovo' })).toContain('(Dettaglio: qualcosa_di_nuovo, stato 418')
   })
 })

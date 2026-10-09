@@ -31,7 +31,7 @@ Il diario deve restare invariato se un cibo viene corretto o cancellato.
 **ADR-012 · Ricette solo con ingredienti semplici in v1**
 Una ricetta non può contenere un'altra ricetta (niente cicli, calcolo più semplice).
 
-**ADR-014 · Login con codice OTP via email invece del link magico** — *sospesa l'8/10/2026, sostituita per ora da ADR-028*
+**ADR-014 · Login con codice OTP via email invece del link magico** — *sostituita: login con password (ADR-028), definitivo con ADR-064*
 Su iOS la PWA installata ha storage separato da Safari (problema noto di WebKit): il link nella mail si apre in Safari e accede lì, non nell'app. Con il codice numerico lo si inserisce direttamente nella PWA. Resta passwordless, quindi rispetta la richiesta dell'utente. Costo: un passaggio in più (copiare il codice). Alternativa se dà problemi: email + password con sessione lunga. Da verificare allo step 3 sull'iPhone vero.
 
 **ADR-015 · Nessun dato personale reale nel repo**
@@ -40,7 +40,7 @@ Il repo è pubblico: peso, altezza, data di nascita e obiettivo stanno solo nel 
 **ADR-018 · Chiave publishable e grant espliciti (verificato sul changelog Supabase)**
 Supabase depreca le chiavi `anon` e `service_role` entro fine 2026: si usa la chiave publishable (`sb_publishable_…`) nel frontend, mai la secret. Inoltre le tabelle nuove in `public` non sono esposte alla Data API senza `grant` espliciti (progetti nuovi dal 30 maggio 2026, esistenti dal 30 ottobre 2026): la migrazione li include per `authenticated` e nessuno per `anon`. Variabile d'ambiente: `VITE_SUPABASE_PUBLISHABLE_KEY`.
 
-**ADR-013 · Registrazioni disattivate dopo la creazione dell'utente**
+**ADR-013 · Registrazioni disattivate dopo la creazione dell'utente** — *sostituita il 9/10/2026 da ADR-064 (registrazione su invito)*
 App a utente singolo con repo pubblico: nessuno deve poter creare un account.
 
 ## Decise il 7 ottobre 2026 (confermate dall'utente)
@@ -228,6 +228,16 @@ In Cibi restano in alto Nuovo cibo e Nuova ricetta; poi "Preferiti" (stella, mat
 
 **ADR-063 · Catalogo a riquadri con stelle**
 Le 12 categorie sono riquadri con un'icona a linea; dentro una categoria ogni voce ha la stella e i preferiti stanno in cima. La stella su una voce non ancora copiata la copia tra i propri cibi già preferita: un solo concetto di "preferito" per tutta l'app.
+
+## Step 18 (9/10/2026, scelte dell'utente)
+
+**ADR-064 · Tester invitati: registrazione con email e password, senza email dall'app**
+Sostituisce ADR-013 (registrazioni chiuse) e ADR-014 (codice OTP): il login resta email + password (ADR-028) e diventa definitivo; lo step 12 (OTP) non serve più. Registrazione aperta solo alle email in `public.allowed_emails` (migrazione 005), controllate da Supabase con l'auth hook ufficiale "Before User Created" (funzione Postgres `hook_before_user_created`, inclusa nel piano gratuito). Preferita a un trigger su `auth.users`: è fatta per questo, gira con il ruolo minimo `supabase_auth_admin` e il suo messaggio arriva all'app (un trigger darebbe un generico "Database error saving new user").
+Email (scelta B dell'utente): nessun dominio, quindi nessun invio possibile ai tester (l'email integrata di Supabase invia solo ai membri del progetto, Resend senza dominio verificato solo al proprietario dell'account). "Confirm email" spento: l'elenco degli invitati sostituisce la verifica dell'email. Rischio dichiarato: chi conosce l'email di un invitato potrebbe registrarsi prima di lui; si mitiga invitando solo quando la persona è pronta. Password dimenticata: la reimposta l'amministratore dal pannello. Se in futuro si compra un dominio, conferma e recupero con codice (verifyOtp type `email` / `recovery`).
+Password: da 8 caratteri a 72 byte (limite di bcrypt), stessa minima impostata in Supabase.
+
+**ADR-065 · Consenso, privacy, esportazione ed eliminazione**
+Consenso esplicito alla registrazione (casella obbligatoria che nomina i dati sulla salute, art. 9 GDPR): versione dell'informativa, data e `health_data_consent` nei metadati dell'utente (soluzione base, senza tabella di storico). Pagina pubblica `/privacy` (testo di base da far rivedere); contatto da `VITE_PRIVACY_CONTACT` su Vercel, mai nel repo. Esporta: JSON di tutte le tabelle dell'utente (la RLS filtra), condiviso con `navigator.share` e, se non disponibile, testo da copiare; un test confronta l'elenco con le tabelle delle migrazioni. Elimina: funzione `delete_my_account()` (security definer, search_path vuoto, solo `auth.uid()`, execute solo ad authenticated), conferma scrivendo ELIMINA, poi uscita e pulizia di cache e storage. Nessuna service_role, nessuna Edge Function.
 
 ## Punti aperti (rispondere prima dello step indicato)
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.

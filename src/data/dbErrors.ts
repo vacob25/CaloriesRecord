@@ -44,7 +44,7 @@ export function describeDbError(error: DbErrorLike, online = true): string {
       return 'Elemento non trovato: forse è stato cancellato.'
     case 'PGRST202':
     case '42883':
-      return 'Funzione del database mancante: esegui in Supabase le migrazioni in supabase/migrations (es. 002).'
+      return 'Funzione del database mancante: esegui in Supabase le migrazioni in supabase/migrations (es. 002, 005).'
     case '42703':
     case 'PGRST204':
       return 'Colonna mancante: esegui in Supabase la migrazione più recente in supabase/migrations (es. 003).'

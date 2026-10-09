@@ -113,8 +113,16 @@ Voci fittizie, mai valori veri del catalogo.
 - kcal dichiarate 400 ma macro che ne danno 800 → avviso, non errore.
 - Peso 29,9 o 250,1 → errore; salto > 2 kg dal giorno prima → richiesta di conferma.
 
-## Test sulla sicurezza dei dati (a mano, allo step 3 e a ogni nuova tabella)
-Vedi `docs/SECURITY.md`, sezione "Verifica RLS con due utenti".
+### Accesso e tester (step 18)
+- `parseNewPassword`: 7 caratteri → errore, 8 → ok; 72 byte ok, 73 no; "è" conta 2 byte (36 sì, 37 no).
+- `validateSignup`: senza consenso → errore e nessuna richiesta; email normalizzata; consenso con `privacy_version`, data ISO e `health_data_consent: true`.
+- `clearUserStorage`: toglie `sb-…`, `off.…`, `caloriesrecord.…`, lascia il resto.
+- `describeAuthError`: rifiuto della hook (403 con "invito", oppure errore generico della hook) → "Registrazione solo su invito…"; `signup_disabled`, `user_already_exists`, `weak_password`; errore sconosciuto con il codice tecnico.
+- `exportData`: l'elenco `EXPORT_TABLES` coincide con le tabelle create nelle migrazioni (tranne `allowed_emails`, dichiarata); conferma eliminazione solo con "ELIMINA".
+- `readPrivacyContact`: assente o vuoto → null.
+
+## Test sulla sicurezza dei dati (a ogni nuova tabella o funzione)
+Vedi `docs/SECURITY.md`, sezione "Verifica RLS con due utenti", e `supabase/checks/no_session.sh` (curl senza sessione).
 
 ## Cosa NON testare
 Il layout e i colori (si guardano), le librerie di terze parti (Recharts, supabase-js), le risposte reali di Open Food Facts (si testa solo la funzione che converte una risposta d'esempio salvata come fixture).

@@ -1,5 +1,8 @@
 import { useState, type FormEvent } from 'react'
 
+import { Link } from 'react-router-dom'
+
+import { PasswordField } from '../../components/PasswordField'
 import { signInWithPassword } from '../../data/auth'
 import { parseEmail, parsePassword } from '../../lib/auth'
 
@@ -9,7 +12,6 @@ const inputClass =
 export function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -62,33 +64,8 @@ export function LoginScreen() {
           className={inputClass}
         />
 
-        <label htmlFor="password" className="mt-5 block text-[13px] font-semibold text-ink-2">
-          Password
-        </label>
-        <div className="relative">
-          <input
-            id="password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="current-password"
-            autoCapitalize="none"
-            spellCheck={false}
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            aria-invalid={error !== null}
-            aria-describedby={error ? 'login-error' : undefined}
-            className={`${inputClass} pr-24`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((shown) => !shown)}
-            aria-label={showPassword ? 'Nascondi password' : 'Mostra password'}
-            aria-pressed={showPassword}
-            className="absolute inset-y-0 right-1 my-auto h-11 min-w-11 px-3 text-[13px] font-semibold text-green-dark"
-          >
-            {showPassword ? 'Nascondi' : 'Mostra'}
-          </button>
+        <div className="mt-5">
+          <PasswordField id="password" label="Password" value={password} onChange={setPassword} autoComplete="current-password" />
         </div>
 
         <button
@@ -105,6 +82,24 @@ export function LoginScreen() {
           {error}
         </p>
       )}
+
+      <div className="mt-8 space-y-1 text-[15px]">
+        <p>
+          Non hai un account?{' '}
+          <Link to="/registrati" className="inline-flex min-h-11 items-center font-semibold text-green-dark">
+            Registrati
+          </Link>
+        </p>
+        <details className="text-ink-2">
+          <summary className="flex min-h-11 cursor-pointer items-center font-semibold text-green-dark">Password dimenticata?</summary>
+          <p className="pb-2 text-[15px]">
+            L’app non invia email: scrivi all’amministratore, che la reimposta per te. Il contatto è nella pagina Privacy.
+          </p>
+        </details>
+        <Link to="/privacy" className="inline-flex min-h-11 items-center font-semibold text-green-dark">
+          Privacy
+        </Link>
+      </div>
     </main>
   )
 }

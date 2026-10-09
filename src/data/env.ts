@@ -53,3 +53,12 @@ function isHttpsUrl(value: string): boolean {
     return false
   }
 }
+
+/**
+ * Contatto per la privacy (VITE_PRIVACY_CONTACT su Vercel, mai nel repo). Facoltativo:
+ * se manca la pagina /privacy lo dice, senza rompere il build.
+ */
+export function readPrivacyContact(env: { VITE_PRIVACY_CONTACT?: string }): string | null {
+  const value = env.VITE_PRIVACY_CONTACT?.trim() ?? ''
+  return value === '' ? null : value
+}

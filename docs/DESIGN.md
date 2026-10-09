@@ -87,10 +87,19 @@ Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, 
 `/benvenuto`, mostrata finché non esiste il profilo (ADR-037): sesso, data di nascita, altezza, peso di oggi (salvato come prima pesata) e peso obiettivo facoltativo. Limiti di DOMAIN_RULES §10. Dopo il salvataggio non ricompare.
 
 ### Login
-Email e password (ADR-028; il codice OTP di ADR-014 è rinviato allo step 12):
+Email e password (ADR-028, ADR-064):
 - Campo email (`type="email"`, `autocomplete="username"`) e campo password (`autocomplete="current-password"`), così il Portachiavi iCloud propone e salva l'accesso. Pulsante "Mostra/Nascondi" la password (≥ 44 px, con `aria-label`). Pulsante "Accedi".
 - Errore unico "Email o password non corretti." (non dice quale dei due è sbagliato). Dopo un errore i campi restano compilati.
-- Nessun "password dimenticata" in app: si reimposta dal pannello di Supabase.
+- Sotto: "Non hai un account? Registrati", "Password dimenticata?" (si apre una spiegazione: la reimposta l'amministratore, l'app non invia email) e "Privacy". Tutti ≥ 44 px.
+
+### Registrati (step 18)
+Email, password (`autocomplete="new-password"`, "Mostra", aiuto "Almeno 8 caratteri…"), link "Leggi l'informativa privacy" su una riga sua (≥ 44 px), casella di consenso che nomina i dati sulla salute, pulsante "Registrati". Errori sotto ogni campo; il rifiuto del server (es. "Registrazione solo su invito…") in un riquadro con `role="alert"`. A registrazione riuscita si va al Benvenuto.
+
+### Privacy (step 18)
+Pagina pubblica, leggibile anche senza login (`/privacy`): avviso in testa "Testo di base da far rivedere", poi dati raccolti, perché, dove stanno, chi li vede, esportare e cancellare, contatto. Link da Accedi, Registrati e Profilo.
+
+### Profilo · I tuoi dati (step 18)
+"Esporta i miei dati" apre il foglio di condivisione di iOS con il file JSON; se non disponibile mostra il testo con "Copia tutto". "Elimina account": spiegazione, campo "Scrivi ELIMINA per confermare", pulsante distruttivo "Elimina account e dati" attivo solo con la parola esatta.
 
 ## Stati comuni
 Caricamento = scheletro con la stessa forma del contenuto. Errore = messaggio + "Riprova". Vuoto = frase + azione. Offline = banner "Serve la connessione". L'avviso "Nuova versione disponibile" (Aggiorna / Dopo) sta sopra l'avviso "Aggiunto · Annulla": i due non si sovrappongono mai.

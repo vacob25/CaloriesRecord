@@ -93,8 +93,14 @@ Si crea alla prima apertura del giorno, copiando i parametri del profilo di quel
 ### tdee_estimates
 `id`, `week_start date not null`, `window_days int` (`> 0`), `avg_intake_kcal int`, `trend_slope_kg_week numeric(5,3)`, `estimated_maintenance_kcal int`, `proposed_maintenance_kcal int` (null se nessuna proposta), `status text` (`pending` default / `accepted` / `rejected` / `none`), `created_at`. I valori calcolati possono essere null quando i dati non bastano (`none`). Indice su `(user_id, week_start)`, **non unico**: una riga per settimana la garantisce l'app (ADR-045). Accettare una proposta aggiorna `profiles.activity_factor` (= mantenimento proposto / BMR attuale), non esiste un campo di override (ADR-009).
 
+### allowed_emails (migrazione 005)
+`email text` chiave primaria (`check`: minuscola, senza spazi ai lati, forma di un'email), `note text`, `created_at`. Nessun `user_id`: non è un dato di un utente ma l'elenco degli invitati. RLS attiva, `revoke all … from anon, authenticated, public`, nessuna policy per loro: dall'app non si legge né si scrive. Solo `supabase_auth_admin` ha `select` (con una policy), per la hook. Le email si aggiungono dal SQL Editor.
+
 ## Funzioni
 - `save_recipe(p_recipe_id, p_name, p_cooked_weight_g, p_kcal_100g, p_protein_100g, p_carbs_100g, p_fat_100g, p_items)` (migrazione 002, ADR-029): crea o aggiorna una ricetta e sostituisce i suoi `recipe_items` in una sola transazione; almeno un ingrediente. `security invoker` (vale la RLS), `set search_path = ''`, `revoke execute … from public, anon` e `grant execute … to authenticated`. I valori per 100 g li calcola l'app.
+- `hook_before_user_created(event jsonb)` (migrazione 005, ADR-064): auth hook "Before User Created". Legge `event->'user'->>'email'`, la confronta in minuscolo con `allowed_emails`: `{}` = crea l'utente, `{"error": {"http_code": 403, "message": …}}` = rifiuta. Non security definer: execute solo a `supabase_auth_admin` (revocato a public, anon, authenticated), `set search_path = ''`.
+- `delete_my_account()` (migrazione 005, ADR-065): security definer, `set search_path = ''`; senza sessione errore 42501; cancella `recipe_items` e poi la riga di `auth.users` con `id = auth.uid()` (il resto a cascata). Execute solo ad authenticated.
+- Indice `recipe_items (user_id)` (migrazione 005): le altre tabelle avevano già un indice o una chiave che comincia con `user_id`.
 - Trigger: `set_updated_at`, `check_recipe_item`, `check_food_source_change` (vedi sopra).
 
 ## Row Level Security (modello da applicare a TUTTE le tabelle)

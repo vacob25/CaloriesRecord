@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Field } from '../../components/Field'
 import { ScreenHeader } from '../../components/ScreenHeader'
@@ -21,6 +22,7 @@ import {
 import { GAIN_RATE_WARNING_KG_WEEK } from '../../lib/constants'
 import { formatNumber, fractionToPercent } from '../../lib/numbers'
 import { estimatedGainKgPerWeek } from '../../lib/targets'
+import { AccountSection } from './AccountSection'
 import { PersonalFields } from './PersonalFields'
 import { RecalibrationCard } from './RecalibrationCard'
 import { WaterSection } from './WaterSection'
@@ -60,12 +62,16 @@ export function ProfileScreen() {
           <PersonalSection profile={profile.data} />
           <ParamsSection profile={profile.data} />
           <WaterSection profile={profile.data} />
+          <AccountSection />
         </>
       )}
       <div className="px-5 pt-6">
         <button type="button" onClick={handleSignOut} disabled={busy} className={secondaryButtonClass}>
           {busy ? 'Uscita in corso…' : 'Esci'}
         </button>
+        <Link to="/privacy" className="mt-3 flex min-h-11 items-center justify-center text-[15px] font-semibold text-green-dark">
+          Privacy
+        </Link>
       </div>
     </>
   )

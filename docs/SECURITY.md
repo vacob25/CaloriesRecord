@@ -31,6 +31,10 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 
 **Esiti:** 8/10/2026, dopo la migrazione 001 sul progetto Supabase reale → `RLS verificata: tutti i controlli superati`.
 
+Dalla migrazione 005 lo script controlla anche: email non invitata rifiutata e invitata accettata dalla hook (senza distinguere maiuscole), elenco invisibile all'app e ad anon, `delete_my_account` di A che cancella tutto di A e niente di B, anon che non può chiamarla. Alla fine mostra l'elenco delle tabelle con RLS. Provato in locale anche "rompendo" apposta grant, hook e funzione: ogni volta si ferma con FALLITO.
+
+**Senza sessione, dall'esterno:** `SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=sb_publishable_… bash supabase/checks/no_session.sh` (valori solo nel terminale): ogni tabella e funzione deve rispondere senza dati.
+
 Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. **Da rieseguire** sul progetto reale dopo le migrazioni 002 e 003; esito da annotare qui dall'utente: _(da fare)_.
 
 Cosa controlla (a mano sarebbe così):
@@ -41,14 +45,20 @@ Cosa controlla (a mano sarebbe così):
 5. Segna l'esito nel messaggio di commit. Se uno qualunque fallisce, lo step non è finito.
 
 ## Login
-- **Email e password** (ADR-028): l'app chiama `signInWithPassword({ email, password })`. Mai link magico. Il codice OTP via email (ADR-014) è rinviato allo step 12.
-- Password: lunga e unica (meglio una frase di 4-5 parole, o generata dal Portachiavi iCloud), mai riusata altrove. Il repo è pubblico e l'URL dell'app è trovabile: la password è l'unica cosa che protegge l'accesso. In Supabase (Authentication → Sign In / Providers → Email) alzare la lunghezza minima della password ad almeno 12.
+- **Email e password** (ADR-028, ADR-064): `signInWithPassword` e, per i tester invitati, `signUp`. Mai link magico, mai OTP.
+- Password: lunga e unica (meglio una frase di 4-5 parole, o generata dal Portachiavi iCloud), mai riusata altrove. Il repo è pubblico e l'URL dell'app è trovabile: la password è l'unica cosa che protegge l'accesso. In Supabase (Authentication → Sign In / Providers → Email) lunghezza minima della password 8, la stessa dell'app (scelta dell'utente, ADR-064).
 - Password dimenticata: Authentication → Users → utente → reimpostala dal pannello. Non c'è recupero via email in app.
 - Tentativi di accesso: Supabase limita i login ripetuti (Authentication → Rate Limits); non alzare quei limiti.
 - In Supabase: `Site URL` = URL di produzione su Vercel; `Redirect URLs` solo gli URL che servono (produzione e `http://localhost:5173`). Mai `*`. Con il login attuale (utente creato a mano, nessuna email dall'app) contano poco, ma vanno tenuti giusti: diventano essenziali con lo step 12.
 - **Solo per lo step 12 (OTP via email):** il servizio email predefinito di Supabase invia solo agli indirizzi dei membri del progetto e ha un limite molto basso (non è pensato per la produzione): per un'app personale con te come proprietario basta; se arrivano errori "email not authorized" o limiti di invio, configurare un SMTP personalizzato (es. Resend).
-- Creare il proprio utente da Authentication → Users → Add user → Create new user, con email, password e "Auto Confirm User"; poi disattivare le registrazioni aperte (Authentication → Providers → Email → "Allow new users to sign up"). Così, anche se qualcuno trova l'URL, non può creare un account.
-- Sessione: gestita da `supabase-js` (storage del browser). Il logout deve cancellare la sessione locale.
+- **Registrazione su invito (step 18, ADR-064)**, in quest'ordine:
+  1. eseguire la migrazione 005;
+  2. Authentication → Hooks → "Before User Created" → tipo Postgres → `public.hook_before_user_created` → attivare;
+  3. Authentication → Sign In / Providers → Email: "Confirm email" OFF, poi "Allow new users to sign up" ON (mai prima della hook: senza, chiunque troverebbe l'URL potrebbe registrarsi);
+  4. invitare: `insert into public.allowed_emails (email) values ('nome@dominio');` dal SQL Editor (minuscolo). Per togliere un invito non usato: `delete from public.allowed_emails where email = '…';`.
+- Rischio dichiarato: senza conferma via email, chi conosce l'email di un invitato potrebbe registrarsi prima di lui. Invitare solo quando la persona è pronta; se succede, eliminare l'utente da Authentication → Users.
+- Eliminazione dell'account: funzione `delete_my_account()` (migrazione 005), solo per l'utente della sessione. Nessuna service_role, nessuna Edge Function.
+- Sessione: gestita da `supabase-js` (storage del browser). All'uscita: `signOut({ scope: 'local' })`, `queryClient.clear()` e rimozione da localStorage/sessionStorage delle chiavi `sb-…`, `off.…`, `caloriesrecord.…` (`clearUserStorage`, testato).
 
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
@@ -59,7 +69,10 @@ Cosa controlla (a mano sarebbe così):
 - Vercel: variabili d'ambiente solo dalle impostazioni del progetto; le anteprime (preview) non devono usare credenziali di produzione se in futuro si aggiungono segreti.
 
 ## Privacy
-Peso, altezza, data di nascita e abitudini alimentari sono dati personali. Restano nel database Supabase dell'utente, accessibili solo con il suo login. Nessuna analytics di terze parti, nessun tracker, nessuna chiamata a servizi IA con dati reali finché non è una scelta esplicita dell'utente (v2).
+Peso, altezza, data di nascita e abitudini alimentari sono dati personali e, peso e alimentazione, **dati sulla salute** (art. 9 GDPR): servono consenso esplicito (casella alla registrazione, ADR-065) e un'informativa (`/privacy`, testo di base da far rivedere). Database nella regione di Francoforte. Ognuno vede solo i propri dati (RLS); l'amministratore tecnico può accedere al database dal pannello. Consenso salvato nei metadati dell'utente (`privacy_version`, `privacy_accepted_at`, `health_data_consent`): soluzione base, senza storico delle versioni. Nessuna analytics di terze parti, nessun tracker, nessuna chiamata a servizi IA con dati reali finché non è una scelta esplicita dell'utente (v2).
 
-## Backup
-Il piano gratuito di Supabase in genere non include backup automatici (da verificare nelle condizioni attuali): prevedere l'esportazione CSV (v2) e farla periodicamente. I progetti gratuiti inattivi per un po' (circa una settimana) vengono messi in pausa: usare l'app ogni giorno basta.
+## Backup, pausa e limiti del piano gratuito (verificati il 9/10/2026)
+- Backup: il piano gratuito **non** ha backup automatici (i backup giornalieri sono del piano Pro, [pricing](https://supabase.com/pricing)). Backup semplice: ogni utente può fare "Esporta i miei dati"; per tutto il database, dal computer, `supabase db dump` (CLI di Supabase, con la password del database solo nel terminale, mai nel repo) una volta a settimana.
+- Pausa: un progetto gratuito senza attività per circa una settimana viene messo in pausa; Supabase manda un'email al proprietario prima. Con 5 tester che usano l'app ogni giorno non succede; se succede l'app mostra "Il server … non risponde" e si riattiva dal pannello.
+- Limiti: database 500 MB e 50.000 utenti attivi al mese: lontanissimi per questo uso.
+- Email: con "Confirm email" spento l'app non ne invia. L'email integrata di Supabase invia solo ai membri del progetto; Resend senza dominio verificato solo al proprietario dell'account.

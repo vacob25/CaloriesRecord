@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { readSupabaseEnv } from './env'
+import { readPrivacyContact, readSupabaseEnv } from './env'
 
 // Valori finti: nessuna chiave reale nel repo.
 const URL_OK = 'https://progetto-finto.supabase.co'
@@ -55,5 +55,13 @@ describe('readSupabaseEnv', () => {
     expect(readSupabaseEnv({ VITE_SUPABASE_URL: URL_OK, VITE_SUPABASE_PUBLISHABLE_KEY: 'chiave-qualsiasi' }).ok).toBe(
       false,
     )
+  })
+})
+
+describe('contatto privacy (step 18)', () => {
+  it('facoltativo: vuoto o assente = null', () => {
+    expect(readPrivacyContact({})).toBeNull()
+    expect(readPrivacyContact({ VITE_PRIVACY_CONTACT: '   ' })).toBeNull()
+    expect(readPrivacyContact({ VITE_PRIVACY_CONTACT: ' contatto@example.com ' })).toBe('contatto@example.com')
   })
 })
