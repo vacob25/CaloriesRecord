@@ -30,12 +30,13 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 **Script pronto:** `supabase/checks/rls_two_users.sql`. Supabase → SQL Editor → New query → incolla tutto il file → Run. Esito atteso nell'ultima riga: `RLS verificata: tutti i controlli superati`. Se un controllo fallisce compare un errore che inizia con `FALLITO:` e non resta niente nel database. Lo script crea due utenti finti (`@example.invalid`), "diventa" ciascuno di loro come farebbe l'app dopo il login (ruolo `authenticated` + `auth.uid()`), fa i controlli qui sotto e poi li cancella; non usa dati reali e si può rieseguire. Quando aggiungi una tabella, aggiungila anche allo script.
 
 **Esiti:** 8/10/2026, dopo la migrazione 001 sul progetto Supabase reale → `RLS verificata: tutti i controlli superati`.
+9/10/2026, dopo le migrazioni 002-005 sul progetto reale (script con i controlli della 005) → `RLS verificata: tutti i controlli superati`, RLS attiva ("sì") su tutte le 10 tabelle.
 
 Dalla migrazione 005 lo script controlla anche: email non invitata rifiutata e invitata accettata dalla hook (senza distinguere maiuscole), elenco invisibile all'app e ad anon, `delete_my_account` di A che cancella tutto di A e niente di B, anon che non può chiamarla. Alla fine mostra l'elenco delle tabelle con RLS. Provato in locale anche "rompendo" apposta grant, hook e funzione: ogni volta si ferma con FALLITO.
 
 **Senza sessione, dall'esterno:** `SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=sb_publishable_… bash supabase/checks/no_session.sh` (valori solo nel terminale): ogni tabella e funzione deve rispondere senza dati.
 
-Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. **Da rieseguire** sul progetto reale dopo le migrazioni 002 e 003; esito da annotare qui dall'utente: _(da fare)_.
+Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. Rieseguito il 9/10/2026 dopo le migrazioni 002-005: superato (vedi Esiti).
 
 Cosa controlla (a mano sarebbe così):
 1. Crea due utenti di prova (A e B) con email diverse.
