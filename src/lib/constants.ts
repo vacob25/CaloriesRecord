@@ -109,3 +109,20 @@ export const TARGET_RATE_MIN_KG_WEEK = 0.2
 export const TARGET_RATE_MAX_KG_WEEK = 0.35
 /** Step 17: cronologia degli "Alimenti recenti" (Cibi e Aggiungi pasto), scelta dell'utente. */
 export const RECENT_FOODS_LIMIT = 8
+
+// ─── Obiettivi (step 19, ADR-066) ───────────────────────────────────────────
+/**
+ * Cut: ritmo di perdita in % del peso a settimana. Intervallo 0,5-1,0% dalla letteratura sulla perdita di grasso
+ * con allenamento di forza (Helms et al. 2014; ISSN diets and body composition 2017); 0,7% è il ritmo del gruppo
+ * "lento" di Garthe et al. 2011, che ha conservato la massa magra. Più si è magri, più conviene il ritmo lento.
+ */
+export const CUT_RATE_MIN_PCT_WEEK = 0.005
+export const CUT_RATE_STEADY_PCT_WEEK = 0.007
+export const CUT_RATE_MAX_PCT_WEEK = 0.01
+/** Mantenimento: il peso è "stabile" se varia meno di ±0,10 kg a settimana (proposta da confermare con l'uso). */
+export const MAINTAIN_BAND_KG_WEEK = 0.1
+/** Sotto questa età il cut è consentito solo con un avviso che consiglia di sentire un medico. */
+export const ADULT_AGE_YEARS = 18
+/** Sport personali: al massimo 2, così i tipi di giorno restano Riposo, A, B, A + B (come prima: Palestra / Calcio). */
+export const SPORTS_MAX = 2
+export const SPORT_NAME_MAX = 24

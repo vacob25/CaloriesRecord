@@ -165,5 +165,14 @@ Accettazione:
 - Dopo "Esci" nel browser non resta nessuna chiave con dati dell'utente.
 - "Elimina account" cancella l'utente e tutte le sue righe e niente degli altri.
 - `rls_two_users.sql` e `no_session.sh` passano sul progetto reale.
+## Step 19 · Obiettivo, sport e tutorial (richiesta dell'utente del 9/10/2026)
+Fare: migrazione 006 (`profiles.goal`, `cut_rate_pct`, `sports`, `tutorial_done_at`; tipi di giorno `rest`/`sport_1`/`sport_2`/`both`); obiettivo Mettere massa / Mantenere / Definizione (cut) con ritmo in % del peso a settimana (ADR-066); sport liberi (max 2) con "Palestra" consigliato, da cui nascono i tipi di giorno ("Palestra + calcio"); Benvenuto in 3 passi (Dati, Obiettivo, Allenamento con livello di attività); nel Profilo "Obiettivo e sport"; ricalibrazione con bande per obiettivo; tutorial a popup "1/8" sulle funzioni principali, riapribile da "Rivedi il tutorial".
+Accettazione:
+- Cut: target di riposo = mantenimento − (peso · ritmo% · 7700 / 7), arrotondato a 10 (75 kg, 0,5%: 2848 → 2440); senza un peso obiettivo sotto il peso attuale non si salva.
+- Con Palestra e Calcio i tipi di giorno sono Riposo, Palestra, Calcio, Palestra + calcio; togliendo uno sport un giorno che lo usava torna a Riposo.
+- Il profilo del titolare (migrato) resta identico: stessi target di prima.
+- Il tutorial parte da solo al primo accesso, va da 1/8 a 8/8 cambiando schermata, "Salta"/"Fine" lo segnano come visto, "Rivedi il tutorial" lo riapre.
+- Typecheck, lint, test, build e tutti gli e2e passano; axe senza violazioni.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

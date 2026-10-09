@@ -6,9 +6,10 @@ import { ErrorState, FormMessage } from '../../components/States'
 import { WeightPill } from '../../components/WeightPill'
 import { cardClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
-import { useDayTarget, useSetTrainingType } from '../../data/queries'
+import { useDayTarget, useProfile, useSetTrainingType } from '../../data/queries'
 import type { DailyTarget } from '../../data/types'
-import { TRAINING_LABEL, TRAINING_TYPES, type TrainingType } from '../../lib/labels'
+import type { TrainingType } from '../../lib/labels'
+import { trainingDayTypes, trainingLabel } from '../../lib/sports'
 import { formatNumber } from '../../lib/numbers'
 import { isLowCarbs, type Nutrients } from '../../lib/nutrition'
 import { progress, ringStatus } from '../../lib/targets'
@@ -46,7 +47,7 @@ function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; w
     ring.over > 0 ? `Oltre di ${formatNumber(ring.over)} kcal` : `${formatNumber(ring.remaining)} kcal restanti`
 
   return (
-    <section aria-label="Riepilogo del giorno" className={`${cardClass} mx-5 mt-4 p-5`}>
+    <section aria-label="Riepilogo del giorno" data-tour="ring" className={`${cardClass} mx-5 mt-4 p-5`}>
       <div className="flex items-center gap-4">
         <Ring fraction={ring.fraction} label={`${centerLabel} su ${formatNumber(target.targetKcal)}`}>
           {ring.over > 0 ? (
@@ -94,6 +95,18 @@ function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; w
 function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType }) {
   const [open, setOpen] = useState(false)
   const setType = useSetTrainingType(date)
+  const profile = useProfile()
+  // I tipi di giorno vengono dagli sport del profilo (step 19): Riposo, ogni sport, e "A + b" se sono due.
+  const sports = profile.data?.sports ?? []
+  const options = trainingDayTypes(sports)
+  if (options.length === 1) {
+    // Nessuno sport nel profilo: solo giorni di riposo, niente scelta.
+    return (
+      <p className="mt-4 text-[13px] text-muted">
+        Giorno: Riposo · aggiungi i tuoi sport dal Profilo per avere i giorni di allenamento.
+      </p>
+    )
+  }
   return (
     <div className="mt-4">
       <button
@@ -102,24 +115,24 @@ function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType })
         aria-expanded={open}
         className="min-h-11 rounded-full bg-green-tint px-4 text-[13px] font-bold text-green-dark"
       >
-        Giorno: {TRAINING_LABEL[type]} {open ? '▴' : '▾'}
+        Giorno: {trainingLabel(type, sports)} {open ? '▴' : '▾'}
       </button>
       {open && (
         <fieldset className="mt-2">
           <legend className="sr-only">Tipo di giorno</legend>
           <div className="grid grid-cols-2 gap-2">
-            {TRAINING_TYPES.map((option) => (
+            {options.map((option) => (
               <button
-                key={option}
+                key={option.type}
                 type="button"
-                aria-pressed={option === type}
+                aria-pressed={option.type === type}
                 disabled={setType.isPending}
-                onClick={() => setType.mutate(option, { onSuccess: () => setOpen(false) })}
+                onClick={() => setType.mutate(option.type, { onSuccess: () => setOpen(false) })}
                 className={`min-h-11 rounded-button border px-3 text-[13px] font-semibold ${
-                  option === type ? 'border-green bg-green-tint text-green-dark' : 'border-line bg-surface text-ink-2'
+                  option.type === type ? 'border-green bg-green-tint text-green-dark' : 'border-line bg-surface text-ink-2'
                 }`}
               >
-                {TRAINING_LABEL[option]}
+                {option.label}
               </button>
             ))}
           </div>

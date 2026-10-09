@@ -81,9 +81,11 @@ Inserimento del peso mattutino, grafico con punti grezzi e media mobile, distanz
 Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornaliera, giorni rispettati, peso in kg/settimana), grafico a barre calorie contro linea del target (verde = rispettato, arancio = sotto), grafico peso 4 settimane con traguardo, distribuzione calorie per pasto, cibi più frequenti. Periodo senza dati: stato vuoto, non grafici a zero.
 
 ### Profilo
+Step 19: sezione **Obiettivo e sport** (stesse carte del Benvenuto, `data-tour="profile-goal"`) e pulsante "Rivedi il tutorial". Il **tutorial** è un popup sopra la barra in basso ("Tutorial · 1/8", titolo, testo breve, puntini, Indietro/Avanti, Salta); l'elemento spiegato ha un contorno verde (`data-tour-active`); focus sul titolo per VoiceOver; rispetta `prefers-reduced-motion`.
 Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), Acqua (obiettivo facoltativo in litri, elenco dei propri contenitori con elimina), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
 
 ### Benvenuto (prima apertura)
+Dal step 19 è in **3 passi** (Indietro / Avanti / Inizia): 1 Dati (sesso, nascita, altezza, peso), 2 Obiettivo (carte Mettere massa / Mantenere il peso / Definizione; per il cut ritmo e peso da raggiungere), 3 Allenamento (sport liberi come chip con "Palestra" consigliato, livello di attività). Le carte sono etichette alte almeno 56 px. Testo storico qui sotto:
 `/benvenuto`, mostrata finché non esiste il profilo (ADR-037): sesso, data di nascita, altezza, peso di oggi (salvato come prima pesata) e peso obiettivo facoltativo. Limiti di DOMAIN_RULES §10. Dopo il salvataggio non ricompare.
 
 ### Login

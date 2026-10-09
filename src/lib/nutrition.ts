@@ -1,3 +1,4 @@
+import type { TrainingType } from './labels'
 import {
   BMR_SEX_OFFSET,
   KCAL_PER_G_CARBS,
@@ -116,7 +117,7 @@ export function maintenance(bmrKcal: number, activityFactor: number): number {
 export function dayTarget(
   maintenanceKcal: number,
   surplusPct: number,
-  trainingType: 'rest' | 'gym' | 'football' | 'both',
+  trainingType: TrainingType,
   trainingBonusKcal: number,
 ): number {
   const base = maintenanceKcal * (1 + surplusPct)

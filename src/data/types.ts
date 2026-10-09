@@ -1,4 +1,5 @@
-import type { MealType } from '../lib/labels'
+import type { Goal } from '../lib/goals'
+import type { MealType, TrainingType } from '../lib/labels'
 import type { Nutrients, Per100g } from '../lib/nutrition'
 import type { FoodUnit, Portion } from '../lib/portions'
 
@@ -59,11 +60,19 @@ export interface Profile {
   fatGPerKg: number
   /** Obiettivo acqua scelto dall'utente; null = nessuno (ADR-049). */
   waterGoalMl: number | null
+  /** Massa, mantenimento o definizione (step 19, ADR-066). */
+  goal: Goal
+  /** Cut: perdita voluta in frazione del peso a settimana (0,005 = 0,5%). */
+  cutRatePct: number
+  /** Sport personali (al massimo 2): da qui i tipi di giorno. */
+  sports: string[]
+  /** Quando ha finito il tutorial; null = da mostrare. */
+  tutorialDoneAt: string | null
 }
 
 export interface DailyTarget {
   date: string
-  trainingType: 'rest' | 'gym' | 'football' | 'both'
+  trainingType: TrainingType
   targetKcal: number
   protein: number
   carbs: number

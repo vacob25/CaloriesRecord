@@ -4,7 +4,7 @@ import type { FoodValues } from '../lib/foodValidation'
 import { catalogToFood, parseCatalog, type CatalogItem } from '../lib/catalog'
 import type { Portion } from '../lib/portions'
 import type { MealType, TrainingType } from '../lib/labels'
-import type { ParamsValues, PersonalValues } from '../lib/profileValidation'
+import type { ParamsValues, PersonalValues, PlanValues } from '../lib/profileValidation'
 import {
   createFood,
   deleteFood,
@@ -24,7 +24,7 @@ import { listEntriesBetween } from './meals'
 import { listTargetsBetween } from './targets'
 import { acceptProposal, rejectProposal, runWeeklyRecalibration, type TdeeEstimate } from './recalibration'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
-import { createProfile, getProfile, updateParams, updatePersonal } from './profile'
+import { createProfile, getProfile, setTutorialDone, updateParams, updatePersonal, updatePlan } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
 import type { MealEntry } from './types'
 import {
@@ -194,15 +194,33 @@ function useInvalidate() {
 export function useCreateProfile() {
   const invalidate = useInvalidate()
   return useMutation({
-    mutationFn: async ({ values, today }: { values: PersonalValues; today: string }) => {
+    mutationFn: async ({ values, plan, activityFactor, today }: { values: PersonalValues; plan: PlanValues; activityFactor: number; today: string }) => {
       if (values.weightKg !== null) await saveWeight(today, values.weightKg)
-      await createProfile(values)
+      await createProfile(values, plan, activityFactor)
     },
     onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.weights, queryKeys.tdee),
   })
 }
 
 /** Modifica del profilo: vale da oggi (ADR-039); i giorni passati non cambiano. */
+export function useUpdatePlan() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: async ({ plan, today }: { plan: PlanValues; today: string }) => {
+      await updatePlan(plan)
+      await recomputeTarget(today)
+    },
+    // Il target di oggi si ricalcola con il nuovo obiettivo; statistiche e ricalibrazione seguono (bande diverse).
+    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
+  })
+}
+
+/** Tutorial finito (`true`) o da rivedere (`false`). */
+export function useSetTutorialDone() {
+  const invalidate = useInvalidate()
+  return useMutation({ mutationFn: setTutorialDone, onSuccess: () => invalidate(queryKeys.profile) })
+}
+
 export function useUpdateProfile() {
   const invalidate = useInvalidate()
   return useMutation({

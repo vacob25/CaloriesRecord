@@ -46,7 +46,7 @@ export function WaterCard({ date }: { date: string }) {
   }
 
   return (
-    <section aria-labelledby="water-title" className={`${cardClass} mx-5 mt-4 px-5 py-4`}>
+    <section aria-labelledby="water-title" data-tour="water" className={`${cardClass} mx-5 mt-4 px-5 py-4`}>
       <div className="flex items-baseline justify-between gap-3">
         <h2 id="water-title" className="text-[18px] font-extrabold">
           Acqua

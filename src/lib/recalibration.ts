@@ -1,7 +1,5 @@
 import {
   ENERGY_PER_KG,
-  RECAL_BAND_MAX,
-  RECAL_BAND_MIN,
   RECAL_FAT_WARNING_KG_WEEK,
   RECAL_MAX_CHANGE,
   RECAL_MIN_DAYS,
@@ -12,6 +10,7 @@ import {
   TARGET_ROUNDING_KCAL,
 } from './constants'
 import { addDays, daysBetween } from './dates'
+import { rateBandKgWeek, restDayTargetKcal, type GoalProfile } from './goals'
 import { round } from './numbers'
 import { slopeKgPerWeek, type WeightLog } from './weight'
 
@@ -30,7 +29,10 @@ export interface RecalInput {
   days: readonly RecalDay[]
   weights: readonly WeightLog[]
   currentMaintenanceKcal: number
-  surplusPct: number
+  /** Obiettivo e parametri (step 19): decidono la banda del peso e il target nuovo. */
+  goalProfile: GoalProfile
+  /** Peso di oggi (media mobile o ultima pesata): serve al cut, dove banda e deficit sono in % del peso. */
+  weightKg: number
 }
 
 export type RecalEvaluation =
@@ -52,10 +54,12 @@ export type RecalEvaluation =
       estimatedMaintenanceKcal: number
       /** Solo con status 'proposal'. */
       proposedMaintenanceKcal: number | null
-      /** Target nuovo nei giorni di riposo (mantenimento proposto · (1 + surplus)). */
+      /** Target nuovo nei giorni di riposo (mantenimento proposto + scostamento dell'obiettivo). */
       proposedRestTargetKcal: number | null
-      /** Ritmo oltre +0,5 kg/settimana: l'eccesso è soprattutto grasso. */
+      /** Massa: ritmo oltre +0,5 kg/settimana, l'eccesso è soprattutto grasso. */
       fatWarning: boolean
+      /** Cut: perdita oltre l'1% del peso a settimana, si rischia di perdere muscolo. */
+      fastLossWarning: boolean
     }
 
 /** Un giorno conta come registrato se ha almeno il 50% del suo target (sotto: giorno quasi certamente dimenticato). */
@@ -98,6 +102,7 @@ export function evaluateRecalibration(input: RecalInput): RecalEvaluation {
     return { status: 'notEnoughData', windowDays, registeredDays: registered.length, weightCount, reasons }
   }
 
+  const band = rateBandKgWeek(input.goalProfile.goal, input.weightKg)
   const averageIntakeKcal = registered.reduce((sum, day) => sum + day.kcal, 0) / registered.length
   const realSurplus = (slopeWeek / 7) * ENERGY_PER_KG
   const estimatedMaintenanceKcal = averageIntakeKcal - realSurplus
@@ -108,10 +113,11 @@ export function evaluateRecalibration(input: RecalInput): RecalEvaluation {
     averageIntakeKcal,
     slopeKgWeek: slopeWeek,
     estimatedMaintenanceKcal,
-    fatWarning: slopeWeek > RECAL_FAT_WARNING_KG_WEEK,
+    fatWarning: input.goalProfile.goal === 'bulk' && slopeWeek > RECAL_FAT_WARNING_KG_WEEK,
+    fastLossWarning: input.goalProfile.goal === 'cut' && slopeWeek < band.min,
   }
 
-  if (slopeWeek >= RECAL_BAND_MIN && slopeWeek <= RECAL_BAND_MAX) {
+  if (slopeWeek >= band.min && slopeWeek <= band.max) {
     return { status: 'inBand', ...base, proposedMaintenanceKcal: null, proposedRestTargetKcal: null }
   }
   const low = input.currentMaintenanceKcal * (1 - RECAL_MAX_CHANGE)
@@ -121,7 +127,7 @@ export function evaluateRecalibration(input: RecalInput): RecalEvaluation {
     status: 'proposal',
     ...base,
     proposedMaintenanceKcal,
-    proposedRestTargetKcal: round10(proposedMaintenanceKcal * (1 + input.surplusPct)),
+    proposedRestTargetKcal: restDayTargetKcal(proposedMaintenanceKcal, input.goalProfile, input.weightKg),
   }
 }
 

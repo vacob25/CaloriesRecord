@@ -36,7 +36,19 @@ export function fractionToPercent(fraction: number): number {
   return round(fraction * 100, 1)
 }
 
-/** "+0,25", "−0,1" (segno sempre esplicito per le variazioni). */
+const fixedFormatters = new Map<number, Intl.NumberFormat>()
+
+/** Sempre `decimals` cifre decimali, anche se zeri: 0,2 con 2 cifre → "0,20". */
+export function formatFixed(value: number, decimals: number): string {
+  let formatter = fixedFormatters.get(decimals)
+  if (!formatter) {
+    formatter = new Intl.NumberFormat('it-IT', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+    fixedFormatters.set(decimals, formatter)
+  }
+  return formatter.format(value)
+}
+
+/** "+0,25", "-0,10" (segno sempre esplicito per le variazioni, cifre fisse). */
 export function formatSigned(value: number, decimals: number): string {
-  return `${value > 0 ? '+' : ''}${formatNumber(value, decimals)}`
+  return `${value > 0 ? '+' : ''}${formatFixed(value, decimals)}`
 }

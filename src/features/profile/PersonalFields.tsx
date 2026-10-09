@@ -8,10 +8,12 @@ interface PersonalFieldsProps {
   onChange: (form: PersonalFormInput) => void
   /** Alla prima apertura si chiede anche il peso di oggi (ADR-037). */
   askWeight: boolean
+  /** Al Benvenuto il peso obiettivo si chiede nel passo dell'obiettivo (serve al cut): qui si nasconde. */
+  askGoalWeight?: boolean
 }
 
 /** Campi dei dati personali, condivisi da Benvenuto e Profilo. */
-export function PersonalFields({ form, errors, onChange, askWeight }: PersonalFieldsProps) {
+export function PersonalFields({ form, errors, onChange, askWeight, askGoalWeight = true }: PersonalFieldsProps) {
   const set = (field: keyof PersonalFormInput) => (event: { target: { value: string } }) =>
     onChange({ ...form, [field]: event.target.value })
 
@@ -48,15 +50,17 @@ export function PersonalFields({ form, errors, onChange, askWeight }: PersonalFi
           error={errors.weightKg}
         />
       )}
-      <Field
-        id="goalWeightKg"
-        label="Peso obiettivo (facoltativo)"
-        inputMode="decimal"
-        suffix="kg"
-        value={form.goalWeightKg}
-        onChange={set('goalWeightKg')}
-        error={errors.goalWeightKg}
-      />
+      {askGoalWeight && (
+        <Field
+          id="goalWeightKg"
+          label="Peso obiettivo (facoltativo)"
+          inputMode="decimal"
+          suffix="kg"
+          value={form.goalWeightKg}
+          onChange={set('goalWeightKg')}
+          error={errors.goalWeightKg}
+        />
+      )}
     </div>
   )
 }

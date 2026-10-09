@@ -1,3 +1,4 @@
+import type { GoalProfile } from '../lib/goals'
 import { addDays, weekRange } from '../lib/dates'
 import { bmr, maintenance } from '../lib/nutrition'
 import { acceptedActivityFactor, evaluateRecalibration, type RecalEvaluation } from '../lib/recalibration'
@@ -52,7 +53,10 @@ export interface RecalibrationState {
   evaluation: RecalEvaluation
   currentBmrKcal: number | null
   currentMaintenanceKcal: number | null
-  surplusPct: number
+  /** Obiettivo e parametri attuali (step 19), per banda del peso e target proposto. */
+  goalProfile: GoalProfile
+  /** Peso di oggi usato nel calcolo (0 se manca). */
+  weightKg: number
 }
 
 async function firstUseDate(): Promise<string | null> {
@@ -91,7 +95,11 @@ export async function runWeeklyRecalibration(today: string): Promise<Recalibrati
       : null
   const currentMaintenanceKcal =
     profile && currentBmrKcal !== null ? Math.round(maintenance(currentBmrKcal, profile.activityFactor)) : null
-  const surplusPct = profile?.surplusPct ?? 0
+  const goalProfile: GoalProfile = {
+    goal: profile?.goal ?? 'bulk',
+    surplusPct: profile?.surplusPct ?? 0,
+    cutRatePct: profile?.cutRatePct ?? 0,
+  }
 
   const kcalByDay = new Map<string, number>()
   for (const entry of entries) kcalByDay.set(entry.entryDate, (kcalByDay.get(entry.entryDate) ?? 0) + entry.kcal)
@@ -108,7 +116,8 @@ export async function runWeeklyRecalibration(today: string): Promise<Recalibrati
     days,
     weights,
     currentMaintenanceKcal: currentMaintenanceKcal ?? 0,
-    surplusPct,
+    goalProfile,
+    weightKg: weightKg ?? 0,
   })
 
   let estimate = existing.data ? toEstimate(existing.data as EstimateRow) : null
@@ -130,7 +139,7 @@ export async function runWeeklyRecalibration(today: string): Promise<Recalibrati
     throwIfError(error)
     estimate = toEstimate(data as EstimateRow)
   }
-  return { estimate, evaluation, currentBmrKcal, currentMaintenanceKcal, surplusPct }
+  return { estimate, evaluation, currentBmrKcal, currentMaintenanceKcal, goalProfile, weightKg: weightKg ?? 0 }
 }
 
 /** Accetta: activity_factor = proposto / BMR attuale. Vale dal giorno dopo: il target di oggi non cambia. */

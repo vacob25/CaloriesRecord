@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatNumber, parseDecimal, round } from './numbers'
+import { formatFixed, formatNumber, formatSigned, parseDecimal, round } from './numbers'
 
 describe('parseDecimal', () => {
   it.each([
@@ -33,5 +33,14 @@ describe('formatNumber', () => {
   it('usa la virgola italiana e taglia i decimali in più', () => {
     expect(formatNumber(3.456, 1)).toBe('3,5')
     expect(formatNumber(120, 1)).toBe('120')
+  })
+})
+
+describe('formatFixed / formatSigned (cifre fisse)', () => {
+  it('0,2 con 2 cifre → 0,20; segno esplicito', () => {
+    expect(formatFixed(0.2, 2)).toBe('0,20')
+    expect(formatSigned(0.2, 2)).toBe('+0,20')
+    expect(formatSigned(-0.375, 2)).toBe('-0,38')
+    expect(formatSigned(0, 1)).toBe('0,0')
   })
 })

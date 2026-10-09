@@ -10,8 +10,8 @@ import { WeightPill } from '../../components/WeightPill'
 import { errorMessage } from '../../data/dbErrors'
 import { useDeleteWeight, useProfile, useWeights } from '../../data/queries'
 import { addDays, formatLongDate } from '../../lib/dates'
-import { TARGET_RATE_MAX_KG_WEEK, TARGET_RATE_MIN_KG_WEEK } from '../../lib/constants'
-import { formatNumber, formatSigned } from '../../lib/numbers'
+import { describeTargetRate } from '../../lib/goals'
+import { formatNumber } from '../../lib/numbers'
 import {
   distanceToGoal,
   lastLogOnOrBefore,
@@ -68,7 +68,7 @@ export function WeightScreen() {
             <Stat
               label="Andamento"
               value={slope === null ? '—' : `${slope > 0 ? '+' : ''}${formatNumber(slope, 2)} kg/sett.`}
-              note={slope === null ? 'servono 10 pesate in 28 giorni' : `obiettivo ${formatSigned(TARGET_RATE_MIN_KG_WEEK, 2)} / ${formatSigned(TARGET_RATE_MAX_KG_WEEK, 2)}`}
+              note={slope === null ? 'servono 10 pesate in 28 giorni' : `obiettivo: ${describeTargetRate({ goal: profile.data?.goal ?? 'bulk', surplusPct: profile.data?.surplusPct ?? 0, cutRatePct: profile.data?.cutRatePct ?? 0 }, current)}`}
             />
             <Stat
               label="Al traguardo"

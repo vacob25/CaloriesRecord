@@ -22,15 +22,12 @@ export function isMealType(value: unknown): value is MealType {
   return typeof value === 'string' && (MEAL_TYPES as readonly string[]).includes(value)
 }
 
-export const TRAINING_TYPES = ['rest', 'gym', 'football', 'both'] as const
+/**
+ * Tipo di giorno. 'sport_1' e 'sport_2' sono il primo e il secondo sport del profilo (step 19): le etichette si
+ * ricavano da lib/sports.ts. Prima erano fissi Palestra e Calcio ('gym', 'football').
+ */
+export const TRAINING_TYPES = ['rest', 'sport_1', 'sport_2', 'both'] as const
 export type TrainingType = (typeof TRAINING_TYPES)[number]
-
-export const TRAINING_LABEL: Record<TrainingType, string> = {
-  rest: 'Riposo',
-  gym: 'Palestra',
-  football: 'Calcio',
-  both: 'Palestra + calcio',
-}
 
 export type Sex = 'male' | 'female'
 export const SEX_LABEL: Record<Sex, string> = { male: 'Uomo', female: 'Donna' }

@@ -54,7 +54,9 @@ export function TodayScreen() {
           <p className="text-[13px] font-semibold text-muted first-letter:uppercase">{formatLongDate(today)}</p>
           <h1 className="text-[28px] font-extrabold leading-tight">Oggi</h1>
         </div>
-        <WeightPill date={today} />
+        <div data-tour="weight">
+          <WeightPill date={today} />
+        </div>
       </header>
 
       <WeightReminder today={today} />
@@ -75,7 +77,7 @@ export function TodayScreen() {
       {deleteEntry.isError && <ErrorState message={errorMessage(deleteEntry.error)} />}
 
       {entries.isSuccess && (
-        <div className="space-y-3 px-5 pt-4">
+        <div data-tour="meals" className="space-y-3 px-5 pt-4">
           {MEAL_TYPES.map((meal) => {
             const { entries: mealEntries, total: mealTotal } = groups[meal]
             const addLink = `/aggiungi?pasto=${meal}`

@@ -18,7 +18,9 @@ target_giorno = target_base + (training_type ≠ rest ? training_bonus_kcal : 0)
 - Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052).
 - Arrotondare il target al multiplo di 10 kcal più vicino.
 - `activity_factor` 1,60 = circa 6 sedute di allenamento a settimana, ad esempio 3 di palestra + 3 di sport di squadra (valore di partenza, poi corretto dalla ricalibrazione).
-- `training_type`: `rest`, `gym`, `football`, `both`. Il bonus è uno solo (non si somma) per non gonfiare il target nei giorni doppi.
+- `training_type`: `rest`, `sport_1`, `sport_2`, `both` (step 19, ADR-068; i nomi vengono dagli sport del profilo). Il bonus è uno solo (non si somma) per non gonfiare il target nei giorni doppi.
+- **Obiettivo (step 19, ADR-066):** `target_base = mantenimento + scostamento`. Massa: `mantenimento · surplus_pct`. Mantenimento: 0. Cut: `−(peso_kg · ritmo · 7700 / 7)`, ritmo = `cut_rate_pct` (0,5% / 0,7% / 1,0% del peso a settimana), peso = quello del giorno. Esempio cut (75 kg, 0,5%): deficit 412,5 → riposo 2848 − 412,5 = 2435,5 → **2440 kcal**; con bonus 200 → 2635,5 → **2640**.
+- Avvisi (non blocchi): massa oltre +0,5 kg/sett.; cut oltre 1%/sett.; target di riposo sotto il BMR; cut sotto i 18 anni (nota medica). Il cut richiede un peso obiettivo sotto il peso attuale.
 - Tetto di sicurezza di interfaccia: avviso (non blocco) se `surplus_pct` > 20% o se il ritmo stimato supera +0,5 kg/settimana (`GAIN_RATE_WARNING_KG_WEEK`).
 - Ritmo stimato (kg/settimana, ADR-053) = `mantenimento_oggi / activity_factor_attuale · activity_factor_nuovo · surplus_pct · 7 / ENERGY_PER_KG`: surplus dei giorni di riposo, bonus escluso. Si controlla al salvataggio dei parametri. Profilo di esempio: 2848 · 0,10 · 7 / 7700 ≈ 0,26.
 
@@ -64,8 +66,8 @@ surplus_reale = slope · ENERGY_PER_KG          (ENERGY_PER_KG = 7700)
 mantenimento_stimato = I − surplus_reale
 ```
 Decisione:
-- Se la pendenza in kg/settimana è tra **+0,20 e +0,40**: nessuna proposta (si è nel ritmo voluto).
-- Altrimenti: `mantenimento_proposto = clamp(mantenimento_stimato, attuale · 0,95, attuale · 1,05)`, arrotondato a 10 kcal. Il target nuovo si ricava come sempre: `mantenimento_proposto · (1 + surplus_pct)` (+ bonus allenamento nei giorni di allenamento). Al massimo una proposta a settimana.
+- Se la pendenza in kg/settimana è dentro la **banda dell'obiettivo**: nessuna proposta. Massa **+0,20/+0,40**; mantenimento **±0,10**; cut da **−1,0% a −0,5% del peso** (peso di oggi, 3 decimali). Sotto −1% in cut si avvisa che si rischia di perdere muscolo.
+- Altrimenti: `mantenimento_proposto = clamp(mantenimento_stimato, attuale · 0,95, attuale · 1,05)`, arrotondato a 10 kcal. Il target nuovo si ricava come sempre dall'obiettivo (massa: `· (1 + surplus_pct)`; cut: meno il deficit) (+ bonus allenamento nei giorni di allenamento). Al massimo una proposta a settimana.
 - Se il peso scende o resta fermo con target e registrazione costanti, la proposta alza il mantenimento (entro il +5%). Se la pendenza supera +0,50 kg/settimana, lo abbassa e avvisa che l'eccesso è soprattutto grasso.
 - **Accettare** una proposta imposta `activity_factor = mantenimento_proposto / BMR_attuale` (3 decimali), così il BMR continua a seguire il peso che sale. **Rifiutare** non cambia nulla. Le righe di `daily_targets` già create non si toccano; vale dal giorno successivo.
 

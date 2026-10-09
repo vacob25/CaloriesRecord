@@ -75,6 +75,19 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,6, surplus 0,10 | ≈ 0,2589 kg/settimana |
 | `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,8, surplus 0,20 | ≈ 0,5825 (2848 / 1,6 · 1,8 = 3204; oltre l'avviso) |
 
+### goals.ts, sports.ts, tutorial.ts (step 19)
+| Funzione | Input | Atteso |
+| --- | --- | --- |
+| `cutDeficitKcal` | 75 kg, 0,5% | 412,5 |
+| `restDayTargetKcal` | 2848, cut 0,5%, 75 kg | 2440 |
+| `rateBandKgWeek` | cut, 75 kg | da −0,75 a −0,375 |
+| `weeksToGoal` | 75 → 70 kg, 0,5% | ceil(ln(70/75)/ln(0,995)) = 14 |
+| `planWarnings` | cut 1,2% | avviso ritmo; cut under 18 → nota medica |
+| `addSport` / `cleanSportName` | duplicati con accenti/maiuscole, > 24 caratteri, terzo sport | rifiutati |
+| `trainingDayTypes` | ["Palestra","Calcio"] | Riposo, Palestra, Calcio, Palestra + calcio |
+| `coerceTrainingType` | `both` con un solo sport | `rest` |
+| `nextStep` / `previousStep` / `tourLabel` | indici 0-7 | ferma agli estremi; "1/8"…"8/8" |
+
 ### portions.ts
 | Caso | Atteso |
 | --- | --- |

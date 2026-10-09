@@ -6,6 +6,7 @@ import { ScreenHeader } from '../../components/ScreenHeader'
 import { ErrorState, FormMessage, ListSkeleton } from '../../components/States'
 import { cardClass, primaryButtonClass, secondaryButtonClass } from '../../components/ui'
 import { useToday } from '../../components/useToday'
+import { useTour } from '../../app/tour'
 import { signOut } from '../../data/auth'
 import { errorMessage } from '../../data/dbErrors'
 import { useDayTarget, useProfile, useUpdateProfile } from '../../data/queries'
@@ -19,11 +20,12 @@ import {
   type PersonalField,
   type PersonalFormInput,
 } from '../../lib/profileValidation'
-import { GAIN_RATE_WARNING_KG_WEEK } from '../../lib/constants'
-import { formatNumber, fractionToPercent } from '../../lib/numbers'
-import { estimatedGainKgPerWeek } from '../../lib/targets'
+import { planWarnings } from '../../lib/goals'
+import { fractionToPercent } from '../../lib/numbers'
+import { rescaledMaintenanceKcal } from '../../lib/targets'
 import { AccountSection } from './AccountSection'
 import { PersonalFields } from './PersonalFields'
+import { PlanSection } from './PlanSection'
 import { RecalibrationCard } from './RecalibrationCard'
 import { WaterSection } from './WaterSection'
 
@@ -42,6 +44,7 @@ const paramsForm = (p: Profile): ParamsFormInput => ({
 
 export function ProfileScreen() {
   const profile = useProfile()
+  const tour = useTour()
   const [busy, setBusy] = useState(false)
 
   async function handleSignOut() {
@@ -60,6 +63,7 @@ export function ProfileScreen() {
         <>
           <RecalibrationCard />
           <PersonalSection profile={profile.data} />
+          <PlanSection profile={profile.data} />
           <ParamsSection profile={profile.data} />
           <WaterSection profile={profile.data} />
           <AccountSection />
@@ -69,7 +73,10 @@ export function ProfileScreen() {
         <button type="button" onClick={handleSignOut} disabled={busy} className={secondaryButtonClass}>
           {busy ? 'Uscita in corso…' : 'Esci'}
         </button>
-        <Link to="/privacy" className="mt-3 flex min-h-11 items-center justify-center text-[15px] font-semibold text-green-dark">
+        <button type="button" onClick={tour.start} className="mt-3 flex min-h-11 w-full items-center justify-center text-[15px] font-semibold text-green-dark">
+          Rivedi il tutorial
+        </button>
+        <Link to="/privacy" className="flex min-h-11 items-center justify-center text-[15px] font-semibold text-green-dark">
           Privacy
         </Link>
       </div>
@@ -131,13 +138,13 @@ const PARAM_FIELDS: { field: ParamsField; label: string; suffix?: string; hint: 
     field: 'surplusPct',
     label: 'Surplus',
     suffix: '%',
-    hint: 'Calorie in più rispetto al mantenimento per aumentare di peso. +10% è un bulk moderato.',
+    hint: 'Calorie in più rispetto al mantenimento per aumentare di massa (solo per l’obiettivo Mettere massa). +10% è un surplus moderato.',
   },
   {
     field: 'trainingBonusKcal',
     label: 'Bonus allenamento',
     suffix: 'kcal',
-    hint: 'Si aggiunge al target nei giorni di palestra o calcio (uno solo, anche se fai entrambi).',
+    hint: 'Si aggiunge al target nei giorni di allenamento, con uno o due sport (il bonus è uno solo, non si somma).',
   },
   {
     field: 'proteinGPerKg',
@@ -178,12 +185,17 @@ function ParamsSection({ profile }: { profile: Profile }) {
     if (!result.ok) return setErrors(result.errors)
     setErrors({})
     const extra: string[] = []
-    // §2: avviso se il ritmo stimato supera +0,5 kg/settimana (serve il mantenimento di oggi).
-    if (target.data?.status === 'ready') {
-      const rate = estimatedGainKgPerWeek(target.data.target.maintenanceKcal, profile.activityFactor, result.value.activityFactor, result.value.surplusPct)
-      if (rate > GAIN_RATE_WARNING_KG_WEEK) {
-        extra.push(`Con questi parametri il ritmo stimato è circa +${formatNumber(rate, 2)} kg/settimana, oltre +0,5: l’aumento sarebbe soprattutto grasso.`)
-      }
+    // §2: avvisi sul piano (ritmo troppo alto per l'obiettivo, target sotto il BMR): serve il mantenimento di oggi.
+    if (target.data?.status === 'ready' && target.data.weightKg !== null) {
+      const maintenance = rescaledMaintenanceKcal(target.data.target.maintenanceKcal, profile.activityFactor, result.value.activityFactor)
+      extra.push(
+        ...planWarnings(
+          { goal: profile.goal, surplusPct: result.value.surplusPct, cutRatePct: profile.cutRatePct },
+          maintenance,
+          target.data.weightKg,
+          target.data.target.maintenanceKcal / profile.activityFactor,
+        ),
+      )
     }
     setWarnings([...result.warnings, ...extra])
     // Il profilo ricaricato dopo questo salvataggio avrà questi valori: non deve riscrivere ciò che si sta digitando.
@@ -198,7 +210,7 @@ function ParamsSection({ profile }: { profile: Profile }) {
       </h2>
       <p className="mt-1 text-[13px] text-muted">Sono stime di partenza: la ricalibrazione le corregge con i tuoi dati.</p>
       <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
-        {PARAM_FIELDS.map(({ field, label, suffix, hint }) => (
+        {PARAM_FIELDS.filter(({ field }) => field !== 'surplusPct' || profile.goal === 'bulk').map(({ field, label, suffix, hint }) => (
           <Field
             key={field}
             id={field}

@@ -61,7 +61,7 @@ export function StatsScreen() {
           ›
         </span>
       </Link>
-      <div className="px-5 pt-4">
+      <div data-tour="stats-period" className="px-5 pt-4">
         <div className="grid grid-cols-2 gap-1 rounded-button bg-line/60 p-1" role="group" aria-label="Periodo">
           {(['week', 'month'] as const).map((option) => (
             <button

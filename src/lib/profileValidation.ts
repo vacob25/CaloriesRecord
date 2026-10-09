@@ -8,7 +8,9 @@ import {
   WEIGHT_MIN_KG,
 } from './constants'
 import type { Sex } from './labels'
+import { activityFactorFor, CUT_PACES, isGoal, validateCutGoalWeight, type ActivityLevelKey, type Goal } from './goals'
 import { parseDecimal, round } from './numbers'
+import { parseSports } from './sports'
 import { ageOn } from './weight'
 
 type Result<T> = { ok: true; value: T } | { ok: false; message: string }
@@ -149,5 +151,55 @@ export function validateParams(
       fatGPerKg: round(fat, 2),
     },
     warnings,
+  }
+}
+
+// ─── Obiettivo, sport e attività (step 19) ──────────────────────────────────
+
+/** Ciò che si salva nel profilo per obiettivo e sport (Benvenuto e Profilo). */
+export interface PlanValues {
+  goal: Goal
+  cutRatePct: number
+  sports: string[]
+}
+
+export interface PlanFormInput {
+  goal: Goal | ''
+  cutRatePct: number
+  sports: string[]
+  /** Solo al Benvenuto: livello di attività da cui si ricava il fattore (null altrove). */
+  activityLevel: ActivityLevelKey | ''
+}
+
+export type PlanField = 'goal' | 'activityLevel' | 'goalWeightKg'
+
+/**
+ * Valida obiettivo, ritmo del cut, sport e (al Benvenuto) livello di attività.
+ * Il cut richiede un peso obiettivo più basso del peso di oggi: senza, non c'è un punto d'arrivo.
+ */
+export function validatePlan(
+  input: PlanFormInput,
+  context: { weightKg: number | null; goalWeightKg: number | null },
+  requireActivity: boolean,
+): { ok: true; value: { plan: PlanValues; activityFactor: number | null } } | { ok: false; errors: Partial<Record<PlanField, string>> } {
+  const errors: Partial<Record<PlanField, string>> = {}
+  if (!isGoal(input.goal)) errors.goal = 'Scegli il tuo obiettivo.'
+  if (requireActivity && input.activityLevel === '') errors.activityLevel = 'Scegli quanto sei attivo: serve a stimare il tuo metabolismo.'
+  if (input.goal === 'cut') {
+    if (context.goalWeightKg === null) errors.goalWeightKg = 'Per la definizione scrivi il peso che vuoi raggiungere.'
+    else if (context.weightKg !== null) {
+      const message = validateCutGoalWeight(context.weightKg, context.goalWeightKg)
+      if (message) errors.goalWeightKg = message
+    }
+  }
+  if (Object.keys(errors).length > 0 || !isGoal(input.goal)) return { ok: false, errors }
+
+  const validPace = CUT_PACES.some((pace) => pace.pct === input.cutRatePct)
+  return {
+    ok: true,
+    value: {
+      plan: { goal: input.goal, cutRatePct: validPace ? input.cutRatePct : CUT_PACES[0]!.pct, sports: parseSports(input.sports) },
+      activityFactor: input.activityLevel === '' ? null : activityFactorFor(input.activityLevel),
+    },
   }
 }

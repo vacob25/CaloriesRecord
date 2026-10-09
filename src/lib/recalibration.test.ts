@@ -18,7 +18,8 @@ const input = (perWeek: number) => ({
   days: days(),
   weights: weightsWithSlope(perWeek),
   currentMaintenanceKcal: 2848,
-  surplusPct: 0.1,
+  goalProfile: { goal: 'bulk' as const, surplusPct: 0.1, cutRatePct: 0.005 },
+  weightKg: 75,
 })
 
 describe('evaluateRecalibration (TESTING.md)', () => {
@@ -94,5 +95,49 @@ describe('acceptedActivityFactor', () => {
   it('accettare imposta activity_factor = proposto / BMR attuale (3 decimali)', () => {
     expect(acceptedActivityFactor(2990, 1780)).toBe(1.68)
     expect(acceptedActivityFactor(2710, 1780)).toBe(1.522)
+  })
+})
+
+describe('bande per obiettivo (step 19, ADR-066)', () => {
+  // Stesso contesto, ma si mangia meno: 28 giorni a 2440 kcal (target del cut 0,5%: 2440).
+  const withGoal = (perWeek: number, goalProfile: { goal: 'bulk' | 'maintain' | 'cut'; surplusPct: number; cutRatePct: number }, kcal = 3200) => ({
+    ...input(perWeek),
+    days: days(kcal),
+    goalProfile,
+  })
+  const cut = { goal: 'cut' as const, surplusPct: 0.1, cutRatePct: 0.005 }
+  const maintain = { goal: 'maintain' as const, surplusPct: 0.1, cutRatePct: 0.005 }
+
+  it('cut: −0,50 kg/sett. è in banda (−0,75/−0,375), mantenimento stimato 2990', () => {
+    const result = evaluateRecalibration(withGoal(-0.5, cut, 2440))
+    expect(result).toMatchObject({ status: 'inBand', fatWarning: false, fastLossWarning: false })
+    if (result.status !== 'notEnoughData') expect(result.estimatedMaintenanceKcal).toBeCloseTo(2990, 0)
+  })
+
+  it('cut troppo lento: −0,10 → stimato 2550, proposto 2710 (tetto −5%: 2705,6), target riposo cut 2300', () => {
+    const result = evaluateRecalibration(withGoal(-0.1, cut, 2440))
+    expect(result).toMatchObject({ status: 'proposal', proposedMaintenanceKcal: 2710, proposedRestTargetKcal: 2300, fastLossWarning: false })
+    if (result.status !== 'notEnoughData') expect(result.estimatedMaintenanceKcal).toBeCloseTo(2550, 0)
+  })
+
+  it('cut troppo veloce: −0,90 (oltre l’1% del peso) → avviso muscolo, il mantenimento sale al massimo +5%: 2990', () => {
+    const result = evaluateRecalibration(withGoal(-0.9, cut, 2440))
+    expect(result).toMatchObject({ status: 'proposal', proposedMaintenanceKcal: 2990, proposedRestTargetKcal: 2580, fastLossWarning: true, fatWarning: false })
+  })
+
+  it('cut: il +0,25 del massa NON è in banda (si ingrassa durante un cut)', () => {
+    expect(evaluateRecalibration(withGoal(0.25, cut, 2440)).status).toBe('proposal')
+  })
+
+  it('mantenimento: stabile è in banda; +0,30 propone di abbassare, senza avviso grasso del massa', () => {
+    expect(evaluateRecalibration(withGoal(0.05, maintain, 2850)).status).toBe('inBand')
+    const result = evaluateRecalibration(withGoal(0.3, maintain, 2850))
+    expect(result).toMatchObject({ status: 'proposal', fatWarning: false, fastLossWarning: false })
+  })
+
+  it('la banda del cut segue il peso: a 100 kg −0,50 è il limite lento, −0,40 è fuori', () => {
+    const heavy = (perWeek: number) => ({ ...withGoal(perWeek, cut, 2440), weightKg: 100 })
+    expect(evaluateRecalibration(heavy(-0.5)).status).toBe('inBand')
+    expect(evaluateRecalibration(heavy(-0.4)).status).toBe('proposal')
   })
 })

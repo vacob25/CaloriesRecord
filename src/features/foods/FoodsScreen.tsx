@@ -71,7 +71,7 @@ export function FoodsScreen() {
   return (
     <>
       <ScreenHeader title="Cibi" />
-      <div className="grid grid-cols-2 gap-3 px-5 pt-4">
+      <div data-tour="foods-actions" className="grid grid-cols-2 gap-3 px-5 pt-4">
         <Link to="/cibi/nuovo" className={`${primaryButtonClass} flex items-center justify-center`}>
           Nuovo cibo
         </Link>

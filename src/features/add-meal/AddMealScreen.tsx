@@ -103,7 +103,7 @@ export function AddMealScreen() {
   return (
     <>
       <ScreenHeader title={`Aggiungi a ${mealName}`} backTo="/" />
-      <div className="px-5 pt-4">
+      <div data-tour="add-search" className="px-5 pt-4">
         <MealPicker name="meal" value={meal} onChange={setMeal} />
         <div className="mt-3 flex items-end gap-2">
           <div className="flex-1">

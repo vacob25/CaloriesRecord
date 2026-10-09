@@ -61,7 +61,7 @@ src/
   components/     UI condivisa: SheetFrame, GramsSheet, ConfirmButton, FavoriteButton, Field, Icon,
                   MacroBar, MealPicker, OfflineBanner, Ring, ScreenHeader, States, Toast,
                   WaterIcon, WeightChart, WeightPill, ui.ts, useToday.ts
-  app/            router, layout, provider, guardie delle rotte, barra di navigazione, avviso di aggiornamento
+  app/            router, layout, provider, guardie delle rotte, barra di navigazione, avviso di aggiornamento, tutorial a popup (`tour.tsx`, `TourPopup.tsx`)
   styles/         tailwind e token (index.css)
 supabase/
   migrations/     SQL numerati (001, 002, 003; vedi DATA_MODEL.md)

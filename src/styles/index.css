@@ -56,3 +56,14 @@
     }
   }
 }
+
+/* Tutorial (step 19): l'elemento del passo attuale ha un contorno e si porta in vista sotto l'intestazione. */
+[data-tour] {
+  scroll-margin-top: 16px;
+}
+[data-tour-active='true'] {
+  outline: 3px solid var(--color-green);
+  outline-offset: 4px;
+  border-radius: var(--radius-card);
+  transition: outline-color 0.2s;
+}

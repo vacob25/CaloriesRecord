@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeDayTarget, estimatedGainKgPerWeek, progress, ringStatus, withTrainingType } from './targets'
+import { computeDayTarget, progress, rescaledMaintenanceKcal, ringStatus, withTrainingType } from './targets'
 
 // Profilo di esempio FITTIZIO (DOMAIN_RULES.md): uomo, 75 kg, 180 cm, 20 anni il giorno considerato.
 const profile = {
@@ -8,7 +8,9 @@ const profile = {
   birthDate: '2006-01-15',
   heightCm: 180,
   activityFactor: 1.6,
+  goal: 'bulk' as const,
   surplusPct: 0.1,
+  cutRatePct: 0.005,
   trainingBonusKcal: 200,
   proteinGPerKg: 2,
   fatGPerKg: 1,
@@ -25,7 +27,7 @@ describe('computeDayTarget — ACCETTAZIONE step 6', () => {
   })
 
   it('calcio: target 3330, macro 150/75/514', () => {
-    expect(computeDayTarget(profile, 75, '2026-10-08', 'football')).toMatchObject({
+    expect(computeDayTarget(profile, 75, '2026-10-08', 'sport_2')).toMatchObject({
       targetKcal: 3330,
       macros: { protein: 150, fat: 75, carbs: 514 },
     })
@@ -61,13 +63,35 @@ describe('progress', () => {
   })
 })
 
-describe('estimatedGainKgPerWeek (§2, revisione)', () => {
-  it('profilo fittizio: 2848 kcal, +10% → circa 0,26 kg/settimana', () => {
-    // 2848 · 0,10 · 7 / 7700 = 0,2589…
-    expect(estimatedGainKgPerWeek(2848, 1.6, 1.6, 0.1)).toBeCloseTo(0.2589, 4)
+describe('mantenimento riscalato sul fattore di attività (Parametri)', () => {
+  it('stesso BMR, nuovo moltiplicatore: 2848 / 1,6 · 1,8 = 3204', () => {
+    expect(rescaledMaintenanceKcal(2848, 1.6, 1.8)).toBeCloseTo(3204, 6)
+    expect(rescaledMaintenanceKcal(2848, 1.6, 1.6)).toBe(2848)
   })
-  it('fattore cambiato nel modulo: il mantenimento si riscala', () => {
-    // 2848 / 1,6 · 1,8 = 3204; · 0,20 · 7 / 7700 = 0,5825…
-    expect(estimatedGainKgPerWeek(2848, 1.6, 1.8, 0.2)).toBeCloseTo(0.5825, 4)
+})
+
+describe('target per obiettivo (step 19, ADR-066) — profilo di esempio 75 kg, mantenimento 2848', () => {
+  it('massa: +10% → 3130 (invariato)', () => {
+    expect(computeDayTarget(profile, 75, '2026-10-08').targetKcal).toBe(3130)
+  })
+  it('mantenimento: nessuno scostamento → 2850', () => {
+    expect(computeDayTarget({ ...profile, goal: 'maintain' }, 75, '2026-10-08').targetKcal).toBe(2850)
+  })
+  it.each([
+    [0.005, 2440], // deficit 75 · 0,005 · 7700 / 7 = 412,5 → 2435,5 → 2440
+    [0.007, 2270], // 577,5 → 2270,5 → 2270
+    [0.01, 2020], //  825 → 2023 → 2020
+  ])('cut al %s del peso a settimana → riposo %s kcal', (cutRatePct, expected) => {
+    const result = computeDayTarget({ ...profile, goal: 'cut', cutRatePct }, 75, '2026-10-08')
+    expect(result.targetKcal).toBe(expected)
+    expect(result.maintenanceKcal).toBe(2848)
+  })
+  it('cut: il bonus allenamento si somma come prima (un solo bonus, anche con due sport)', () => {
+    const cut = { ...profile, goal: 'cut' as const, cutRatePct: 0.005 }
+    expect(withTrainingType(2848, cut, 75, 'sport_1').targetKcal).toBe(2640) // 2435,5 + 200 = 2635,5 → 2640
+    expect(withTrainingType(2848, cut, 75, 'both').targetKcal).toBe(2640)
+  })
+  it('cut: il deficit segue il peso del giorno (più leggero → deficit più piccolo)', () => {
+    expect(withTrainingType(2848, { ...profile, goal: 'cut', cutRatePct: 0.005 }, 60, 'rest').targetKcal).toBe(2520) // 60 · 0,005 · 1100 = 330 → 2518 → 2520
   })
 })

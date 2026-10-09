@@ -1,15 +1,14 @@
-import { ENERGY_PER_KG } from './constants'
 import type { Sex, TrainingType } from './labels'
+import { adjustmentPct, type GoalProfile } from './goals'
 import { bmr, dayTarget, macros, maintenance, type Macros } from './nutrition'
 import { ageOn } from './weight'
 
 /** Parametri del profilo che servono al target (come in `profiles`). */
-export interface TargetProfile {
+export interface TargetProfile extends GoalProfile {
   sex: Sex
   birthDate: string
   heightCm: number
   activityFactor: number
-  surplusPct: number
   trainingBonusKcal: number
   proteinGPerKg: number
   fatGPerKg: number
@@ -40,11 +39,12 @@ export function computeDayTarget(
  */
 export function withTrainingType(
   maintenanceKcal: number,
-  profile: Pick<TargetProfile, 'surplusPct' | 'trainingBonusKcal' | 'proteinGPerKg' | 'fatGPerKg'>,
+  profile: Pick<TargetProfile, 'goal' | 'surplusPct' | 'cutRatePct' | 'trainingBonusKcal' | 'proteinGPerKg' | 'fatGPerKg'>,
   weightKg: number,
   trainingType: TrainingType,
 ): DayTargetValues {
-  const targetKcal = dayTarget(maintenanceKcal, profile.surplusPct, trainingType, profile.trainingBonusKcal)
+  // Massa: surplus fisso. Mantenimento: 0. Cut: deficit in base al peso di quel giorno (lib/goals.ts).
+  const targetKcal = dayTarget(maintenanceKcal, adjustmentPct(profile, maintenanceKcal, weightKg), trainingType, profile.trainingBonusKcal)
   return {
     trainingType,
     maintenanceKcal,
@@ -68,15 +68,9 @@ export function progress(eaten: number, goal: number): number {
 }
 
 /**
- * §2: ritmo stimato in kg/settimana dai parametri del profilo (surplus dei giorni di riposo).
- * Il mantenimento di oggi si riscala sul nuovo fattore di attività scritto nel modulo.
+ * Mantenimento di oggi riscalato su un nuovo fattore di attività (modulo dei Parametri, prima del salvataggio):
+ * il BMR è lo stesso, cambia solo il moltiplicatore.
  */
-export function estimatedGainKgPerWeek(
-  maintenanceToday: number,
-  currentActivityFactor: number,
-  newActivityFactor: number,
-  newSurplusPct: number,
-): number {
-  const newMaintenance = (maintenanceToday / currentActivityFactor) * newActivityFactor
-  return (newMaintenance * newSurplusPct * 7) / ENERGY_PER_KG
+export function rescaledMaintenanceKcal(maintenanceToday: number, currentActivityFactor: number, newActivityFactor: number): number {
+  return (maintenanceToday / currentActivityFactor) * newActivityFactor
 }

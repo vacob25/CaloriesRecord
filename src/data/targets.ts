@@ -1,4 +1,5 @@
 import type { TrainingType } from '../lib/labels'
+import { coerceTrainingType } from '../lib/sports'
 import { computeDayTarget, withTrainingType, type DayTargetValues } from '../lib/targets'
 import { weightForDay } from '../lib/weight'
 import { throwIfError } from './dbErrors'
@@ -97,7 +98,8 @@ export async function recomputeTarget(date: string): Promise<void> {
   const [profile, weights] = await Promise.all([getProfile(), recentWeightsUntil(date)])
   const weightKg = weightForDay(weights, date)
   if (!profile || weightKg === null) return
-  const values = computeDayTarget(profile, weightKg, date, existing.trainingType)
+  // Se lo sport di quel giorno non c'è più nel profilo (sport cambiati) si torna a Riposo.
+  const values = computeDayTarget(profile, weightKg, date, coerceTrainingType(existing.trainingType, profile.sports))
   const { error } = await getSupabase().from('daily_targets').update(toRow(date, values)).eq('target_date', date)
   throwIfError(error)
 }

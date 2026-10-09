@@ -105,8 +105,8 @@ describe('maintenance', () => {
 describe('dayTarget (TESTING.md)', () => {
   it.each([
     ['rest', 3130],
-    ['football', 3330],
-    ['gym', 3330],
+    ['sport_2', 3330],
+    ['sport_1', 3330],
     ['both', 3330],
   ] as const)('2848, +10%%, %s, bonus 200 → %s (il bonus non si somma)', (type, expected) => {
     expect(dayTarget(2848, 0.1, type, 200)).toBe(expected)
