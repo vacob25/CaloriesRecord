@@ -220,8 +220,19 @@ begin
   reset role;
   if to_regprocedure('public.delete_my_account()') is not null then
     -- 5a. La hook accetta solo le email nell'elenco (senza distinguere maiuscole).
+    -- Nel SQL Editor di Supabase non si può "diventare" supabase_auth_admin: la logica si prova
+    -- chiamando la funzione direttamente, i permessi di quel ruolo si controllano con has_*_privilege.
+    if not has_function_privilege('supabase_auth_admin', 'public.hook_before_user_created(jsonb)', 'execute') then
+      raise exception 'FALLITO: supabase_auth_admin non può eseguire la hook';
+    end if;
+    if not has_table_privilege('supabase_auth_admin', 'public.allowed_emails', 'select') then
+      raise exception 'FALLITO: supabase_auth_admin non può leggere allowed_emails';
+    end if;
+    if has_function_privilege('anon', 'public.hook_before_user_created(jsonb)', 'execute')
+       or has_function_privilege('authenticated', 'public.hook_before_user_created(jsonb)', 'execute') then
+      raise exception 'FALLITO: la hook è eseguibile da anon o authenticated';
+    end if;
     insert into public.allowed_emails (email) values (invited);
-    set local role supabase_auth_admin;
     hook_result := public.hook_before_user_created(jsonb_build_object('user', jsonb_build_object('email', upper(invited))));
     if hook_result <> '{}'::jsonb then raise exception 'FALLITO: email invitata rifiutata: %', hook_result; end if;
     hook_result := public.hook_before_user_created(jsonb_build_object('user', jsonb_build_object('email', 'mai-invitato@example.invalid')));
@@ -230,7 +241,6 @@ begin
     end if;
     hook_result := public.hook_before_user_created('{}'::jsonb);
     if hook_result -> 'error' is null then raise exception 'FALLITO: registrazione senza email accettata'; end if;
-    reset role;
     delete from public.allowed_emails where email = invited;
 
     -- 5b. L'elenco degli invitati e la hook non sono raggiungibili dall'app.
