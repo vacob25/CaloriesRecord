@@ -24,6 +24,8 @@ const PATHS: Record<CatalogCategory, string[]> = {
   'Grassi e condimenti': ['M10 3h4', 'M11 3v3l-3 4v10h8V10l-3-4V3', 'M12 13c1 1.5 1.5 2.5 1.5 3a1.5 1.5 0 0 1-3 0c0-.5.5-1.5 1.5-3z'],
   // tazza
   Bevande: ['M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z', 'M16 10h2a2 2 0 0 1 0 4h-2', 'M9 3v2', 'M12 3v2'],
+  // piatto con forchetta
+  'Piatti comuni': ['M12 5a7 7 0 1 0 0 14 7 7 0 0 0 0-14z', 'M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z', 'M2.5 4v5a2 2 0 0 0 2 2', 'M5.5 4v16', 'M21 4c-2 1-3 3-3 6v2h3z', 'M21 12v8'],
   // vasetto del miele
   'Dolcificanti e altro': ['M7 6h10', 'M8 6V4h8v2', 'M6 9a2 2 0 0 1 2-3h8a2 2 0 0 1 2 3v9a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z', 'M9 13h6'],
 }

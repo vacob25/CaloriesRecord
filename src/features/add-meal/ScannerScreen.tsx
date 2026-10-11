@@ -8,7 +8,6 @@ import { FormMessage } from '../../components/States'
 import { primaryButtonClass, secondaryButtonClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useResolveBarcode } from '../../data/queries'
-import { isMealType } from '../../lib/labels'
 import { isPlausibleBarcode } from '../../lib/openFoodFacts'
 
 type CameraState = 'idle' | 'starting' | 'scanning' | 'denied' | 'unavailable'
@@ -22,7 +21,11 @@ export function ScannerScreen() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const pasto = params.get('pasto')
-  const backTo = `/aggiungi${isMealType(pasto) ? `?pasto=${pasto}` : ''}`
+  const data = params.get('data')
+  const query = [pasto && /^[a-z0-9_]{1,40}$/.test(pasto) ? `pasto=${pasto}` : '', data && /^\d{4}-\d{2}-\d{2}$/.test(data) ? `data=${data}` : '']
+    .filter(Boolean)
+    .join('&')
+  const backTo = `/aggiungi${query ? `?${query}` : ''}`
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<IScannerControls | null>(null)
   // La libreria può leggere lo stesso codice più volte prima di fermarsi: si tiene solo la prima lettura.

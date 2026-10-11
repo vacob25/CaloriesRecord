@@ -7,6 +7,7 @@ export const EXPORT_TABLES = [
   'profiles',
   'foods',
   'recipe_items',
+  'meal_slots',
   'meal_entries',
   'weight_logs',
   'daily_targets',

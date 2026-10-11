@@ -1,25 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { defaultGrams, defaultQuantity, entrySnapshot, favoritesFirst, groupByMeal, mealForHour, recentFoods, rescaleEntry, stepGrams } from './meals'
-
-describe('mealForHour', () => {
-  it.each([
-    [0, 'snack'],
-    [4, 'snack'],
-    [5, 'breakfast'],
-    [9, 'breakfast'],
-    [10, 'morning_snack'],
-    [11, 'morning_snack'],
-    [12, 'lunch'],
-    [14, 'lunch'],
-    [15, 'snack'],
-    [18, 'dinner'],
-    [22, 'dinner'],
-    [23, 'snack'],
-  ] as const)('ore %s → %s', (hour, meal) => {
-    expect(mealForHour(hour)).toBe(meal)
-  })
-})
+import { DEFAULT_MEAL_SLOTS } from './mealSlots'
+import { defaultGrams, defaultQuantity, entrySnapshot, favoritesFirst, groupByMeal, recentFoods, rescaleEntry, stepGrams } from './meals'
 
 describe('entrySnapshot', () => {
   it('kcal dall’etichetta (110 kcal/100 g · 200 g = 220), macro arrotondati a 1 decimale', () => {
@@ -67,11 +49,14 @@ describe('defaultGrams', () => {
 
 describe('groupByMeal', () => {
   it('cinque pasti in ordine (step 17), con totali; pasto vuoto = zeri', () => {
-    const groups = groupByMeal([
-      { id: 1, mealType: 'lunch' as const, kcal: 300, protein: 10, carbs: 40, fat: 5 },
-      { id: 2, mealType: 'lunch' as const, kcal: 100, protein: 2, carbs: 10, fat: 5 },
-      { id: 3, mealType: 'breakfast' as const, kcal: 200, protein: 8, carbs: 30, fat: 4 },
-    ])
+    const groups = groupByMeal(
+      [
+        { id: 1, mealType: 'lunch', kcal: 300, protein: 10, carbs: 40, fat: 5 },
+        { id: 2, mealType: 'lunch', kcal: 100, protein: 2, carbs: 10, fat: 5 },
+        { id: 3, mealType: 'breakfast', kcal: 200, protein: 8, carbs: 30, fat: 4 },
+      ],
+      DEFAULT_MEAL_SLOTS.map((slot) => slot.key),
+    )
     expect(Object.keys(groups)).toEqual(['breakfast', 'morning_snack', 'lunch', 'dinner', 'snack'])
     expect(groups.lunch.total).toEqual({ kcal: 400, protein: 12, carbs: 50, fat: 10 })
     expect(groups.lunch.entries.map((e) => e.id)).toEqual([1, 2])

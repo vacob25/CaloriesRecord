@@ -174,5 +174,14 @@ Accettazione:
 - Il tutorial parte da solo al primo accesso, va da 1/8 a 8/8 cambiando schermata, "Salta"/"Fine" lo segnano come visto, "Rivedi il tutorial" lo riapre.
 - Typecheck, lint, test, build e tutti gli e2e passano; axe senza violazioni.
 
+## Step 20 · Giorni passati, pasti su misura, piatti comuni (richiesta dell'utente dell'11/10/2026)
+Fare: in Oggi le frecce ‹ › accanto al titolo portano ai giorni passati (fino a 14 giorni indietro, `?data=`) per registrare ciò che si era dimenticato negli stessi pasti, con avviso "Stai modificando un giorno passato" e "Torna a oggi"; ingranaggio a destra di "Pasti" per creare, rinominare, riordinare ed eliminare i propri pasti (migrazione 007, `meal_slots`; fino a 8, nome ≤ 20 caratteri); categoria "Piatti comuni" nel catalogo con 23 piatti calcolati dagli ingredienti CREA già presenti (ADR-072).
+Accettazione:
+- Da Oggi → ‹ → "Ieri" → + Aggiungi in Colazione → la voce è registrata con la data di ieri, in Colazione, e non compare in Oggi; un `?data=` troppo vecchio, futuro o sbagliato riporta a oggi.
+- Ingranaggio: un pasto nuovo compare in Oggi, in Aggiungi e in Statistiche; rinominare mantiene le voci già registrate; un nome doppione (anche con maiuscole diverse) è rifiutato; un pasto con voci non si elimina (messaggio chiaro), uno vuoto sì; non si scende sotto 1 pasto.
+- I pasti di chi esiste già restano Colazione, Snack, Pranzo, Cena, Spuntino con le voci di prima; chi crea il profilo li riceve dal database.
+- Piatti comuni: 23 voci, ognuna con la ricetta nella fonte e la dicitura STIMA; scegliere un piatto lo salva tra i propri cibi, modificabile.
+- `rls_two_users.sql` passa anche con `meal_slots` e `no_session.sh` la include.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

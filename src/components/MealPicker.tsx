@@ -1,20 +1,31 @@
-import { MEAL_LABEL, MEAL_TYPES, type MealType } from '../lib/labels'
+import type { MealType } from '../lib/labels'
+import type { MealSlot } from '../lib/mealSlots'
 
-/** Scelta del pasto a 5 segmenti (radio: accessibile con VoiceOver). */
-export function MealPicker({ value, onChange, name }: { value: MealType; onChange: (meal: MealType) => void; name: string }) {
+/** Scelta del pasto (radio: accessibile con VoiceOver). Va a capo se i pasti sono molti (fino a 8). */
+export function MealPicker({
+  value,
+  onChange,
+  name,
+  slots,
+}: {
+  value: MealType
+  onChange: (meal: MealType) => void
+  name: string
+  slots: readonly MealSlot[]
+}) {
   return (
     <fieldset>
       <legend className="sr-only">Pasto</legend>
-      <div className="grid grid-cols-5 gap-1 rounded-button bg-line/60 p-1">
-        {MEAL_TYPES.map((meal) => (
+      <div className="flex flex-wrap gap-1 rounded-button bg-line/60 p-1">
+        {slots.map((slot) => (
           <label
-            key={meal}
-            className={`flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] px-0.5 text-[12px] font-semibold ${
-              value === meal ? 'bg-surface text-ink shadow-sm' : 'text-muted'
+            key={slot.key}
+            className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-[12px] px-2.5 text-[13px] font-semibold whitespace-nowrap ${
+              value === slot.key ? 'bg-surface text-ink shadow-sm' : 'text-muted'
             }`}
           >
-            <input type="radio" name={name} value={meal} checked={value === meal} onChange={() => onChange(meal)} className="sr-only" />
-            {MEAL_LABEL[meal]}
+            <input type="radio" name={name} value={slot.key} checked={value === slot.key} onChange={() => onChange(slot.key)} className="sr-only" />
+            {slot.name}
           </label>
         ))}
       </div>

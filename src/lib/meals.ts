@@ -1,14 +1,7 @@
-import { DEFAULT_GRAMS, GRAMS_MAX, GRAMS_STEP, MEAL_BY_HOUR, RECENT_FOODS_LIMIT } from './constants'
-import { MEAL_TYPES, type MealType } from './labels'
+import { DEFAULT_GRAMS, GRAMS_MAX, GRAMS_STEP, RECENT_FOODS_LIMIT } from './constants'
+import type { MealType } from './labels'
 import { round } from './numbers'
 import { nutrientsFor, sumNutrients, type Nutrients, type Per100g } from './nutrition'
-
-/** Pasto proposto per un'ora locale 0-23. */
-export function mealForHour(hour: number): MealType {
-  let meal: MealType = MEAL_BY_HOUR[0][1]
-  for (const [from, type] of MEAL_BY_HOUR) if (hour >= from) meal = type
-  return meal
-}
 
 /**
  * Snapshot di una voce pasto (ADR-011): kcal e macro calcolati ora, arrotondati a 1 decimale
@@ -68,10 +61,13 @@ export interface EntryLike extends Nutrients {
   mealType: MealType
 }
 
-/** Voci raggruppate per pasto, nell'ordine Colazione, Pranzo, Cena, Snack, con i totali. */
-export function groupByMeal<T extends EntryLike>(entries: readonly T[]): Record<MealType, { entries: T[]; total: Nutrients }> {
-  const groups = {} as Record<MealType, { entries: T[]; total: Nutrients }>
-  for (const meal of MEAL_TYPES) {
+/** Voci raggruppate per pasto, nell'ordine dei pasti dell'utente (`keys`), con i totali. Pasto vuoto = zeri. */
+export function groupByMeal<T extends EntryLike>(
+  entries: readonly T[],
+  keys: readonly MealType[],
+): Record<MealType, { entries: T[]; total: Nutrients }> {
+  const groups: Record<MealType, { entries: T[]; total: Nutrients }> = {}
+  for (const meal of keys) {
     const list = entries.filter((entry) => entry.mealType === meal)
     groups[meal] = { entries: list, total: sumNutrients(list) }
   }

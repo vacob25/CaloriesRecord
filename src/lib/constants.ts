@@ -126,3 +126,10 @@ export const ADULT_AGE_YEARS = 18
 /** Sport personali: al massimo 2, così i tipi di giorno restano Riposo, A, B, A + B (come prima: Palestra / Calcio). */
 export const SPORTS_MAX = 2
 export const SPORT_NAME_MAX = 24
+
+/** Pasti su misura (step 20): quanti al massimo e quanto può essere lungo il nome. */
+export const MEAL_SLOTS_MAX = 8
+export const MEAL_NAME_MAX = 20
+
+/** Quanti giorni indietro si può registrare un pasto dimenticato (step 20). */
+export const BACKFILL_MAX_DAYS = 14

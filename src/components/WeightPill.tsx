@@ -2,19 +2,21 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Field } from './Field'
+import { useToday } from './useToday'
 import { SheetFrame } from './SheetFrame'
 import { FormMessage } from './States'
 import { primaryButtonClass } from './ui'
 import { errorMessage } from '../data/dbErrors'
 import { useSaveWeight, useWeights } from '../data/queries'
 import { WEIGHT_JUMP_CONFIRM_KG } from '../lib/constants'
-import { addDays } from '../lib/dates'
+import { addDays, formatLongDate } from '../lib/dates'
 import { formatNumber } from '../lib/numbers'
 import { validateWeight } from '../lib/profileValidation'
 import { needsJumpConfirmation } from '../lib/weight'
 
 /** Pill del peso di oggi: un tocco apre l'inserimento (upsert: la seconda pesata sostituisce la prima). */
 export function WeightPill({ date, showTrendLink = true }: { date: string; showTrendLink?: boolean }) {
+  const today = useToday()
   const weights = useWeights(addDays(date, -1))
   const save = useSaveWeight()
   const [open, setOpen] = useState(false)
@@ -53,7 +55,7 @@ export function WeightPill({ date, showTrendLink = true }: { date: string; showT
         {todayLog ? `${formatNumber(todayLog.kg, 1)} kg` : 'Registra peso'}
       </button>
       {open && (
-        <SheetFrame title="Peso di oggi" subtitle="Conta la tendenza, non la singola pesata." onClose={() => setOpen(false)}>
+        <SheetFrame title={date === today ? 'Peso di oggi' : `Peso del ${formatLongDate(date)}`} subtitle="Conta la tendenza, non la singola pesata." onClose={() => setOpen(false)}>
           {() => (
             <>
             <form onSubmit={handleSubmit} noValidate className="mt-3">

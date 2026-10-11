@@ -20,6 +20,8 @@ import {
 } from './foods'
 import { resolveBarcode } from './barcode'
 import { searchProducts } from './openFoodFacts'
+import { createMealSlot, deleteMealSlot, listMealSlots, renameMealSlot, reorderMealSlots } from './mealSlots'
+import type { MealSlot } from '../lib/mealSlots'
 import { listEntriesBetween } from './meals'
 import { listTargetsBetween } from './targets'
 import { acceptProposal, rejectProposal, runWeeklyRecalibration, type TdeeEstimate } from './recalibration'
@@ -47,6 +49,7 @@ export const queryKeys = {
   foods: ['foods'] as const,
   food: (id: string) => ['foods', id] as const,
   recipe: (id: string) => ['foods', 'recipe', id] as const,
+  mealSlots: ['meal_slots'] as const,
   entries: ['meal_entries'] as const,
   entriesForDay: (date: string) => ['meal_entries', date] as const,
   lastGrams: ['meal_entries', 'last-grams'] as const,
@@ -63,6 +66,28 @@ export const queryKeys = {
   stats: ['meal_entries', 'stats'] as const,
   /** Tutte le valutazioni di ricalibrazione (prefisso). */
   tdee: ['tdee_estimates'] as const,
+}
+
+export function useMealSlots() {
+  return useQuery({ queryKey: queryKeys.mealSlots, queryFn: listMealSlots })
+}
+
+/** Crea, rinomina, ordina ed elimina i pasti. Ogni scrittura riscarica l'elenco; il diario si ricarica quando cambiano i nomi. */
+export function useMealSlotActions() {
+  const client = useQueryClient()
+  const refresh = () => client.invalidateQueries({ queryKey: queryKeys.mealSlots })
+  return {
+    create: useMutation({
+      mutationFn: ({ slot, position }: { slot: MealSlot; position: number }) => createMealSlot(slot, position),
+      onSuccess: refresh,
+    }),
+    rename: useMutation({
+      mutationFn: ({ key, name }: { key: string; name: string }) => renameMealSlot(key, name),
+      onSuccess: refresh,
+    }),
+    reorder: useMutation({ mutationFn: (keys: readonly string[]) => reorderMealSlots(keys), onSuccess: refresh }),
+    remove: useMutation({ mutationFn: (key: string) => deleteMealSlot(key), onSuccess: refresh }),
+  }
 }
 
 export function useFoods() {
@@ -352,7 +377,11 @@ export function useUpdateWaterGoal() {
 export function useCatalog(enabled = true) {
   return useQuery({
     queryKey: queryKeys.catalog,
-    queryFn: async () => parseCatalog((await import('./catalog/ingredienti.json')).default).items,
+    // Ingredienti (CREA) e piatti comuni calcolati da quegli ingredienti (step 20): due file, un solo elenco.
+    queryFn: async () => {
+      const [ingredients, dishes] = await Promise.all([import('./catalog/ingredienti.json'), import('./catalog/piatti.json')])
+      return parseCatalog(ingredients.default, dishes.default).items
+    },
     staleTime: Infinity,
     enabled,
   })

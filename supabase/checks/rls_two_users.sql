@@ -28,7 +28,7 @@ declare
   invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
-  extra text[] := array['water_entries', 'drink_containers'];
+  extra text[] := array['water_entries', 'drink_containers', 'meal_slots'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
@@ -148,6 +148,15 @@ begin
     begin
       execute format('insert into public.drink_containers (user_id, name, ml) values (%L, %L, 100)', a, 'x');
       raise exception 'FALLITO: B ha inserito in drink_containers a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
+
+  -- Migrazione 007: i pasti dell'utente (creati dal trigger alla creazione del profilo) sono protetti come il resto.
+  if 'meal_slots' = any (tables) then
+    begin
+      execute format('insert into public.meal_slots (user_id, slot_key, name, position) values (%L, %L, %L, 9)', a, 'custom_00000000', 'Pasto rubato');
+      raise exception 'FALLITO: B ha inserito in meal_slots a nome di A';
     exception when insufficient_privilege then null;
     end;
   end if;

@@ -6,21 +6,11 @@ export const FOOD_SOURCE_LABEL = {
   recipe: 'Ricetta',
 } as const
 
-/** Ordine della giornata. 'snack' è lo spuntino del pomeriggio/sera; 'morning_snack' quello di metà mattina (step 17). */
-export const MEAL_TYPES = ['breakfast', 'morning_snack', 'lunch', 'dinner', 'snack'] as const
-export type MealType = (typeof MEAL_TYPES)[number]
-
-export const MEAL_LABEL: Record<MealType, string> = {
-  breakfast: 'Colazione',
-  morning_snack: 'Snack',
-  lunch: 'Pranzo',
-  dinner: 'Cena',
-  snack: 'Spuntino',
-}
-
-export function isMealType(value: unknown): value is MealType {
-  return typeof value === 'string' && (MEAL_TYPES as readonly string[]).includes(value)
-}
+/**
+ * Chiave di un pasto (`meal_slots.slot_key`). Dal step 20 i pasti sono dell'utente: i cinque di partenza hanno le chiavi
+ * 'breakfast', 'morning_snack', 'lunch', 'dinner', 'snack' (vedi lib/mealSlots.ts), gli altri 'custom_…'.
+ */
+export type MealType = string
 
 /**
  * Tipo di giorno. 'sport_1' e 'sport_2' sono il primo e il secondo sport del profilo (step 19): le etichette si

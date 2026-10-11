@@ -7,14 +7,17 @@ import { ScreenHeader } from '../../components/ScreenHeader'
 import { EmptyState, ErrorState, ListSkeleton } from '../../components/States'
 import { cardClass, inputClass, primaryButtonClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
-import { useAddEntry, useFoods, useLastGrams } from '../../data/queries'
+import { useAddEntry, useFoods, useLastGrams, useMealSlots } from '../../data/queries'
 import type { Food } from '../../data/types'
-import { localDate, localHour } from '../../lib/dates'
-import { FOOD_SOURCE_LABEL, isMealType, MEAL_LABEL, type MealType } from '../../lib/labels'
-import { defaultQuantity, entrySnapshot, mealForHour, recentFoods } from '../../lib/meals'
+import { useToday } from '../../components/useToday'
+import { formatLongDate, localHour } from '../../lib/dates'
+import { FOOD_SOURCE_LABEL, type MealType } from '../../lib/labels'
+import { defaultQuantity, entrySnapshot, recentFoods } from '../../lib/meals'
+import { mealForHour, slotName } from '../../lib/mealSlots'
 import { formatNumber } from '../../lib/numbers'
 import { per100Label } from '../../lib/portions'
 import { filterByQuery } from '../../lib/search'
+import { dayQuery, viewedDay } from '../../lib/viewDay'
 import { CatalogList } from './CatalogList'
 import { OffSearch } from './OffSearch'
 
@@ -56,9 +59,16 @@ export function AddMealScreen() {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const requested = params.get('pasto')
-  const [meal, setMeal] = useState<MealType>(() =>
-    isMealType(requested) ? requested : mealForHour(localHour(new Date())),
-  )
+  const today = useToday()
+  // Giorno su cui si registra (step 20): oggi, o un giorno passato arrivando da Oggi con ?data=…
+  const day = viewedDay(params.get('data'), today)
+  const dayParam = dayQuery(day, today)
+  const [hourOnOpen] = useState(() => localHour(new Date()))
+  const mealSlots = useMealSlots()
+  const slots = mealSlots.data ?? []
+  const [chosenMeal, setMeal] = useState<MealType | null>(null)
+  const meal: MealType =
+    chosenMeal ?? (requested !== null && slots.some((slot) => slot.key === requested) ? requested : mealForHour(hourOnOpen, slots))
   const foods = useFoods()
   const lastGrams = useLastGrams()
   const addEntry = useAddEntry()
@@ -72,8 +82,9 @@ export function AddMealScreen() {
   const searching = query.trim() !== ''
   const visible = searching ? filterByQuery(all, query) : foodsForTab(all, tab)
   const inCatalog = !searching && tab === 'catalog'
-  const mealName = MEAL_LABEL[meal].toLowerCase()
-  const returnTo = `/aggiungi?pasto=${meal}`
+  const mealName = slotName(slots, meal).toLowerCase()
+  const withDay = (path: string) => `${path}?pasto=${meal}${dayParam ? `&${dayParam}` : ''}`
+  const returnTo = withDay('/aggiungi')
 
   // Ritorno da scanner / nuovo cibo con ?cibo=<id>: si apre subito il pannello dei grammi.
   const chosenId = params.get('cibo')
@@ -93,18 +104,22 @@ export function AddMealScreen() {
   }
 
   function handleAdd(grams: number) {
-    if (!current) return
+    if (!current || slots.length === 0) return
     addEntry.mutate(
-      { date: localDate(new Date()), mealType: meal, food: current, grams },
-      { onSuccess: (entry) => navigate('/', { state: { added: { id: entry.id, mealType: meal } } }) },
+      { date: day, mealType: meal, food: current, grams },
+      {
+        onSuccess: (entry) =>
+          navigate({ pathname: '/', search: dayParam ? `?${dayParam}` : '' }, { state: { added: { id: entry.id, mealType: meal } } }),
+      },
     )
   }
 
   return (
     <>
-      <ScreenHeader title={`Aggiungi a ${mealName}`} backTo="/" />
+      <ScreenHeader title={`Aggiungi a ${mealName}`} backTo={dayParam ? `/?${dayParam}` : '/'} />
+      {dayParam && <p className="px-5 pt-1 text-[13px] font-semibold text-green-dark first-letter:uppercase">Per {formatLongDate(day)}</p>}
       <div data-tour="add-search" className="px-5 pt-4">
-        <MealPicker name="meal" value={meal} onChange={setMeal} />
+        <MealPicker name="meal" value={meal} onChange={setMeal} slots={slots} />
         <div className="mt-3 flex items-end gap-2">
           <div className="flex-1">
             <label htmlFor="add-search" className="sr-only">
@@ -121,7 +136,7 @@ export function AddMealScreen() {
             />
           </div>
           <Link
-            to={`/aggiungi/scanner?pasto=${meal}`}
+            to={withDay('/aggiungi/scanner')}
             aria-label="Scansiona un codice a barre"
             className="flex size-12 shrink-0 items-center justify-center rounded-button border border-line bg-surface text-ink"
           >
@@ -230,7 +245,7 @@ export function AddMealScreen() {
           portions={current.portions}
           preview={(grams) => entrySnapshot(current.per100g, grams)}
           submitLabel={`Aggiungi a ${mealName}`}
-          busy={addEntry.isPending}
+          busy={addEntry.isPending || slots.length === 0}
           error={addEntry.isError ? errorMessage(addEntry.error) : null}
           onSubmit={handleAdd}
           onClose={closeSheet}

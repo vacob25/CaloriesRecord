@@ -25,10 +25,14 @@ export function describeDbError(error: DbErrorLike, online = true): string {
   switch (error.code) {
     case '23505':
       if (text.includes('barcode')) return 'Hai già un cibo con questo codice a barre.'
+      if (text.includes('meal_slots')) return 'Hai già un pasto con questo nome.'
       return 'Esiste già un elemento uguale.'
     case '23503':
       if (text.includes('recipe_items_ingredient_fkey')) {
         return 'Questo cibo è usato in una ricetta: toglilo prima dagli ingredienti.'
+      }
+      if (text.includes('meal_entries_slot_fkey')) {
+        return 'Questo pasto ha già delle voci registrate: non si può eliminare. Puoi rinominarlo.'
       }
       return 'Questo elemento è collegato ad altri dati e non si può modificare così.'
     case '23514':

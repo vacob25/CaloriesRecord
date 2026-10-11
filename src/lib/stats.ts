@@ -1,6 +1,6 @@
 import { RESPECTED_MAX_RATIO, RESPECTED_MIN_RATIO } from './constants'
 import { daysBetween } from './dates'
-import { MEAL_TYPES, type MealType } from './labels'
+import type { MealType } from './labels'
 import { sumNutrients, type Nutrients } from './nutrition'
 import { movingAverage7, type WeightLog } from './weight'
 
@@ -40,7 +40,7 @@ export interface PeriodStats {
   averageMacros: Omit<Nutrients, 'kcal'> | null
   /** Giorni rispettati / giorni registrati con un target. */
   respected: { count: number; of: number }
-  /** kcal per pasto / totale del periodo (0-1). */
+  /** kcal per pasto / totale del periodo (0-1); solo i pasti che hanno voci nel periodo. */
   mealShare: Record<MealType, number>
   /** Cibi più frequenti per numero di voci (food_id, o nome se il cibo è stato cancellato). */
   topFoods: { key: string; name: string; count: number }[]
@@ -76,9 +76,9 @@ export function periodStats(
   const withTarget = registered.filter((d) => d.status !== 'noTarget')
   const respectedCount = withTarget.filter((d) => d.status === 'respected').length
 
-  const mealShare = Object.fromEntries(MEAL_TYPES.map((meal) => [meal, 0])) as Record<MealType, number>
+  const mealShare: Record<MealType, number> = {}
   if (totals.kcal > 0) {
-    for (const entry of inPeriod) mealShare[entry.mealType] += entry.kcal / totals.kcal
+    for (const entry of inPeriod) mealShare[entry.mealType] = (mealShare[entry.mealType] ?? 0) + entry.kcal / totals.kcal
   }
 
   const counts = new Map<string, { key: string; name: string; count: number }>()

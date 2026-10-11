@@ -62,7 +62,7 @@ Trigger `check_food_source_change` (solo quando cambia `source`): un cibo usato 
 | --- | --- | --- |
 | id | uuid PK | |
 | entry_date | date not null | giorno locale |
-| meal_type | text not null | `breakfast` / `morning_snack` / `lunch` / `dinner` / `snack` (`morning_snack` dalla migrazione 004: "Snack"; `snack` nell'app è "Spuntino") |
+| meal_type | text not null | chiave di un pasto dell'utente (`meal_slots.slot_key`, migrazione 007; di partenza `breakfast` / `morning_snack` "Snack" / `lunch` / `dinner` / `snack` "Spuntino") |
 | food_id | uuid null | `(food_id, user_id)` → `foods (id, user_id)` ON DELETE SET NULL (food_id): si azzera solo `food_id` (ADR-022) |
 | food_name | text not null | snapshot |
 | grams | numeric(8,1) > 0 | quantità nell'unità `unit` (il nome resta `grams` anche per i ml) |
@@ -87,6 +87,16 @@ Indici su `(user_id, entry_date)` e su `food_id`.
 | created_at, updated_at | timestamptz | |
 
 Si crea alla prima apertura del giorno, copiando i parametri del profilo di quel momento. Cambiare il tipo di allenamento aggiorna solo quella riga. I giorni passati non si ricalcolano mai quando cambia il profilo.
+
+### meal_slots (migrazione 007)
+| Colonna | Tipo | Note |
+| --- | --- | --- |
+| user_id, slot_key | PK composta | `slot_key` è stabile (non cambia se rinomini): i cinque di partenza `breakfast`/`morning_snack`/`lunch`/`dinner`/`snack`, i nuovi `custom_` + 8 esadecimali |
+| name | text | 1-20 caratteri senza spazi ai bordi; unico per utente senza distinguere le maiuscole (indice su `lower(name)`) |
+| position | int | 0-99, l'ordine in Oggi |
+| created_at | timestamptz | |
+
+Il trigger `profiles_seed_meal_slots` crea i cinque pasti di partenza alla creazione del profilo; la migrazione li crea per chi esiste già. `meal_entries.meal_type` non ha più l'elenco fisso: ha la chiave esterna `(user_id, meal_type) → meal_slots` con NO ACTION, quindi un pasto con voci non si elimina ma la cancellazione dell'account (cascata da `auth.users`) funziona. Il limite di 8 pasti è dell'app, non del database.
 
 ### water_entries (migrazione 003)
 `id`, `entry_date date not null` (giorno locale), `ml int` con `check (ml > 0 and ml <= 5000)`, `container text` (migrazione 004: `glass` / `small-bottle` / `bottle`, l'id di un contenitore personale, oppure null per una quantità libera; testo e non chiave esterna, così eliminare un contenitore non tocca le aggiunte), `created_at`. Indice su `(user_id, entry_date)`. Niente calorie: l'acqua non entra in `meal_entries`.

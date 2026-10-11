@@ -19,6 +19,7 @@ export const CATALOG_CATEGORIES = [
   'Grassi e condimenti',
   'Bevande',
   'Dolcificanti e altro',
+  'Piatti comuni',
 ] as const
 export type CatalogCategory = (typeof CATALOG_CATEGORIES)[number]
 

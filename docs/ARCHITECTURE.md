@@ -56,6 +56,7 @@ src/
     queries.ts                    hook TanStack Query condivisi (useFoods, useEntries, …) e chiavi della cache
     types.ts                      tipi delle righe del database
     catalog/ingredienti.json      catalogo degli ingredienti (ADR-050), con il suo test
+    catalog/piatti.json           piatti comuni calcolati dagli ingredienti (ADR-072), con il suo test
   features/       una cartella per area, con componenti e hook propri
     today/  add-meal/  foods/  weight/  stats/  profile/  auth/  privacy/
   components/     UI condivisa: SheetFrame, GramsSheet, ConfirmButton, FavoriteButton, Field, Icon,

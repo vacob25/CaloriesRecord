@@ -1,0 +1,442 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "pasta-al-pomodoro",
+      "name": "Pasta al pomodoro",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 162,
+      "protein": 5.7,
+      "carbs": 25.8,
+      "fat": 4.4,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 245
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pasta di semola, lessata (160 g), passata di pomodoro (100 g), olio extravergine di oliva (8 g), parmigiano Reggiano DOP (5 g); acqua evaporata in cottura 30 g; peso finale 243 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Pasta lessata, sugo di passata ridotto in padella con olio. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "ragu-di-carne",
+      "name": "Ragù di carne (condimento)",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 124,
+      "protein": 12.0,
+      "carbs": 3.8,
+      "fat": 6.6,
+      "portions": [
+        {
+          "name": "1 mestolo",
+          "amount": 60
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): manzo, girello, crudo (100 g), olio extravergine di oliva (10 g), carote, crude (20 g), sedano, crudo (15 g), cipolle, crude (20 g), passata di pomodoro (150 g); acqua evaporata in cottura 115 g; peso finale 200 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Ragù con carne MAGRA (girello). Con macinato più grasso le kcal salgono di circa 40-60 ogni 100 g. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "pasta-al-ragu",
+      "name": "Pasta al ragù",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 157,
+      "protein": 9.5,
+      "carbs": 22.5,
+      "fat": 3.6,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 285
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pasta di semola, lessata (160 g), ragù di carne (120 g), parmigiano Reggiano DOP (5 g); peso finale 285 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Usa il ragù di carne magra di questo catalogo. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "lasagne-alla-bolognese",
+      "name": "Lasagne alla bolognese",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 145,
+      "protein": 8.2,
+      "carbs": 14.6,
+      "fat": 6.1,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 320
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pasta all'uovo, secca (45 g), ragù di carne (100 g), latte parzialmente scremato (100 g), burro (8 g), farina di frumento 00 (8 g), parmigiano Reggiano DOP (12 g); acqua assorbita in cottura 45 g; peso finale 318 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Sfoglia che assorbe acqua, besciamella leggera, gratinata. Porzione media. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "ravioli-di-carne-al-pomodoro",
+      "name": "Ravioli di carne al pomodoro",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 145,
+      "protein": 9.1,
+      "carbs": 15.1,
+      "fat": 5.6,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 210
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): farina di frumento 00 (40 g), uovo di gallina, intero (20 g), manzo, girello, crudo (30 g), prosciutto cotto (15 g), ricotta di vacca (10 g), parmigiano Reggiano DOP (5 g), passata di pomodoro (80 g), olio extravergine di oliva (5 g); acqua assorbita in cottura 5 g; peso finale 210 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Pasta fresca all’uovo con ripieno di carne; molto variabile secondo il tipo di ravioli. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "risotto-alla-parmigiana",
+      "name": "Risotto alla parmigiana",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 152,
+      "protein": 3.7,
+      "carbs": 23.1,
+      "fat": 5.5,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 280
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): riso brillato, crudo (80 g), burro (8 g), parmigiano Reggiano DOP (15 g), cipolle, crude (15 g), olio extravergine di oliva (4 g); acqua assorbita in cottura 160 g; peso finale 282 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Riso cotto nel brodo vegetale senza grassi; il riso assorbe circa il doppio del suo peso in acqua. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "risotto-ai-funghi",
+      "name": "Risotto ai funghi",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 120,
+      "protein": 3.6,
+      "carbs": 17.9,
+      "fat": 4.1,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 370
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): riso brillato, crudo (80 g), funghi prataioli, crudi (100 g), burro (6 g), parmigiano Reggiano DOP (12 g), cipolle, crude (15 g), olio extravergine di oliva (6 g); acqua assorbita in cottura 150 g; peso finale 369 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Riso cotto nel brodo vegetale; funghi prataioli. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "minestrone-di-verdure",
+      "name": "Minestrone di verdure",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 33,
+      "protein": 1.0,
+      "carbs": 4.0,
+      "fat": 1.3,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 435
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): carote, crude (40 g), zucchine, crude (60 g), patate, crude (60 g), fagiolini, freschi (40 g), cipolle, crude (20 g), sedano, crudo (20 g), pomodori pelati in scatola (40 g), olio extravergine di oliva (5 g); acqua assorbita in cottura 150 g; peso finale 435 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Verdure in brodo, senza pasta né riso. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "pasta-e-fagioli",
+      "name": "Pasta e fagioli",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 92,
+      "protein": 3.7,
+      "carbs": 13.5,
+      "fat": 2.5,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 370
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): fagioli borlotti, lessati (100 g), pasta di semola, lessata (80 g), passata di pomodoro (40 g), carote, crude (15 g), sedano, crudo (10 g), cipolle, crude (15 g), olio extravergine di oliva (8 g); acqua assorbita in cottura 100 g; peso finale 368 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Pasta corta e fagioli in brodo denso. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "gnocchi-di-patate-al-pomodoro",
+      "name": "Gnocchi di patate al pomodoro",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 124,
+      "protein": 3.7,
+      "carbs": 21.0,
+      "fat": 3.0,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 270
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): patate, lessate, senza buccia (150 g), farina di frumento 00 (40 g), passata di pomodoro (100 g), olio extravergine di oliva (6 g), parmigiano Reggiano DOP (5 g); acqua evaporata in cottura 30 g; peso finale 271 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Impasto di patate e farina, sugo di passata. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "pasta-al-tonno",
+      "name": "Pasta al tonno",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 162,
+      "protein": 8.1,
+      "carbs": 24.1,
+      "fat": 4.2,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 270
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pasta di semola, lessata (160 g), tonno sott'olio, sgocciolato (40 g), pomodorini ciliegino, freschi (80 g), olio extravergine di oliva (6 g); acqua evaporata in cottura 15 g; peso finale 271 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Tonno sott’olio sgocciolato e pomodorini. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "pasta-aglio-olio-e-peperoncino",
+      "name": "Pasta aglio, olio e peperoncino",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 223,
+      "protein": 6.5,
+      "carbs": 34.1,
+      "fat": 7.4,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 175
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pasta di semola, lessata (160 g), olio extravergine di oliva (12 g), aglio (3 g); peso finale 175 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Condimento a crudo con olio. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "pizza-margherita",
+      "name": "Pizza margherita",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 226,
+      "protein": 10.6,
+      "carbs": 30.7,
+      "fat": 7.4,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 360
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): farina di frumento 00 (150 g), passata di pomodoro (80 g), fior di latte (100 g), olio extravergine di oliva (5 g); acqua assorbita in cottura 25 g; peso finale 360 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Impasto con circa 60% di acqua, cottura al forno; 1 pizza di pizzeria è di solito 400-500 g e può avere più condimento. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "cordon-bleu-di-pollo",
+      "name": "Cordon bleu di pollo",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 213,
+      "protein": 20.2,
+      "carbs": 10.1,
+      "fat": 10.4,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 210
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): petto di pollo, crudo (120 g), prosciutto cotto (25 g), fior di latte (25 g), uovo di gallina, intero (20 g), pane bianco (25 g), farina di frumento 00 (8 g), olio extravergine di oliva (12 g); acqua evaporata in cottura 25 g; peso finale 210 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Panato e cotto in padella; l’olio assorbito è una stima. Il pane bianco sostituisce il pangrattato (non nel catalogo). I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "frittata-di-uova",
+      "name": "Frittata di uova (2 uova)",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 199,
+      "protein": 13.6,
+      "carbs": 0.0,
+      "fat": 16.1,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 135
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): uovo di gallina, intero (120 g), parmigiano Reggiano DOP (10 g), olio extravergine di oliva (8 g); acqua evaporata in cottura 5 g; peso finale 133 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: 2 uova medie, cotta in padella. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "parmigiana-di-melanzane",
+      "name": "Parmigiana di melanzane",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 148,
+      "protein": 6.6,
+      "carbs": 2.7,
+      "fat": 11.9,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 320
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): melanzane, crude (200 g), olio extravergine di oliva (20 g), passata di pomodoro (100 g), fior di latte (70 g), parmigiano Reggiano DOP (10 g); acqua evaporata in cottura 80 g; peso finale 320 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Melanzane fritte (l’olio assorbito è una stima), strati di sugo e mozzarella, al forno. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "insalata-caprese",
+      "name": "Insalata caprese",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 137,
+      "protein": 7.9,
+      "carbs": 1.9,
+      "fat": 10.8,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 260
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pomodori da insalata, freschi (150 g), mozzarella di vacca (100 g), olio extravergine di oliva (8 g); peso finale 258 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Pomodori, mozzarella e olio a crudo. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "orata-al-forno-con-patate",
+      "name": "Orata al forno con patate",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 133,
+      "protein": 11.5,
+      "carbs": 9.7,
+      "fat": 5.3,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 300
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): orata, filetti, crudi (150 g), patate, crude (150 g), pomodorini ciliegino, freschi (50 g), olio extravergine di oliva (10 g); acqua evaporata in cottura 60 g; peso finale 300 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Cottura al forno con perdita di acqua. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "pollo-al-forno-con-patate",
+      "name": "Pollo al forno con patate",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 152,
+      "protein": 13.3,
+      "carbs": 11.4,
+      "fat": 6.0,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 280
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): coscia di pollo senza pelle, cruda (180 g), patate, crude (200 g), olio extravergine di oliva (10 g); acqua evaporata in cottura 110 g; peso finale 280 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Coscia senza pelle, cottura al forno con perdita di acqua. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "insalata-di-tonno-e-fagioli",
+      "name": "Insalata di tonno e fagioli",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 125,
+      "protein": 10.3,
+      "carbs": 8.5,
+      "fat": 5.1,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 235
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): fagioli cannellini, in scatola, sgocciolati (150 g), tonno sott'olio, sgocciolato (60 g), cipolle, crude (20 g), olio extravergine di oliva (5 g); peso finale 235 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Fagioli in scatola sgocciolati e tonno sott’olio sgocciolato. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "porridge-di-avena-e-latte",
+      "name": "Porridge di avena e latte",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 100,
+      "protein": 3.8,
+      "carbs": 16.6,
+      "fat": 2.2,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 270
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): avena, fiocchi (40 g), latte parzialmente scremato (200 g), miele (10 g); acqua assorbita in cottura 20 g; peso finale 270 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Fiocchi d’avena cotti nel latte. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "yogurt-greco-con-miele-e-noci",
+      "name": "Yogurt greco con miele e noci",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 170,
+      "protein": 6.7,
+      "carbs": 6.3,
+      "fat": 13.2,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 195
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): yogurt greco intero (170 g), miele (10 g), noci (15 g); peso finale 195 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Yogurt greco intero. I piatti veri cambiano; correggili dopo la scelta."
+    },
+    {
+      "id": "panino-con-crudo-e-mozzarella",
+      "name": "Panino con crudo e mozzarella",
+      "category": "Piatti comuni",
+      "unit": "g",
+      "kcal": 241,
+      "protein": 16.0,
+      "carbs": 30.0,
+      "fat": 6.7,
+      "portions": [
+        {
+          "name": "1 porzione",
+          "amount": 160
+        }
+      ],
+      "source": "Calcolato dalla ricetta (g per 1 porzione): pane bianco (80 g), prosciutto crudo di Parma DOP, sgrassato (40 g), mozzarella di vacca (40 g); peso finale 160 g. Valori per 100 g dei singoli ingredienti: catalogo (CREA).",
+      "portionsSource": "indicativo, la ricetta qui sotto",
+      "notes": "STIMA da ricetta tradizionale, non una misura: Pane bianco, crudo sgrassato e mozzarella. I piatti veri cambiano; correggili dopo la scelta."
+    }
+  ]
+}

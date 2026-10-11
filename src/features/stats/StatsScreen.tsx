@@ -7,10 +7,10 @@ import { cardClass } from '../../components/ui'
 import { useToday } from '../../components/useToday'
 import { WeightChart } from '../../components/WeightChart'
 import { errorMessage } from '../../data/dbErrors'
-import { useProfile, useStatsData } from '../../data/queries'
+import { useMealSlots, useProfile, useStatsData } from '../../data/queries'
 import { RESPECTED_MAX_RATIO, RESPECTED_MIN_RATIO } from '../../lib/constants'
 import { addDays, formatShortDate } from '../../lib/dates'
-import { DAY_STATUS_LABEL, MEAL_LABEL, MEAL_TYPES } from '../../lib/labels'
+import { DAY_STATUS_LABEL } from '../../lib/labels'
 import { formatNumber } from '../../lib/numbers'
 import { periodFor, periodLabel, type PeriodKind } from '../../lib/period'
 import { periodStats } from '../../lib/stats'
@@ -29,6 +29,7 @@ export function StatsScreen() {
   const fetchFrom = addDays(start < weightStart ? start : weightStart, -6)
   const data = useStatsData(start, end, fetchFrom)
   const profile = useProfile()
+  const mealSlots = useMealSlots()
 
   const stats = data.data
     ? periodStats(
@@ -169,14 +170,14 @@ export function StatsScreen() {
               Calorie per pasto
             </h2>
             <ul className="mt-3 space-y-3">
-              {MEAL_TYPES.map((meal) => (
-                <li key={meal}>
+              {(mealSlots.data ?? []).map((slot) => (
+                <li key={slot.key}>
                   <div className="flex justify-between text-[13px]">
-                    <span className="font-semibold text-ink-2">{MEAL_LABEL[meal]}</span>
-                    <span className="font-bold tabular-nums">{formatNumber(stats.mealShare[meal] * 100)}%</span>
+                    <span className="font-semibold text-ink-2">{slot.name}</span>
+                    <span className="font-bold tabular-nums">{formatNumber((stats.mealShare[slot.key] ?? 0) * 100)}%</span>
                   </div>
                   <div className="mt-1 h-2 overflow-hidden rounded-full bg-line" aria-hidden="true">
-                    <div className="h-full rounded-full bg-green" style={{ width: `${Math.round(stats.mealShare[meal] * 100)}%` }} />
+                    <div className="h-full rounded-full bg-green" style={{ width: `${Math.round((stats.mealShare[slot.key] ?? 0) * 100)}%` }} />
                   </div>
                 </li>
               ))}

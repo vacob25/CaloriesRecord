@@ -36,6 +36,8 @@ Dalla migrazione 005 lo script controlla anche: email non invitata rifiutata e i
 
 **Senza sessione, dall'esterno:** `SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=sb_publishable_… bash supabase/checks/no_session.sh` (valori solo nel terminale): ogni tabella e funzione deve rispondere senza dati.
 
+Dalla migrazione 007 controlla anche `meal_slots` (B non può inserire pasti a nome di A; il trigger che crea i pasti passa dalla RLS). Provato "rompendo" la policy di insert: si ferma con FALLITO. Esito locale 11/10/2026: superato, 11 tabelle con RLS.
+
 Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. Rieseguito il 9/10/2026 dopo le migrazioni 002-005: superato (vedi Esiti).
 
 Cosa controlla (a mano sarebbe così):

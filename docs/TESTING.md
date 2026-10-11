@@ -88,6 +88,20 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `coerceTrainingType` | `both` con un solo sport | `rest` |
 | `nextStep` / `previousStep` / `tourLabel` | indici 0-7 | ferma agli estremi; "1/8"…"8/8" |
 
+### mealSlots.ts, viewDay.ts (step 20)
+| Funzione | Input | Atteso |
+| --- | --- | --- |
+| `mealForHour` | ore 0…23, pasti di partenza | come prima (5 → breakfast, 10 → morning_snack, 12 → lunch, 18 → dinner, 15/23/0 → snack) |
+| `mealForHour` | 11 senza `morning_snack` | breakfast (fascia precedente) |
+| `validateMealName` | `PRANZO` con Pranzo esistente | rifiutato (doppione); `pranzo` rinominando `lunch` ammesso |
+| `validateMealName` | 21 caratteri / vuoto | rifiutato; 20 ok |
+| `moveSlot` | `lunch` su / giù, ai bordi | scambia di una posizione; ai bordi non cambia |
+| `newSlotKey` | random 0 / 0,99 | `custom_00000000` / `custom_ffffffff` |
+| `viewedDay` | oggi 2026-10-11 | 10-10 e 09-27 validi; 09-26, 10-12, `2026-02-30`, testo → oggi |
+| `previousViewedDay` / `nextViewedDay` | limite 14 / oggi | null oltre il limite / a oggi |
+| `dayTitle` | oggi, ieri, 2 e 5 giorni fa | Oggi, Ieri, L’altro ieri, 5 giorni fa |
+| catalogo piatti | tutte le voci con gli ingredienti | nessun errore, id e nomi unici; pasta al pomodoro ricalcolata a mano (±1 kcal) |
+
 ### portions.ts
 | Caso | Atteso |
 | --- | --- |
