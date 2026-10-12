@@ -191,5 +191,12 @@ Accettazione:
 - Tenendo premuta una voce in Colazione e rilasciandola su Pranzo (vuoto o con voci) la voce passa a Pranzo con grammi e calorie invariati; rilasciata fuori da un pasto o sul proprio torna al suo posto; un tocco veloce apre ancora la modifica; un movimento prima del tempo non sposta.
 - Mentre si trascina una voce lo swipe tra i giorni è sospeso.
 
+## Step 22 · Calorie per sport (richiesta dell'utente del 12/10/2026)
+Fare: calorie di un allenamento medio per tennis, corsa, calcio e palestra dal Compendium of Physical Activities ((MET − 1) · peso · ore), sommate quando in un giorno ci sono più sport; il bonus di riserva del profilo vale per gli sport fuori tabella; in Oggi si vede "Bonus di oggi: +731 kcal (Palestra 281 + Calcio 450)" (ADR-075). Nessuna migrazione.
+Accettazione:
+- A 75 kg: Tennis 525, Corsa 495, Calcio 450, Palestra 281 kcal; il tipo di giorno somma gli sport scelti (Palestra + Calcio = 731 → target 3860 con il profilo di esempio).
+- Uno sport fuori tabella (es. Nuoto) vale il bonus di riserva (200) e si somma agli altri.
+- Il peso del giorno cambia le kcal (60 kg di Calcio = 360).
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

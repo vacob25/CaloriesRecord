@@ -1,6 +1,7 @@
 import type { Sex, TrainingType } from './labels'
 import { adjustmentPct, type GoalProfile } from './goals'
 import { bmr, dayTarget, macros, maintenance, type Macros } from './nutrition'
+import { trainingBonus } from './sportEnergy'
 import { ageOn } from './weight'
 
 /** Parametri del profilo che servono al target (come in `profiles`). */
@@ -9,7 +10,10 @@ export interface TargetProfile extends GoalProfile {
   birthDate: string
   heightCm: number
   activityFactor: number
+  /** Bonus di riserva per gli sport che non sono nella tabella di lib/sportEnergy.ts. */
   trainingBonusKcal: number
+  /** Sport del profilo: da qui le calorie degli allenamenti del giorno. */
+  sports: readonly string[]
   proteinGPerKg: number
   fatGPerKg: number
 }
@@ -39,12 +43,13 @@ export function computeDayTarget(
  */
 export function withTrainingType(
   maintenanceKcal: number,
-  profile: Pick<TargetProfile, 'goal' | 'surplusPct' | 'cutRatePct' | 'trainingBonusKcal' | 'proteinGPerKg' | 'fatGPerKg'>,
+  profile: Pick<TargetProfile, 'goal' | 'surplusPct' | 'cutRatePct' | 'trainingBonusKcal' | 'sports' | 'proteinGPerKg' | 'fatGPerKg'>,
   weightKg: number,
   trainingType: TrainingType,
 ): DayTargetValues {
   // Massa: surplus fisso. Mantenimento: 0. Cut: deficit in base al peso di quel giorno (lib/goals.ts).
-  const targetKcal = dayTarget(maintenanceKcal, adjustmentPct(profile, maintenanceKcal, weightKg), trainingType, profile.trainingBonusKcal)
+  const trainingKcal = trainingBonus(trainingType, profile.sports, weightKg, profile.trainingBonusKcal).total
+  const targetKcal = dayTarget(maintenanceKcal, adjustmentPct(profile, maintenanceKcal, weightKg), trainingKcal)
   return {
     trainingType,
     maintenanceKcal,

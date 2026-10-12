@@ -12,6 +12,7 @@ const profile = {
   surplusPct: 0.1,
   cutRatePct: 0.005,
   trainingBonusKcal: 200,
+  sports: ['Palestra', 'Calcio'],
   proteinGPerKg: 2,
   fatGPerKg: 1,
 }
@@ -26,10 +27,10 @@ describe('computeDayTarget — ACCETTAZIONE step 6', () => {
     })
   })
 
-  it('calcio: target 3330, macro 150/75/514', () => {
+  it('calcio (7,0 MET, 60 min, 75 kg → 450 kcal): target 3580, macro 150/75/576', () => {
     expect(computeDayTarget(profile, 75, '2026-10-08', 'sport_2')).toMatchObject({
-      targetKcal: 3330,
-      macros: { protein: 150, fat: 75, carbs: 514 },
+      targetKcal: 3580, // 3132,8 + 450 = 3582,8
+      macros: { protein: 150, fat: 75, carbs: 576 },
     })
   })
 
@@ -40,7 +41,7 @@ describe('computeDayTarget — ACCETTAZIONE step 6', () => {
 
 describe('withTrainingType', () => {
   it('parte dal mantenimento salvato, non dal profilo attuale', () => {
-    expect(withTrainingType(2848, profile, 75, 'both').targetKcal).toBe(3330)
+    expect(withTrainingType(2848, profile, 75, 'sport_1+sport_2').targetKcal).toBe(3860) // 3132,8 + 281 + 450 = 3863,8
     expect(withTrainingType(3000, profile, 75, 'rest').targetKcal).toBe(3300)
   })
 })
@@ -86,10 +87,15 @@ describe('target per obiettivo (step 19, ADR-066) — profilo di esempio 75 kg, 
     expect(result.targetKcal).toBe(expected)
     expect(result.maintenanceKcal).toBe(2848)
   })
-  it('cut: il bonus allenamento si somma come prima (un solo bonus, anche con due sport)', () => {
+  it('cut: le calorie degli allenamenti si sommano al target (Palestra 281; Palestra + Calcio 731)', () => {
     const cut = { ...profile, goal: 'cut' as const, cutRatePct: 0.005 }
-    expect(withTrainingType(2848, cut, 75, 'sport_1').targetKcal).toBe(2640) // 2435,5 + 200 = 2635,5 → 2640
-    expect(withTrainingType(2848, cut, 75, 'both').targetKcal).toBe(2640)
+    expect(withTrainingType(2848, cut, 75, 'sport_1').targetKcal).toBe(2720) // 2435,5 + 281 = 2716,5
+    expect(withTrainingType(2848, cut, 75, 'sport_1+sport_2').targetKcal).toBe(3170) // 2435,5 + 731 = 3166,5
+  })
+  it('sport fuori tabella: vale il bonus di riserva del profilo, e si somma agli altri', () => {
+    const withCustom = { ...profile, sports: ['Palestra', 'Padel'] }
+    expect(withTrainingType(2848, withCustom, 75, 'sport_2').targetKcal).toBe(3330) // 3132,8 + 200
+    expect(withTrainingType(2848, withCustom, 75, 'sport_1+sport_2').targetKcal).toBe(3610) // 3132,8 + 281 + 200 = 3613,8
   })
   it('cut: il deficit segue il peso del giorno (più leggero → deficit più piccolo)', () => {
     expect(withTrainingType(2848, { ...profile, goal: 'cut', cutRatePct: 0.005 }, 60, 'rest').targetKcal).toBe(2520) // 60 · 0,005 · 1100 = 330 → 2518 → 2520

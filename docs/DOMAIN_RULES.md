@@ -13,12 +13,14 @@ Peso usato: la media mobile attuale (sezione 4) se disponibile (≥ 4 pesate in 
 ```
 mantenimento = round(BMR · activity_factor)     (default 1,60; intero, ADR-052)
 target_base  = mantenimento · (1 + surplus_pct) (default +10%)
-target_giorno = target_base + (training_type ≠ rest ? training_bonus_kcal : 0)
+target_giorno = target_base + Σ calorie degli allenamenti del giorno      (step 22, §2b)
 ```
 - Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052).
 - Arrotondare il target al multiplo di 10 kcal più vicino.
 - `activity_factor` 1,60 = circa 6 sedute di allenamento a settimana, ad esempio 3 di palestra + 3 di sport di squadra (valore di partenza, poi corretto dalla ricalibrazione).
-- `training_type`: `rest` oppure gli sport del giorno, `sport_1`, `sport_1+sport_3`… (step 21, ADR-073; i nomi vengono dagli sport del profilo, fino a 4). Il bonus è uno solo (non si somma) per non gonfiare il target nei giorni con più sport.
+- `training_type`: `rest` oppure gli sport del giorno, `sport_1`, `sport_1+sport_3`… (step 21, ADR-073; i nomi vengono dagli sport del profilo, fino a 4).
+- **Calorie degli allenamenti (step 22, ADR-075), §2b:** ogni sport del giorno vale `(MET − 1) · peso_kg · ore` (il "− 1" toglie il metabolismo a riposo, già nel mantenimento); **più sport si sommano**. Tabella (`lib/sportEnergy.ts`): Tennis 8,0 MET · 60 min; Corsa 9,8 · 45 min; Calcio 7,0 · 60 min; Palestra 6,0 · 45 min. A 75 kg: Tennis 525, Corsa 495, Calcio 450, Palestra 281 kcal. Gli sport fuori tabella valgono il "Bonus per gli altri sport" del profilo (`training_bonus_kcal`, default 200). Il peso è quello del giorno. Esempio (profilo di esempio, +10%): Palestra + Calcio → 3132,8 + 281 + 450 = 3863,8 → **3860 kcal**; solo Calcio → **3580**.
+- **Attenzione, doppio conteggio:** il livello di attività (1,2-1,725) descrive la settimana *compresi* gli allenamenti; sommare anche le calorie di ogni seduta conta due volte una parte. La ricalibrazione corregge (max ±5% a settimana), ma un livello di attività più basso (che descriva solo la giornata senza allenamento) dà un target di riposo più realistico.
 - **Obiettivo (step 19, ADR-066):** `target_base = mantenimento + scostamento`. Massa: `mantenimento · surplus_pct`. Mantenimento: 0. Cut: `−(peso_kg · ritmo · 7700 / 7)`, ritmo = `cut_rate_pct` (0,5% / 0,7% / 1,0% del peso a settimana), peso = quello del giorno. Esempio cut (75 kg, 0,5%): deficit 412,5 → riposo 2848 − 412,5 = 2435,5 → **2440 kcal**; con bonus 200 → 2635,5 → **2640**.
 - Avvisi (non blocchi): massa oltre +0,5 kg/sett.; cut oltre 1%/sett.; target di riposo sotto il BMR; cut sotto i 18 anni (nota medica). Il cut richiede un peso obiettivo sotto il peso attuale.
 - Tetto di sicurezza di interfaccia: avviso (non blocco) se `surplus_pct` > 20% o se il ritmo stimato supera +0,5 kg/settimana (`GAIN_RATE_WARNING_KG_WEEK`).

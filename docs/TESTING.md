@@ -105,6 +105,16 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `dragTargetIndex` / `reorderByDrag` | spostamento di mezza riga / elenco a,b,c,d | arrotonda alla riga più vicina e resta nell'elenco; 0→2: b,c,a,d |
 | catalogo piatti | tutte le voci con gli ingredienti | nessun errore, id e nomi unici; pasta al pomodoro ricalcolata a mano (±1 kcal) |
 
+### sportEnergy.ts (step 22)
+| Funzione | Input | Atteso |
+| --- | --- | --- |
+| `sessionKcal` | 75 kg: Tennis, Corsa, Calcio, Palestra | 525, 495, 450, 281 kcal ((MET − 1) · kg · ore) |
+| `sessionKcal` | 60 kg di Calcio | 360 |
+| `sportEnergyFor` | Calcio a 5, Calcetto, Running, Sala pesi | riconosciuti; Padel, Tennis tavolo, Nuoto, CrossFit no |
+| `trainingBonus` | `sport_1+sport_2` (Palestra, Calcio) a 75 kg | 731 (si somma) |
+| `trainingBonus` | sport fuori tabella, riserva 150 | 150, segnato non stimato |
+| `withTrainingType` | 2848, +10%, `sport_1+sport_2` | 3860 (3132,8 + 281 + 450); solo Calcio 3580 |
+
 ### portions.ts
 | Caso | Atteso |
 | --- | --- |

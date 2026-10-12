@@ -53,7 +53,7 @@ export function adjustmentPct(profile: GoalProfile, maintenanceKcal: number, wei
 
 /** Target di un giorno di riposo (senza bonus allenamento), arrotondato come gli altri target. */
 export function restDayTargetKcal(maintenanceKcal: number, profile: GoalProfile, weightKg: number): number {
-  return dayTarget(maintenanceKcal, adjustmentPct(profile, maintenanceKcal, weightKg), 'rest', 0)
+  return dayTarget(maintenanceKcal, adjustmentPct(profile, maintenanceKcal, weightKg), 0)
 }
 
 /** Ritmo atteso dal piano in kg/settimana, con segno (giorni di riposo, bonus escluso). */

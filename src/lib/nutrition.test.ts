@@ -104,12 +104,11 @@ describe('maintenance', () => {
 
 describe('dayTarget (TESTING.md)', () => {
   it.each([
-    ['rest', 3130],
-    ['sport_2', 3330],
-    ['sport_1', 3330],
-    ['both', 3330],
-  ] as const)('2848, +10%%, %s, bonus 200 → %s (il bonus non si somma)', (type, expected) => {
-    expect(dayTarget(2848, 0.1, type, 200)).toBe(expected)
+    [0, 3130],
+    [200, 3330],
+    [731, 3860],
+  ])('2848, +10%%, calorie di allenamento %s → %s', (trainingKcal, expected) => {
+    expect(dayTarget(2848, 0.1, trainingKcal)).toBe(expected)
   })
 })
 

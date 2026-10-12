@@ -1,4 +1,3 @@
-import type { TrainingType } from './labels'
 import {
   BMR_SEX_OFFSET,
   KCAL_PER_G_CARBS,
@@ -111,18 +110,12 @@ export function maintenance(bmrKcal: number, activityFactor: number): number {
 }
 
 /**
- * Target del giorno: mantenimento · (1 + surplus) + un solo bonus nei giorni di allenamento
- * (anche "entrambi"), arrotondato a 10 kcal.
+ * Target del giorno: mantenimento · (1 + scostamento dell'obiettivo) + le calorie degli allenamenti del giorno
+ * (lib/sportEnergy.ts: più sport si sommano), arrotondato a 10 kcal.
  */
-export function dayTarget(
-  maintenanceKcal: number,
-  surplusPct: number,
-  trainingType: TrainingType,
-  trainingBonusKcal: number,
-): number {
+export function dayTarget(maintenanceKcal: number, surplusPct: number, trainingKcal: number): number {
   const base = maintenanceKcal * (1 + surplusPct)
-  const bonus = trainingType === 'rest' ? 0 : trainingBonusKcal
-  return round((base + bonus) / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
+  return round((base + trainingKcal) / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
 }
 
 export interface Macros {

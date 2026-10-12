@@ -9,6 +9,7 @@ import { errorMessage } from '../../data/dbErrors'
 import { useDayTarget, useProfile, useSetTrainingType } from '../../data/queries'
 import type { DailyTarget } from '../../data/types'
 import type { TrainingType } from '../../lib/labels'
+import { trainingBonus } from '../../lib/sportEnergy'
 import { toggleSportInType, trainingLabel, trainingSportIndexes } from '../../lib/sports'
 import { formatNumber } from '../../lib/numbers'
 import { isLowCarbs, type Nutrients } from '../../lib/nutrition'
@@ -75,7 +76,7 @@ function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; w
         </dl>
       </div>
 
-      <TrainingTypeBadge date={date} type={target.trainingType} />
+      <TrainingTypeBadge date={date} type={target.trainingType} weightKg={weightKg} />
 
       <div className="mt-4 space-y-3">
         <MacroBar label="Proteine" eaten={eaten.protein} goal={target.protein} progress={progress(eaten.protein, target.protein)} colorClass="bg-blue" />
@@ -95,7 +96,7 @@ function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; w
  * Badge del tipo di giorno: un tocco apre la scelta; cambia il target del solo giorno. Si toccano gli sport fatti quel giorno
  * (anche più di uno: "Palestra + calcio" nasce toccandoli uno dopo l'altro); "Riposo" li toglie tutti (step 21).
  */
-function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType }) {
+function TrainingTypeBadge({ date, type, weightKg }: { date: string; type: TrainingType; weightKg: number | null }) {
   const [open, setOpen] = useState(false)
   const setType = useSetTrainingType(date)
   const profile = useProfile()
@@ -109,6 +110,7 @@ function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType })
     )
   }
   const selected = trainingSportIndexes(type)
+  const bonus = weightKg !== null ? trainingBonus(type, sports, weightKg, profile.data?.trainingBonusKcal ?? 0) : null
   const pill = (pressed: boolean) =>
     `min-h-11 rounded-button border px-3 text-[13px] font-semibold ${
       pressed ? 'border-green bg-green-tint text-green-dark' : 'border-line bg-surface text-ink-2'
@@ -150,7 +152,10 @@ function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType })
             ))}
           </div>
           <p className="mt-2 text-[13px] text-muted">
-            Tocca gli sport che fai oggi, anche più di uno. Nei giorni di allenamento si aggiunge il bonus (uno solo). Cambia solo questo giorno.
+            {bonus && bonus.total > 0
+              ? `Bonus di oggi: +${bonus.total} kcal (${bonus.parts.map((part) => `${part.name} ${part.kcal}`).join(' + ')}). `
+              : 'Tocca gli sport che fai oggi, anche più di uno: le calorie si sommano. '}
+            Stima per un allenamento medio, secondo il tuo peso. Cambia solo questo giorno.
           </p>
           {setType.isError && <FormMessage kind="error">{errorMessage(setType.error)}</FormMessage>}
         </fieldset>

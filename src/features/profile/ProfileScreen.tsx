@@ -142,9 +142,9 @@ const PARAM_FIELDS: { field: ParamsField; label: string; suffix?: string; hint: 
   },
   {
     field: 'trainingBonusKcal',
-    label: 'Bonus allenamento',
+    label: 'Bonus per gli altri sport',
     suffix: 'kcal',
-    hint: 'Si aggiunge al target nei giorni di allenamento, con uno o due sport (il bonus è uno solo, non si somma).',
+    hint: 'Tennis, corsa, calcio e palestra hanno già le loro calorie, calcolate sul tuo peso. Questo valore vale per ogni altro sport che scrivi (per esempio il nuoto) e si somma agli altri nei giorni con più allenamenti.',
   },
   {
     field: 'proteinGPerKg',
