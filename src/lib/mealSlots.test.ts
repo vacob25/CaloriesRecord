@@ -4,11 +4,13 @@ import { MEAL_NAME_MAX, MEAL_SLOTS_MAX } from './constants'
 import {
   canAddSlot,
   canRemoveSlot,
+  dragTargetIndex,
   cleanMealName,
   DEFAULT_MEAL_SLOTS,
   mealForHour,
   moveSlot,
   newSlotKey,
+  reorderByDrag,
   slotName,
   validateMealName,
 } from './mealSlots'
@@ -107,5 +109,22 @@ describe('slotName', () => {
   it('nome dalla chiave, "Pasto" se manca', () => {
     expect(slotName(DEFAULT_MEAL_SLOTS, 'dinner')).toBe('Cena')
     expect(slotName(DEFAULT_MEAL_SLOTS, 'zzz')).toBe('Pasto')
+  })
+})
+
+describe('dragTargetIndex e reorderByDrag', () => {
+  it('mezza riga di spostamento arrotonda alla riga più vicina, sempre dentro l’elenco', () => {
+    expect(dragTargetIndex(2, 0, 50, 5)).toBe(2)
+    expect(dragTargetIndex(2, 24, 50, 5)).toBe(2)
+    expect(dragTargetIndex(2, 26, 50, 5)).toBe(3)
+    expect(dragTargetIndex(2, -80, 50, 5)).toBe(0)
+    expect(dragTargetIndex(2, 999, 50, 5)).toBe(4)
+    expect(dragTargetIndex(0, -999, 50, 5)).toBe(0)
+  })
+  it('riordina portando un elemento in un’altra posizione', () => {
+    expect(reorderByDrag(['a', 'b', 'c', 'd'], 0, 2)).toEqual(['b', 'c', 'a', 'd'])
+    expect(reorderByDrag(['a', 'b', 'c', 'd'], 3, 1)).toEqual(['a', 'd', 'b', 'c'])
+    expect(reorderByDrag(['a', 'b'], 1, 1)).toEqual(['a', 'b'])
+    expect(reorderByDrag(['a', 'b'], 5, 0)).toEqual(['a', 'b'])
   })
 })

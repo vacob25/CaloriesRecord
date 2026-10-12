@@ -80,6 +80,9 @@ Inserimento del peso mattutino, grafico con punti grezzi e media mobile, distanz
 ### Statistiche
 Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornaliera, giorni rispettati, peso in kg/settimana), grafico a barre calorie contro linea del target (verde = rispettato, arancio = sotto), grafico peso 4 settimane con traguardo, distribuzione calorie per pasto, cibi più frequenti. Periodo senza dati: stato vuoto, non grafici a zero.
 
+### Oggi · I tuoi pasti (step 20)
+Sheet con una riga per pasto: nome, matita (rinomina), X (elimina in due tocchi) e a destra due linee chiare (`text-muted`) che dicono "trascinami". Tenendo premuto (350 ms) la riga si solleva in primo piano come in iOS (scala 1,03, ombra, bordi arrotondati), segue il dito e le altre si spostano; al rilascio scivola al suo posto e l'ordine si salva. Dalle due linee il trascinamento parte subito. Frecce su/giù sulle due linee per tastiera e VoiceOver.
+
 ### Profilo
 Step 19: sezione **Obiettivo e sport** (stesse carte del Benvenuto, `data-tour="profile-goal"`) e pulsante "Rivedi il tutorial". Il **tutorial** è un popup sopra la barra in basso ("Tutorial · 1/8", titolo, testo breve, puntini, Indietro/Avanti, Salta); l'elemento spiegato ha un contorno verde (`data-tour-active`); focus sul titolo per VoiceOver; rispetta `prefers-reduced-motion`.
 Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), Acqua (obiettivo facoltativo in litri, elenco dei propri contenitori con elimina), esci. Ogni parametro ha una nota breve che spiega cosa cambia.

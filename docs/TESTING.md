@@ -100,6 +100,7 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `viewedDay` | oggi 2026-10-11 | 10-10 e 09-27 validi; 09-26, 10-12, `2026-02-30`, testo → oggi |
 | `previousViewedDay` / `nextViewedDay` | limite 14 / oggi | null oltre il limite / a oggi |
 | `dayTitle` | oggi, ieri, 2 e 5 giorni fa | Oggi, Ieri, L’altro ieri, 5 giorni fa |
+| `dragTargetIndex` / `reorderByDrag` | spostamento di mezza riga / elenco a,b,c,d | arrotonda alla riga più vicina e resta nell'elenco; 0→2: b,c,a,d |
 | catalogo piatti | tutte le voci con gli ingredienti | nessun errore, id e nomi unici; pasta al pomodoro ricalcolata a mano (±1 kcal) |
 
 ### portions.ts
