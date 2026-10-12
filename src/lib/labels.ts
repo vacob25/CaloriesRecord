@@ -13,11 +13,10 @@ export const FOOD_SOURCE_LABEL = {
 export type MealType = string
 
 /**
- * Tipo di giorno. 'sport_1' e 'sport_2' sono il primo e il secondo sport del profilo (step 19): le etichette si
- * ricavano da lib/sports.ts. Prima erano fissi Palestra e Calcio ('gym', 'football').
+ * Tipo di giorno: 'rest', oppure gli sport fatti quel giorno come 'sport_1', 'sport_1+sport_3' (numeri in ordine = posizione
+ * nell'elenco degli sport del profilo, step 21). Le funzioni per leggerlo e costruirlo sono in lib/sports.ts.
  */
-export const TRAINING_TYPES = ['rest', 'sport_1', 'sport_2', 'both'] as const
-export type TrainingType = (typeof TRAINING_TYPES)[number]
+export type TrainingType = string
 
 export type Sex = 'male' | 'female'
 export const SEX_LABEL: Record<Sex, string> = { male: 'Uomo', female: 'Donna' }

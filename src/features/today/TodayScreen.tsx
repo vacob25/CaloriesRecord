@@ -21,6 +21,7 @@ import { formatQuantity } from '../../lib/portions'
 import { sumNutrients } from '../../lib/nutrition'
 import { dayQuery, dayTitle, nextViewedDay, previousViewedDay, viewedDay } from '../../lib/viewDay'
 import { MealSlotsSheet } from './MealSlotsSheet'
+import { useEntryDrag } from './useEntryDrag'
 import { useDaySwipe } from './useDaySwipe'
 import { TargetCard } from './TargetCard'
 import { WaterCard } from './WaterCard'
@@ -55,6 +56,8 @@ export function TodayScreen() {
   const recalibration = useRecalibration(today)
   const pendingProposal = recalibration.data?.estimate?.status === 'pending'
   const [editing, setEditing] = useState<MealEntry | null>(null)
+  const moveEntry = useUpdateEntry()
+  const [moved, setMoved] = useState('')
 
   const added = (location.state as AddedState | null)?.added
   const dismissToast = useCallback(
@@ -65,6 +68,17 @@ export function TodayScreen() {
   const list = entries.data ?? []
   const slots = mealSlots.data ?? []
   const groups = groupByMeal(list, slots.map((slot) => slot.key))
+  // Spostare una voce in un altro pasto trascinandola (step 21).
+  const entryDrag = useEntryDrag<MealEntry>({
+    enabled: editing === null && !managingMeals && !moveEntry.isPending,
+    onDrop: (entry, mealKey) => {
+      setMoved('')
+      moveEntry.mutate(
+        { entry, grams: entry.grams, mealType: mealKey },
+        { onSuccess: () => setMoved(`Spostato in ${slotName(slots, mealKey)}`) },
+      )
+    },
+  })
   const total = sumNutrients(list)
 
   return (
@@ -161,7 +175,10 @@ export function TodayScreen() {
                   <Link
                     key={slot.key}
                     to={addLink}
-                    className="flex min-h-16 items-center justify-between rounded-card border-2 border-dashed border-line px-5 text-[15px]"
+                    data-meal-key={slot.key}
+                    className={`flex min-h-16 items-center justify-between rounded-card border-2 border-dashed px-5 text-[15px] transition-colors ${
+                      entryDrag.drag?.over === slot.key ? 'border-green bg-green-tint' : 'border-line'
+                    }`}
                   >
                     <span className="font-bold">{slot.name}</span>
                     <span className="font-semibold text-green-dark">+ Aggiungi</span>
@@ -169,14 +186,24 @@ export function TodayScreen() {
                 )
               }
               return (
-                <section key={slot.key} aria-label={slot.name} className={`${cardClass} px-5 py-4`}>
+                <section
+                  key={slot.key}
+                  aria-label={slot.name}
+                  data-meal-key={slot.key}
+                  className={`${cardClass} px-5 py-4 transition-shadow ${entryDrag.drag?.over === slot.key ? 'ring-2 ring-green' : ''}`}
+                >
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-[18px] font-extrabold">{slot.name}</h3>
                     <p className="text-[15px] font-bold tabular-nums">{formatNumber(mealTotal.kcal)} kcal</p>
                   </div>
                   <ul className="mt-2 divide-y divide-line">
                     {mealEntries.map((entry) => (
-                      <li key={entry.id}>
+                      <li
+                        key={entry.id}
+                        {...entryDrag.rowProps(entry)}
+                        style={entryDrag.rowStyle(entry.id)}
+                        className={`select-none [-webkit-touch-callout:none] ${entryDrag.drag?.id === entry.id ? entryDrag.liftedClass : ''}`}
+                      >
                         <button
                           type="button"
                           onClick={() => {
@@ -206,6 +233,9 @@ export function TodayScreen() {
 
       <WaterCard date={day} />
       </div>
+      <p role="status" className="sr-only">
+        {moved}
+      </p>
 
       {editing && (
         <EditEntrySheet

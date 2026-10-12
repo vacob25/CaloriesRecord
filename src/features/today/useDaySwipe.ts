@@ -1,9 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react'
 
 import { swipeDirection } from '../../lib/viewDay'
+import { ENTRY_DRAGGING_ATTRIBUTE } from './useEntryDrag'
 
 const EDGE_PX = 24
 const LOCK_PX = 10
+
+/** Mentre si trascina una voce tra i pasti lo swipe tra i giorni è sospeso. */
+function entryDragging(): boolean {
+  return document.body.hasAttribute(ENTRY_DRAGGING_ATTRIBUTE)
+}
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
@@ -40,7 +46,7 @@ export function useDaySwipe(ref: RefObject<HTMLElement | null>, day: string, { o
     }
     const onMove = (event: TouchEvent) => {
       const touch = event.touches[0]
-      if (!start || !touch) return
+      if (!start || !touch || entryDragging()) return
       const dx = touch.clientX - start.x
       const dy = touch.clientY - start.y
       if (!horizontal && Math.abs(dx) > LOCK_PX && Math.abs(dx) > Math.abs(dy)) horizontal = true
@@ -54,7 +60,7 @@ export function useDaySwipe(ref: RefObject<HTMLElement | null>, day: string, { o
       const begin = start
       start = null
       if (!begin || !touch) return
-      const direction = cancelled ? null : swipeDirection(touch.clientX - begin.x, touch.clientY - begin.y)
+      const direction = cancelled || entryDragging() ? null : swipeDirection(touch.clientX - begin.x, touch.clientY - begin.y)
       const action = direction === 'previous' ? handlers.current.onPrevious : direction === 'next' ? handlers.current.onNext : null
       const shifted = el.style.transform
       el.style.transform = ''

@@ -124,7 +124,7 @@ export const MAINTAIN_BAND_KG_WEEK = 0.1
 /** Sotto questa età il cut è consentito solo con un avviso che consiglia di sentire un medico. */
 export const ADULT_AGE_YEARS = 18
 /** Sport personali: al massimo 2, così i tipi di giorno restano Riposo, A, B, A + B (come prima: Palestra / Calcio). */
-export const SPORTS_MAX = 2
+export const SPORTS_MAX = 4
 export const SPORT_NAME_MAX = 24
 
 /** Pasti su misura (step 20): quanti al massimo e quanto può essere lungo il nome. */

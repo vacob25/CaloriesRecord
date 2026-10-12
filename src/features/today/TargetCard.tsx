@@ -9,7 +9,7 @@ import { errorMessage } from '../../data/dbErrors'
 import { useDayTarget, useProfile, useSetTrainingType } from '../../data/queries'
 import type { DailyTarget } from '../../data/types'
 import type { TrainingType } from '../../lib/labels'
-import { trainingDayTypes, trainingLabel } from '../../lib/sports'
+import { toggleSportInType, trainingLabel, trainingSportIndexes } from '../../lib/sports'
 import { formatNumber } from '../../lib/numbers'
 import { isLowCarbs, type Nutrients } from '../../lib/nutrition'
 import { progress, ringStatus } from '../../lib/targets'
@@ -91,15 +91,16 @@ function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; w
   )
 }
 
-/** Badge del tipo di giorno: un tocco apre la scelta; cambia il target del solo giorno. */
+/**
+ * Badge del tipo di giorno: un tocco apre la scelta; cambia il target del solo giorno. Si toccano gli sport fatti quel giorno
+ * (anche più di uno: "Palestra + calcio" nasce toccandoli uno dopo l'altro); "Riposo" li toglie tutti (step 21).
+ */
 function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType }) {
   const [open, setOpen] = useState(false)
   const setType = useSetTrainingType(date)
   const profile = useProfile()
-  // I tipi di giorno vengono dagli sport del profilo (step 19): Riposo, ogni sport, e "A + b" se sono due.
   const sports = profile.data?.sports ?? []
-  const options = trainingDayTypes(sports)
-  if (options.length === 1) {
+  if (sports.length === 0) {
     // Nessuno sport nel profilo: solo giorni di riposo, niente scelta.
     return (
       <p className="mt-4 text-[13px] text-muted">
@@ -107,6 +108,11 @@ function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType })
       </p>
     )
   }
+  const selected = trainingSportIndexes(type)
+  const pill = (pressed: boolean) =>
+    `min-h-11 rounded-button border px-3 text-[13px] font-semibold ${
+      pressed ? 'border-green bg-green-tint text-green-dark' : 'border-line bg-surface text-ink-2'
+    }`
   return (
     <div className="mt-4">
       <button
@@ -119,24 +125,33 @@ function TrainingTypeBadge({ date, type }: { date: string; type: TrainingType })
       </button>
       {open && (
         <fieldset className="mt-2">
-          <legend className="sr-only">Tipo di giorno</legend>
+          <legend className="sr-only">Sport di oggi</legend>
           <div className="grid grid-cols-2 gap-2">
-            {options.map((option) => (
+            <button
+              type="button"
+              aria-pressed={selected.length === 0}
+              disabled={setType.isPending}
+              onClick={() => setType.mutate('rest')}
+              className={pill(selected.length === 0)}
+            >
+              Riposo
+            </button>
+            {sports.map((sport, index) => (
               <button
-                key={option.type}
+                key={sport}
                 type="button"
-                aria-pressed={option.type === type}
+                aria-pressed={selected.includes(index)}
                 disabled={setType.isPending}
-                onClick={() => setType.mutate(option.type, { onSuccess: () => setOpen(false) })}
-                className={`min-h-11 rounded-button border px-3 text-[13px] font-semibold ${
-                  option.type === type ? 'border-green bg-green-tint text-green-dark' : 'border-line bg-surface text-ink-2'
-                }`}
+                onClick={() => setType.mutate(toggleSportInType(type, index))}
+                className={pill(selected.includes(index))}
               >
-                {option.label}
+                {sport}
               </button>
             ))}
           </div>
-          <p className="mt-2 text-[13px] text-muted">Nei giorni di allenamento si aggiunge il bonus (uno solo). Cambia solo oggi.</p>
+          <p className="mt-2 text-[13px] text-muted">
+            Tocca gli sport che fai oggi, anche più di uno. Nei giorni di allenamento si aggiunge il bonus (uno solo). Cambia solo questo giorno.
+          </p>
           {setType.isError && <FormMessage kind="error">{errorMessage(setType.error)}</FormMessage>}
         </fieldset>
       )}

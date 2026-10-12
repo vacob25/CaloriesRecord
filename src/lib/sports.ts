@@ -48,27 +48,40 @@ function inSentence(name: string): string {
   return /[A-ZÀ-Ý]/.test(name.slice(1)) ? name : name.charAt(0).toLowerCase() + name.slice(1)
 }
 
-export interface DayTypeOption {
-  type: TrainingType
-  label: string
+/** Posizioni (0-based) degli sport di un tipo di giorno. 'rest' e valori non validi → nessuno; il vecchio 'both' → [0, 1]. */
+export function trainingSportIndexes(type: TrainingType): number[] {
+  if (type === 'both') return [0, 1]
+  const indexes: number[] = []
+  for (const part of type.split('+')) {
+    const match = /^sport_([1-9])$/.exec(part)
+    if (!match) return []
+    indexes.push(Number(match[1]) - 1)
+  }
+  return [...new Set(indexes)].sort((a, b) => a - b)
 }
 
-/** Tipi di giorno dell'utente: Riposo, ogni sport, e "A + b" se ne ha due (come prima: Palestra / Calcio / entrambi). */
-export function trainingDayTypes(sports: readonly string[]): DayTypeOption[] {
-  const [first, second] = sports
-  const options: DayTypeOption[] = [{ type: 'rest', label: 'Riposo' }]
-  if (first) options.push({ type: 'sport_1', label: first })
-  if (second) options.push({ type: 'sport_2', label: second })
-  if (first && second) options.push({ type: 'both', label: `${first} + ${inSentence(second)}` })
-  return options
+/** Tipo di giorno dagli sport scelti (posizioni 0-based): ordinati, senza doppioni; nessuno = 'rest'. */
+export function buildTrainingType(indexes: readonly number[]): TrainingType {
+  const unique = [...new Set(indexes)].sort((a, b) => a - b)
+  return unique.length === 0 ? 'rest' : unique.map((index) => `sport_${index + 1}`).join('+')
 }
 
-/** Etichetta di un tipo di giorno con gli sport di adesso; se lo sport non c'è più (profilo cambiato) "Allenamento". */
+/** Tocco su uno sport: lo aggiunge al giorno o, se c'è già, lo toglie. Così "Palestra + calcio" nasce toccandoli uno dopo l'altro. */
+export function toggleSportInType(type: TrainingType, index: number): TrainingType {
+  const current = trainingSportIndexes(type)
+  return buildTrainingType(current.includes(index) ? current.filter((i) => i !== index) : [...current, index])
+}
+
+/** Etichetta di un tipo di giorno con gli sport di adesso: "Riposo", "Palestra", "Palestra + calcio + nuoto". */
 export function trainingLabel(type: TrainingType, sports: readonly string[]): string {
-  return trainingDayTypes(sports).find((option) => option.type === type)?.label ?? (type === 'rest' ? 'Riposo' : 'Allenamento')
+  const names = trainingSportIndexes(type)
+    .map((index) => sports[index])
+    .filter((name): name is string => name !== undefined)
+  if (names.length === 0) return type === 'rest' ? 'Riposo' : 'Allenamento'
+  return names.map((name, i) => (i === 0 ? name : inSentence(name))).join(' + ')
 }
 
-/** Se il tipo di giorno richiede uno sport che non c'è più, si torna a Riposo (profilo modificato). */
+/** Tipo di giorno valido con gli sport di adesso: gli sport che non ci sono più si tolgono; se non resta niente, Riposo. */
 export function coerceTrainingType(type: TrainingType, sports: readonly string[]): TrainingType {
-  return trainingDayTypes(sports).some((option) => option.type === type) ? type : 'rest'
+  return buildTrainingType(trainingSportIndexes(type).filter((index) => index < sports.length))
 }

@@ -183,5 +183,13 @@ Accettazione:
 - Piatti comuni: 23 voci, ognuna con la ricetta nella fonte e la dicitura STIMA; scegliere un piatto lo salva tra i propri cibi, modificabile.
 - `rls_two_users.sql` passa anche con `meal_slots` e `no_session.sh` la include.
 
+## Step 21 · Sport fino a 4 e voci trascinabili (richiesta dell'utente del 12/10/2026)
+Fare: migrazione 008 (sport del profilo da 2 a 4; tipo di giorno = insieme di sport, `sport_1+sport_3`, il vecchio `both` diventa `sport_1+sport_2`); nel selettore del giorno si toccano gli sport fatti quel giorno, anche più di uno, e le combinazioni ("Palestra + calcio + nuoto") nascono dai tocchi; in Oggi una voce si sposta in un altro pasto tenendola premuta e trascinandola (ADR-074).
+Accettazione:
+- Con 4 sport nel profilo: Palestra poi Nuoto in Oggi → "Giorno: Palestra + nuoto" (`sport_1+sport_3`); un secondo tocco su uno sport lo toglie; "Riposo" toglie tutto; il bonus resta uno solo (+200).
+- Il database rifiuta il quinto sport e i tipi di giorno non validi; chi aveva `both` ora ha `sport_1+sport_2`; togliendo uno sport dal profilo, i giorni che lo usavano perdono solo quello (se non resta niente, Riposo).
+- Tenendo premuta una voce in Colazione e rilasciandola su Pranzo (vuoto o con voci) la voce passa a Pranzo con grammi e calorie invariati; rilasciata fuori da un pasto o sul proprio torna al suo posto; un tocco veloce apre ancora la modifica; un movimento prima del tempo non sposta.
+- Mentre si trascina una voce lo swipe tra i giorni è sospeso.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

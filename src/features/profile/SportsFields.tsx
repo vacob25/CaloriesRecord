@@ -38,7 +38,7 @@ export function SportsFields({ sports, onChange }: SportsFieldsProps) {
     <fieldset>
       <legend className="text-[13px] font-semibold text-ink-2">Che sport fai? (facoltativo)</legend>
       <p className="mt-1 text-[13px] text-muted">
-        Fino a {SPORTS_MAX}. Nei giorni di allenamento sceglierai uno sport o entrambi e l’app aggiunge il bonus di calorie.
+        Fino a {SPORTS_MAX}. Nei giorni di allenamento tocchi gli sport che fai (anche più di uno insieme) e l’app aggiunge il bonus di calorie, uno solo.
       </p>
 
       {sports.length > 0 && (

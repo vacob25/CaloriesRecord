@@ -29,7 +29,7 @@ Postgres su Supabase. Una migrazione SQL numerata per volta in `supabase/migrati
 | water_goal_ml | int | nullable, > 0; obiettivo acqua scelto dall'utente (migrazione 003, ADR-049) |
 | goal | text | default `bulk`, in (`bulk`,`maintain`,`cut`) (migrazione 006, ADR-066) |
 | cut_rate_pct | numeric(4,3) | default 0.005, `> 0` e `<= 0.05`: % del peso a settimana (solo cut) |
-| sports | jsonb | default `[]`, array di al più 2 nomi (ADR-068); il titolare è migrato a `["Palestra","Calcio"]` |
+| sports | jsonb | default `[]`, array di al più 4 nomi (migrazione 008, ADR-073; con la 006 erano 2); il titolare è migrato a `["Palestra","Calcio"]` |
 | tutorial_done_at | timestamptz | nullable; vuoto = il tutorial va ancora mostrato (ADR-069) |
 | created_at, updated_at | timestamptz | |
 
@@ -80,7 +80,7 @@ Indici su `(user_id, entry_date)` e su `food_id`.
 | Colonna | Tipo | Note |
 | --- | --- | --- |
 | user_id, target_date | PK composta | |
-| training_type | text | `rest` (default) / `sport_1` / `sport_2` / `both` (migrazione 006; prima `gym`/`football`) |
+| training_type | text | `rest` (default) oppure gli sport del giorno: `sport_1`, `sport_1+sport_3`… (numeri 1-4 in ordine = posizione in `profiles.sports`); vincolo `rest` o `^sport_[1-4](\+sport_[1-4]){0,3}$` (migrazione 008; con la 006 era `rest`/`sport_1`/`sport_2`/`both`) |
 | target_kcal | int | già con bonus allenamento |
 | protein_g, carbs_g, fat_g | int | |
 | maintenance_kcal | int | mantenimento usato quel giorno |

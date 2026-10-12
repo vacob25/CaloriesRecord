@@ -18,7 +18,7 @@ target_giorno = target_base + (training_type ≠ rest ? training_bonus_kcal : 0)
 - Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052).
 - Arrotondare il target al multiplo di 10 kcal più vicino.
 - `activity_factor` 1,60 = circa 6 sedute di allenamento a settimana, ad esempio 3 di palestra + 3 di sport di squadra (valore di partenza, poi corretto dalla ricalibrazione).
-- `training_type`: `rest`, `sport_1`, `sport_2`, `both` (step 19, ADR-068; i nomi vengono dagli sport del profilo). Il bonus è uno solo (non si somma) per non gonfiare il target nei giorni doppi.
+- `training_type`: `rest` oppure gli sport del giorno, `sport_1`, `sport_1+sport_3`… (step 21, ADR-073; i nomi vengono dagli sport del profilo, fino a 4). Il bonus è uno solo (non si somma) per non gonfiare il target nei giorni con più sport.
 - **Obiettivo (step 19, ADR-066):** `target_base = mantenimento + scostamento`. Massa: `mantenimento · surplus_pct`. Mantenimento: 0. Cut: `−(peso_kg · ritmo · 7700 / 7)`, ritmo = `cut_rate_pct` (0,5% / 0,7% / 1,0% del peso a settimana), peso = quello del giorno. Esempio cut (75 kg, 0,5%): deficit 412,5 → riposo 2848 − 412,5 = 2435,5 → **2440 kcal**; con bonus 200 → 2635,5 → **2640**.
 - Avvisi (non blocchi): massa oltre +0,5 kg/sett.; cut oltre 1%/sett.; target di riposo sotto il BMR; cut sotto i 18 anni (nota medica). Il cut richiede un peso obiettivo sotto il peso attuale.
 - Tetto di sicurezza di interfaccia: avviso (non blocco) se `surplus_pct` > 20% o se il ritmo stimato supera +0,5 kg/settimana (`GAIN_RATE_WARNING_KG_WEEK`).

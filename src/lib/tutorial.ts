@@ -30,7 +30,7 @@ export const TOUR_STEPS: readonly TourStep[] = [
     path: '/',
     target: 'meals',
     title: 'I pasti',
-    text: 'Tocca “+ Aggiungi” per registrare cosa mangi, o una voce per cambiarla. Con l’ingranaggio crei e rinomini i tuoi pasti; con le frecce accanto a “Oggi” torni ai giorni passati per recuperare ciò che avevi dimenticato.',
+    text: 'Tocca “+ Aggiungi” per registrare cosa mangi, o una voce per cambiarla. Con l’ingranaggio crei, rinomini e riordini i tuoi pasti; tenendo premuta una voce la trascini in un altro pasto; con le frecce (o scorrendo a destra) torni ai giorni passati.',
   },
   {
     id: 'water',

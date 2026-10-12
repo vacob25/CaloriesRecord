@@ -84,8 +84,10 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `weeksToGoal` | 75 → 70 kg, 0,5% | ceil(ln(70/75)/ln(0,995)) = 14 |
 | `planWarnings` | cut 1,2% | avviso ritmo; cut under 18 → nota medica |
 | `addSport` / `cleanSportName` | duplicati con accenti/maiuscole, > 24 caratteri, terzo sport | rifiutati |
-| `trainingDayTypes` | ["Palestra","Calcio"] | Riposo, Palestra, Calcio, Palestra + calcio |
-| `coerceTrainingType` | `both` con un solo sport | `rest` |
+| `toggleSportInType` | rest → 0 → 2 → 1 → 0 | `sport_1`, `sport_1+sport_3`, `sport_1+sport_2+sport_3`, `sport_2+sport_3` |
+| `trainingLabel` | `sport_1+sport_2+sport_4` con 4 sport | Palestra + calcio + CrossFit (le sigle restano) |
+| `trainingSportIndexes` | `both`, `sport_3+sport_1`, `gym`, `sport_1+x` | [0,1], [0,2], [], [] |
+| `coerceTrainingType` | `sport_1+sport_2` con un solo sport / `sport_2` con uno | `sport_1` / `rest` |
 | `nextStep` / `previousStep` / `tourLabel` | indici 0-7 | ferma agli estremi; "1/8"…"8/8" |
 
 ### mealSlots.ts, viewDay.ts (step 20)
