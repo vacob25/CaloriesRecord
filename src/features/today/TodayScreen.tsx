@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { GramsSheet } from '../../components/GramsSheet'
@@ -21,6 +21,7 @@ import { formatQuantity } from '../../lib/portions'
 import { sumNutrients } from '../../lib/nutrition'
 import { dayQuery, dayTitle, nextViewedDay, previousViewedDay, viewedDay } from '../../lib/viewDay'
 import { MealSlotsSheet } from './MealSlotsSheet'
+import { useDaySwipe } from './useDaySwipe'
 import { TargetCard } from './TargetCard'
 import { WaterCard } from './WaterCard'
 import { WeightReminder } from './WeightReminder'
@@ -39,6 +40,11 @@ export function TodayScreen() {
   const nextDay = nextViewedDay(day, today)
   const goToDay = (target: string) =>
     setParams(target === today ? {} : { data: target }, { replace: true })
+  const swipeRef = useRef<HTMLDivElement>(null)
+  useDaySwipe(swipeRef, day, {
+    onPrevious: previousDay ? () => goToDay(previousDay) : null,
+    onNext: nextDay ? () => goToDay(nextDay) : null,
+  })
   const entries = useEntries(day)
   const mealSlots = useMealSlots()
   const [managingMeals, setManagingMeals] = useState(false)
@@ -63,6 +69,8 @@ export function TodayScreen() {
 
   return (
     <>
+      {/* touch-action: pan-y = la pagina scorre in verticale, l'orizzontale è per lo swipe tra i giorni. */}
+      <div ref={swipeRef} data-day-swipe className="touch-pan-y">
       <header className="flex items-end justify-between gap-3 px-5 pt-6">
         <div>
           <p className="text-[13px] font-semibold text-muted first-letter:uppercase">{formatLongDate(day)}</p>
@@ -197,6 +205,7 @@ export function TodayScreen() {
       </div>
 
       <WaterCard date={day} />
+      </div>
 
       {editing && (
         <EditEntrySheet

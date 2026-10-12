@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { dayQuery, dayTitle, nextViewedDay, previousViewedDay, viewedDay } from './viewDay'
+import { dayQuery, dayTitle, nextViewedDay, previousViewedDay, swipeDirection, viewedDay } from './viewDay'
 
 const TODAY = '2026-10-11'
 
@@ -48,5 +48,20 @@ describe('dayTitle e dayQuery', () => {
   it('query solo per i giorni passati', () => {
     expect(dayQuery(TODAY, TODAY)).toBe('')
     expect(dayQuery('2026-10-10', TODAY)).toBe('data=2026-10-10')
+  })
+})
+
+describe('swipeDirection', () => {
+  it('destra = precedente, sinistra = successivo', () => {
+    expect(swipeDirection(80, 5)).toBe('previous')
+    expect(swipeDirection(-80, -5)).toBe('next')
+  })
+  it('troppo corto o soprattutto verticale non conta', () => {
+    expect(swipeDirection(59, 0)).toBeNull()
+    expect(swipeDirection(80, 60)).toBeNull()
+    expect(swipeDirection(0, 200)).toBeNull()
+  })
+  it('al limite della dominanza (1,5×) conta', () => {
+    expect(swipeDirection(90, 60)).toBe('previous')
   })
 })

@@ -45,3 +45,16 @@ export function dayTitle(day: string, today: string): string {
 export function dayQuery(day: string, today: string): string {
   return day === today ? '' : `data=${day}`
 }
+
+/** Distanza minima (px) per contare come swipe, e quanto deve prevalere l'orizzontale sul verticale. */
+export const SWIPE_MIN_PX = 60
+export const SWIPE_DOMINANCE = 1.5
+
+/**
+ * Gesto di scorrimento orizzontale in Oggi: verso destra (dx > 0) = giorno precedente, verso sinistra = giorno dopo.
+ * Un gesto soprattutto verticale (scroll della pagina) o troppo corto non conta.
+ */
+export function swipeDirection(dx: number, dy: number): 'previous' | 'next' | null {
+  if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < SWIPE_DOMINANCE * Math.abs(dy)) return null
+  return dx > 0 ? 'previous' : 'next'
+}
