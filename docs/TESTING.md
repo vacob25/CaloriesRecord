@@ -105,6 +105,13 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `dragTargetIndex` / `reorderByDrag` | spostamento di mezza riga / elenco a,b,c,d | arrotonda alla riga più vicina e resta nell'elenco; 0→2: b,c,a,d |
 | catalogo piatti | tutte le voci con gli ingredienti | nessun errore, id e nomi unici; pasta al pomodoro ricalcolata a mano (±1 kcal) |
 
+### numbers.ts · sanitizeNumberInput (step 23)
+| Input | Atteso |
+| --- | --- |
+| `75,5` / `75.5` decimale | invariati |
+| `7a5,5kg` / ` 1 2,3,4.5 ` / `-5` / `abc` decimale | `75,5` / `12,345` / `5` / vuoto |
+| `250 ml` / `1,5` intero | `250` / `15` |
+
 ### sportEnergy.ts (step 22)
 | Funzione | Input | Atteso |
 | --- | --- | --- |

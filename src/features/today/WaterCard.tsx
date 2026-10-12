@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 
 import { ErrorState } from '../../components/States'
 import { WaterIcon } from '../../components/WaterIcon'
@@ -7,6 +6,7 @@ import { cardClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useAddWater, useContainers, useDeleteWater, useProfile, useWater } from '../../data/queries'
 import { countFor, DEFAULT_CONTAINERS, formatWater, freeTotal, lastFor, waterProgress, waterTotal, type Container } from '../../lib/water'
+import { WaterGoalSheet } from './WaterGoalSheet'
 import { WaterSheet } from './WaterSheet'
 
 const stepButton =
@@ -20,6 +20,7 @@ export function WaterCard({ date }: { date: string }) {
   const add = useAddWater(date)
   const remove = useDeleteWater()
   const [custom, setCustom] = useState(false)
+  const [editingGoal, setEditingGoal] = useState(false)
 
   const entries = water.data ?? []
   const total = waterTotal(entries)
@@ -61,15 +62,24 @@ export function WaterCard({ date }: { date: string }) {
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-line" aria-hidden="true">
             <div className="h-full rounded-full bg-blue" style={{ width: `${Math.round(progress.fraction * 100)}%` }} />
           </div>
-          <p className="mt-1 text-[13px] text-muted">
-            {progress.remainingMl > 0 ? `Mancano ${formatWater(progress.remainingMl)}` : 'Obiettivo raggiunto'}
-          </p>
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <p className="text-[13px] text-muted">
+              {progress.remainingMl > 0 ? `Mancano ${formatWater(progress.remainingMl)}` : 'Obiettivo raggiunto'}
+            </p>
+            <button type="button" onClick={() => setEditingGoal(true)} className="min-h-11 shrink-0 text-[13px] font-semibold text-green-dark">
+              Cambia obiettivo
+            </button>
+          </div>
         </>
       ) : (
         profile.isSuccess && (
-          <Link to="/profilo#acqua" className="mt-1 flex min-h-11 items-center text-[13px] font-semibold text-green-dark">
+          <button
+            type="button"
+            onClick={() => setEditingGoal(true)}
+            className="mt-1 flex min-h-11 items-center text-[13px] font-semibold text-green-dark"
+          >
             Imposta un obiettivo d'acqua (facoltativo)
-          </Link>
+          </button>
         )
       )}
 
@@ -140,6 +150,7 @@ export function WaterCard({ date }: { date: string }) {
         </li>
       </ul>
 
+      {editingGoal && <WaterGoalSheet goalMl={goal} onClose={() => setEditingGoal(false)} />}
       {custom && <WaterSheet date={date} existingNames={all.map((container) => container.name)} onClose={() => setCustom(false)} />}
     </section>
   )

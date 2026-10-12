@@ -11,6 +11,7 @@ import { useDeleteFood, useFood, useSaveFood } from '../../data/queries'
 import type { Food } from '../../data/types'
 import { validateFood, type FoodField, type FoodFormInput } from '../../lib/foodValidation'
 import { PORTION_NAME_MAX, per100Label, validatePortionRows, type FoodUnit, type Portion, type PortionRowInput } from '../../lib/portions'
+import { sanitizeNumberInput } from '../../lib/numbers'
 
 const EMPTY_FORM: FoodFormInput = {
   name: '',
@@ -256,7 +257,7 @@ function FoodForm({ initial, food, source, note, returnTo }: FoodFormProps) {
                       value={row.amount}
                       inputMode="decimal"
                       autoComplete="off"
-                      onChange={(event) => setPortionRow(row.key, 'amount', event.target.value)}
+                      onChange={(event) => setPortionRow(row.key, 'amount', sanitizeNumberInput(event.target.value, 'decimal'))}
                       aria-invalid={portionErrors[row.key] ? true : undefined}
                       className="block min-h-11 w-full rounded-button border border-line bg-surface pl-3 pr-9 text-right text-[15px] tabular-nums outline-none focus:border-green focus:ring-2 focus:ring-green-tint"
                     />

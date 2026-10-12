@@ -52,3 +52,21 @@ export function formatFixed(value: number, decimals: number): string {
 export function formatSigned(value: number, decimals: number): string {
   return `${value > 0 ? '+' : ''}${formatFixed(value, decimals)}`
 }
+
+/**
+ * Pulisce ciò che si scrive in un campo numerico (step 23): solo cifre e UN separatore decimale (virgola o punto, come arriva
+ * dalla tastiera del telefono). 'integer' = solo cifre. Lettere, spazi e simboli spariscono; i separatori in più si tolgono.
+ */
+export function sanitizeNumberInput(text: string, kind: 'decimal' | 'integer'): string {
+  if (kind === 'integer') return text.replace(/\D/g, '')
+  let seenSeparator = false
+  let result = ''
+  for (const char of text) {
+    if (/\d/.test(char)) result += char
+    else if ((char === ',' || char === '.') && !seenSeparator) {
+      seenSeparator = true
+      result += char
+    }
+  }
+  return result
+}

@@ -198,5 +198,11 @@ Accettazione:
 - Uno sport fuori tabella (es. Nuoto) vale il bonus di riserva (200) e si somma agli altri.
 - Il peso del giorno cambia le kcal (60 kg di Calcio = 360).
 
+## Step 23 · Obiettivo acqua in un pop-up e campi numerici (richiesta dell'utente del 12/10/2026)
+Fare: in Oggi → Acqua, "Imposta un obiettivo d'acqua" apre un pop-up per scriverlo lì (litri), invece di portare nel Profilo; con l'obiettivo c'è "Cambia obiettivo" (modifica o "Togli l'obiettivo"); tutti i campi che chiedono solo un numero mostrano la tastiera numerica e accettano solo cifre e una virgola (ADR-076).
+Accettazione:
+- Il pop-up si apre in Oggi, con il campo già attivo; "2 litri e mezzo" diventa "2", "2,5,7a" diventa "2,57"; 0 o un valore non valido mostra il messaggio nel pop-up; il salvataggio aggiorna "1,45 L di 2 L".
+- Lo stesso vale per peso, altezza, calorie, macro, grammi, ml, quantità delle porzioni e peso della ricetta (virgola o punto), e per codici a barre e capienze (solo cifre); nomi, email e password restano liberi.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

@@ -2,7 +2,7 @@ import { useId, useState, type FormEvent, type ReactNode } from 'react'
 
 import { validateGrams } from '../lib/foodValidation'
 import { stepGrams } from '../lib/meals'
-import { formatNumber, parseDecimal } from '../lib/numbers'
+import { formatNumber, parseDecimal, sanitizeNumberInput } from '../lib/numbers'
 import type { Nutrients } from '../lib/nutrition'
 import { formatCount, formatQuantity, portionAmount, stepCount, type FoodUnit, type Portion } from '../lib/portions'
 import { SheetFrame } from './SheetFrame'
@@ -95,7 +95,7 @@ export function GramsSheet(props: GramsSheetProps) {
                 autoComplete="off"
                 value={text}
                 onChange={(event) => {
-                  setText(event.target.value)
+                  setText(sanitizeNumberInput(event.target.value, 'decimal'))
                   setChosen(null)
                   setFieldError(null)
                 }}

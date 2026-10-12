@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatFixed, formatNumber, formatSigned, parseDecimal, round } from './numbers'
+import { formatFixed, formatNumber, formatSigned, parseDecimal, round, sanitizeNumberInput } from './numbers'
 
 describe('parseDecimal', () => {
   it.each([
@@ -42,5 +42,22 @@ describe('formatFixed / formatSigned (cifre fisse)', () => {
     expect(formatSigned(0.2, 2)).toBe('+0,20')
     expect(formatSigned(-0.375, 2)).toBe('-0,38')
     expect(formatSigned(0, 1)).toBe('0,0')
+  })
+})
+
+describe('sanitizeNumberInput', () => {
+  it('decimale: cifre e un solo separatore', () => {
+    expect(sanitizeNumberInput('75,5', 'decimal')).toBe('75,5')
+    expect(sanitizeNumberInput('75.5', 'decimal')).toBe('75.5')
+    expect(sanitizeNumberInput('7a5,5kg', 'decimal')).toBe('75,5')
+    expect(sanitizeNumberInput(' 1 2,3,4.5 ', 'decimal')).toBe('12,345')
+    expect(sanitizeNumberInput('-5', 'decimal')).toBe('5')
+    expect(sanitizeNumberInput('abc', 'decimal')).toBe('')
+    expect(sanitizeNumberInput(',5', 'decimal')).toBe(',5')
+  })
+  it('intero: solo cifre', () => {
+    expect(sanitizeNumberInput('250 ml', 'integer')).toBe('250')
+    expect(sanitizeNumberInput('1,5', 'integer')).toBe('15')
+    expect(sanitizeNumberInput('800123456789x', 'integer')).toBe('800123456789')
   })
 })

@@ -86,6 +86,9 @@ Sheet con una riga per pasto: nome, matita (rinomina), X (elimina in due tocchi)
 ### Oggi · voci trascinabili e sport del giorno (step 21, 22)
 Sotto i pulsanti degli sport, una riga dice il bonus del giorno: "Bonus di oggi: +731 kcal (Palestra 281 + Calcio 450)". Il selettore del giorno ha "Riposo" e un pulsante per sport (fino a 4), a toggle: si toccano gli sport fatti oggi, l'etichetta diventa "Palestra + calcio + nuoto". Una voce si sposta in un altro pasto tenendola premuta (350 ms): si solleva come nel riordino dei pasti, il pasto sotto il dito si evidenzia (anello verde / riquadro tratteggiato verde chiaro), la pagina scorre da sola vicino ai bordi; al rilascio sul pasto la voce passa lì, altrove torna indietro.
 
+### Campi numerici e obiettivo acqua (step 23)
+Campi che chiedono solo un numero: tastiera numerica (cifre e virgola; solo cifre per ml e codici) e pulizia automatica di ciò che si scrive o incolla. Oggi → Acqua: "Imposta un obiettivo d'acqua" (o "Cambia obiettivo") apre un pop-up con il campo in litri già attivo, "Salva obiettivo" e, se c'è, "Togli l'obiettivo".
+
 ### Profilo
 Step 19: sezione **Obiettivo e sport** (stesse carte del Benvenuto, `data-tour="profile-goal"`) e pulsante "Rivedi il tutorial". Il **tutorial** è un popup sopra la barra in basso ("Tutorial · 1/8", titolo, testo breve, puntini, Indietro/Avanti, Salta); l'elemento spiegato ha un contorno verde (`data-tour-active`); focus sul titolo per VoiceOver; rispetta `prefers-reduced-motion`.
 Dati personali (sesso, data di nascita, altezza), parametri (fattore attività, surplus, bonus allenamento, peso obiettivo, g/kg proteine e grassi), proposta di ricalibrazione (accetta/rifiuta con spiegazione dei numeri), Acqua (obiettivo facoltativo in litri, elenco dei propri contenitori con elimina), esci. Ogni parametro ha una nota breve che spiega cosa cambia.
