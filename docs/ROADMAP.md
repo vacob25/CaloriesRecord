@@ -211,5 +211,11 @@ Accettazione:
 - All'apertura il pannello si apre (non sopra il tutorial); "Più tardi" lo rimanda alla prossima apertura e lascia l'avviso in Oggi; nel frattempo oggi è riposo (3130 con il profilo di esempio).
 - "Salva i miei sport" o "Non faccio sport" chiudono la richiesta e ricalcolano il target di oggi; su iPhone SE i pulsanti restano visibili.
 
+## Step 25 · Test end-to-end nel repo e CI (revisione #1, 19/10/2026)
+Fare: i 19 test end-to-end (step 4-24, revisione dell'8/10, senza rete, accessibilità) in `tests/e2e/` con `@playwright/test`; Supabase simulato (`tests/e2e/setup`); GitHub Actions con typecheck, lint, test, build ed end-to-end (ADR-078).
+Accettazione:
+- `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
+- La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

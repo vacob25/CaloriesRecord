@@ -39,5 +39,6 @@ PWA personale per registrare calorie e macro da iPhone: dal proprietario e da po
 - `npm run preview` — serve `dist/` in locale per provare la PWA
 - `npm run test` — Vitest una volta (`npm run test:watch` per la modalità watch)
 - `npm run lint` — oxlint, gli avvisi fanno fallire il comando
+- `npm run build:e2e` e `npm run test:e2e` — test end-to-end con Supabase simulato (istruzioni in `tests/e2e/README.md`); li esegue anche la CI su ogni PR
 - `npm run typecheck` — TypeScript strict, senza generare file
 - Prima di dichiarare uno step finito: `typecheck`, `lint`, `test` e `build` devono passare.

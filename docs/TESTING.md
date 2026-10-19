@@ -168,6 +168,12 @@ Voci fittizie, mai valori veri del catalogo.
 - `exportData`: l'elenco `EXPORT_TABLES` coincide con le tabelle create nelle migrazioni (tranne `allowed_emails`, dichiarata); conferma eliminazione solo con "ELIMINA".
 - `readPrivacyContact`: assente o vuoto → null.
 
+## Test end-to-end e CI (step 25, ADR-078)
+- `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
+- `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
+- CI (`.github/workflows/ci.yml`) su ogni PR e su `main`: typecheck, lint, test unitari, build e test end-to-end. Nessun segreto e nessun accesso al progetto reale.
+- Ogni nuova funzione che si vede nell'app porta il suo test end-to-end nella stessa PR; ogni nuova migrazione entra da sola nel database dei test.
+
 ## Test sulla sicurezza dei dati (a ogni nuova tabella o funzione)
 Vedi `docs/SECURITY.md`, sezione "Verifica RLS con due utenti", e `supabase/checks/no_session.sh` (curl senza sessione).
 
