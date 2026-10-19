@@ -84,7 +84,7 @@ test('Step 20 · giorni passati, pasti su misura, piatti', async () => {
   check(await dlg.getByRole('listitem').count() === 5, 'ingranaggio: 5 pasti di partenza');
   await dlg.getByLabel('Nome del nuovo pasto').fill('dopo allenamento');
   await dlg.getByRole('button', { name: 'Aggiungi', exact: true }).click();
-  await dlg.getByText('Dopo allenamento').waitFor();
+  await dlg.getByText('Dopo allenamento', { exact: true }).waitFor();
   check(sql("select (slot_key like 'custom_%')::int ||' '|| name ||' '|| position from public.meal_slots where name = 'Dopo allenamento'") === '1 Dopo allenamento 5', 'pasto nuovo salvato (nome pulito, in fondo)');
   await dlg.getByLabel('Nome del nuovo pasto').fill('PRANZO');
   await dlg.getByRole('button', { name: 'Aggiungi', exact: true }).click();
@@ -93,7 +93,7 @@ test('Step 20 · giorni passati, pasti su misura, piatti', async () => {
   await dlg.getByRole('button', { name: 'Rinomina Spuntino' }).click();
   await dlg.getByLabel('Nome del pasto').fill('Merenda');
   await dlg.getByRole('button', { name: 'Salva' }).click();
-  await dlg.getByText('Merenda').waitFor();
+  await dlg.getByText('Merenda', { exact: true }).waitFor();
   check(sql("select name from public.meal_slots where slot_key = 'snack'") === 'Merenda', 'rinominato: stessa chiave, nome nuovo');
   // Riordino: tenendo premuto la riga (mouse = stesso gesto del dito), o dalle due linee, o con le frecce.
   const order = () => sql("select string_agg(slot_key, ',' order by position) from public.meal_slots");
@@ -150,7 +150,7 @@ test('Step 20 · giorni passati, pasti su misura, piatti', async () => {
   await p.screenshot({ path: test.info().outputPath('step20-pasti.png') });
   await dlg.getByRole('button', { name: 'Elimina Dopo allenamento' }).click();
   await dlg.getByRole('button', { name: 'Elimina davvero' }).click();
-  await dlg.getByText('Dopo allenamento').waitFor({ state: 'detached' });
+  await dlg.getByText('Dopo allenamento', { exact: true }).waitFor({ state: 'detached' });
   check(sql("select count(*) from public.meal_slots") === '5', 'un pasto vuoto si elimina');
   await dlg.getByRole('button', { name: 'Chiudi' }).click();
   // Il nome nuovo compare in Oggi e in Aggiungi.
