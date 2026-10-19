@@ -1,23 +1,17 @@
 import { SPORT_NAME_MAX, SPORTS_MAX } from './constants'
 import type { TrainingType } from './labels'
 import { normalizeText } from './search'
+import { cleanName } from './text'
 
 /** Sport suggeriti (scorciatoie): Palestra è consigliata, il resto si scrive liberamente. */
 export const RECOMMENDED_SPORT = 'Palestra'
 export const SUGGESTED_SPORTS = ['Palestra', 'Calcio', 'Corsa', 'Nuoto', 'Ciclismo', 'Basket', 'Pallavolo', 'Tennis'] as const
 
-/** Nome pulito: spazi sistemati, niente caratteri di controllo, iniziale maiuscola ("calcio a 5" → "Calcio a 5"). */
-export function cleanSportName(input: string): string {
-  // eslint-disable-next-line no-control-regex
-  const text = input.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim()
-  return text === '' ? '' : text.charAt(0).toUpperCase() + text.slice(1)
-}
-
 export type SportsResult = { ok: true; value: string[] } | { ok: false; message: string }
 
-/** Aggiunge uno sport alla lista: non vuoto, ≤ 24 caratteri, senza doppioni (anche con maiuscole/accenti diversi), al massimo 2. */
+/** Aggiunge uno sport alla lista: non vuoto, ≤ 24 caratteri, senza doppioni (anche con maiuscole/accenti diversi), al massimo 4 (SPORTS_MAX). */
 export function addSport(current: readonly string[], input: string): SportsResult {
-  const name = cleanSportName(input)
+  const name = cleanName(input)
   if (name === '') return { ok: false, message: 'Scrivi il nome dello sport.' }
   if (name.length > SPORT_NAME_MAX) return { ok: false, message: `Al massimo ${SPORT_NAME_MAX} caratteri.` }
   if (current.some((sport) => normalizeText(sport) === normalizeText(name))) {
@@ -35,7 +29,7 @@ export function parseSports(value: unknown): string[] {
   const result: string[] = []
   for (const item of value) {
     if (typeof item !== 'string') continue
-    const name = cleanSportName(item).slice(0, SPORT_NAME_MAX)
+    const name = cleanName(item).slice(0, SPORT_NAME_MAX)
     if (name === '' || result.some((sport) => normalizeText(sport) === normalizeText(name))) continue
     result.push(name)
     if (result.length === SPORTS_MAX) break

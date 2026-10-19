@@ -47,7 +47,7 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 
 ### Oggi (home)
 - Intestazione: data per esteso, titolo "Oggi", pill con peso del giorno (tocco → registra/modifica il peso).
-- Card riepilogo: anello con "kcal restanti" al centro; a lato obiettivo, mangiate e badge del tipo di giorno ("Giorno calcio +200"); sotto tre barre macro (proteine, carboidrati, grassi) con "mangiati / obiettivo".
+- Card riepilogo: anello con "kcal restanti" al centro; a lato obiettivo, mangiate e badge del tipo di giorno ("Giorno: Palestra + calcio", e sotto "Bonus di oggi: +731 kcal (Palestra 281 + Calcio 450)"); sotto tre barre macro (proteine, carboidrati, grassi) con "mangiati / obiettivo".
 - Se le kcal superano il target: l'anello mostra "oltre di N kcal", non numeri negativi, senza colore di allarme (in un bulk non è un errore grave).
 - Promemoria del peso (step 17) in cima, sotto l'intestazione, finché il peso di oggi non è registrato: testo a sinistra, pulsante "Registra peso" a destra.
 - Cinque card pasto (Colazione, Snack, Pranzo, Cena, Spuntino) con totale kcal e voci; un pasto vuoto è una card tratteggiata "+ Aggiungi". Tocco su una voce → modifica grammi o elimina.

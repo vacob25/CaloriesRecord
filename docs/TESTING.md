@@ -18,13 +18,12 @@ Tolleranza per i decimali: `toBeCloseTo(valore, 2)`.
 | `bmr` (uomo) | 75 kg, 180 cm, 20 anni | 1780 |
 | `bmr` (donna) | 60 kg, 165 cm, 30 anni | 1320,25 |
 | `maintenance` | bmr 1780, fattore 1,6 | 2848 |
-| `dayTarget` | mantenimento 2848, surplus 0,10, `rest`, bonus 200 | 3130 |
-| `dayTarget` | stesso, `football` | 3330 |
-| `dayTarget` | stesso, `both` | 3330 (il bonus non si somma) |
+| `dayTarget` | mantenimento 2848, surplus 0,10, calorie di allenamento 0 (giorno di riposo) | 3130 |
+| `dayTarget` | stesso, +200 kcal di allenamento | 3330 |
+| `dayTarget` | stesso, +731 kcal (Palestra 281 + Calcio 450: gli sport si sommano, ADR-075) | 3860 |
 | `macros` | 3130 kcal, 75 kg, 2,0 g/kg P, 1,0 g/kg F | P 150, F 75, C 464 |
 | `macros` | 3330 kcal, stessi parametri | P 150, F 75, C 514 |
 | `macros` | 2000 kcal, 75 kg, stessi parametri | P 150, F 75, C 181 (2,4 g/kg, quindi avviso carboidrati < 3 g/kg) |
-| `kcalOf(food, grams)` | 110 kcal/100 g, 200 g | 220 |
 
 Verifica di coerenza: per ogni `macros`, `4·P + 4·C + 9·F` deve essere entro ±5 kcal dal target.
 
@@ -72,8 +71,8 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | Funzione | Input | Atteso |
 | --- | --- | --- |
 | `computeDayTarget` | profilo di esempio, riposo | mantenimento 2848 (intero), target 3130, macro 150/75/464 |
-| `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,6, surplus 0,10 | ≈ 0,2589 kg/settimana |
-| `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,8, surplus 0,20 | ≈ 0,5825 (2848 / 1,6 · 1,8 = 3204; oltre l'avviso) |
+| `plannedRateKgWeek` | massa, mantenimento 2848, 75 kg, surplus 0,10 | ≈ 0,2589 kg/settimana |
+| `plannedRateKgWeek` | massa, mantenimento 3204, surplus 0,20 | ≈ 0,5825 (oltre l'avviso del +0,5) |
 
 ### goals.ts, sports.ts, tutorial.ts (step 19)
 | Funzione | Input | Atteso |
@@ -83,10 +82,10 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `rateBandKgWeek` | cut, 75 kg | da −0,75 a −0,375 |
 | `weeksToGoal` | 75 → 70 kg, 0,5% | ceil(ln(70/75)/ln(0,995)) = 14 |
 | `planWarnings` | cut 1,2% | avviso ritmo; cut under 18 → nota medica |
-| `addSport` / `cleanSportName` | duplicati con accenti/maiuscole, > 24 caratteri, terzo sport | rifiutati |
+| `addSport` / `cleanName` (`lib/text.ts`) | duplicati con accenti/maiuscole, > 24 caratteri, quinto sport (il massimo è 4, ADR-073) | rifiutati |
 | `toggleSportInType` | rest → 0 → 2 → 1 → 0 | `sport_1`, `sport_1+sport_3`, `sport_1+sport_2+sport_3`, `sport_2+sport_3` |
 | `trainingLabel` | `sport_1+sport_2+sport_4` con 4 sport | Palestra + calcio + CrossFit (le sigle restano) |
-| `trainingSportIndexes` | `both`, `sport_3+sport_1`, `gym`, `sport_1+x` | [0,1], [0,2], [], [] |
+| `trainingSportIndexes` | `sport_1+sport_3`, `sport_3+sport_1`, `gym`, `sport_1+x`; il vecchio `both` (righe anteriori alla migrazione 008) | [0,2], [0,2], [], []; [0,1] |
 | `coerceTrainingType` | `sport_1+sport_2` con un solo sport / `sport_2` con uno | `sport_1` / `rest` |
 | `nextStep` / `previousStep` / `tourLabel` | indici 0-7 | ferma agli estremi; "1/8"…"8/8" |
 

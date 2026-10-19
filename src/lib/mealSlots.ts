@@ -1,6 +1,7 @@
 import { MEAL_BY_HOUR, MEAL_NAME_MAX, MEAL_SLOTS_MAX } from './constants'
 import type { MealType } from './labels'
 import { normalizeText } from './search'
+import { cleanName } from './text'
 
 /** Un pasto dell'utente. La chiave non cambia quando lo rinomini (le voci del diario puntano a lei). */
 export interface MealSlot {
@@ -17,18 +18,11 @@ export const DEFAULT_MEAL_SLOTS: readonly MealSlot[] = [
   { key: 'snack', name: 'Spuntino' },
 ]
 
-/** Nome pulito: spazi sistemati, niente caratteri di controllo, iniziale maiuscola. */
-export function cleanMealName(input: string): string {
-  // eslint-disable-next-line no-control-regex
-  const text = input.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim()
-  return text === '' ? '' : text.charAt(0).toUpperCase() + text.slice(1)
-}
-
 export type SlotNameResult = { ok: true; value: string } | { ok: false; message: string }
 
 /** Nome valido per un pasto: non vuoto, ≤ 20 caratteri, diverso dagli altri pasti (maiuscole e accenti non contano). */
 export function validateMealName(input: string, slots: readonly MealSlot[], ignoreKey?: MealType): SlotNameResult {
-  const name = cleanMealName(input)
+  const name = cleanName(input)
   if (name === '') return { ok: false, message: 'Scrivi il nome del pasto.' }
   if (name.length > MEAL_NAME_MAX) return { ok: false, message: `Al massimo ${MEAL_NAME_MAX} caratteri.` }
   if (slots.some((slot) => slot.key !== ignoreKey && normalizeText(slot.name) === normalizeText(name))) {
