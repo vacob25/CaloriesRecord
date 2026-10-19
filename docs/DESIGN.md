@@ -24,7 +24,7 @@ Riferimento visivo: canvas "App Calorie – Design v1" (schermate Oggi, Aggiungi
 | `--green-tint` | #DCF3E8 | badge verdi |
 | `--blue` | #2F62D9 | proteine, peso, traguardo |
 | `--orange` | #E9861F | carboidrati, giorni sotto target |
-| `--orange-text` | #C4680C | testo arancio (contrasto) |
+| `--orange-text` | #A35200 | testo arancio (contrasto 5,6:1 su bianco; il vecchio #C4680C faceva 3,9:1) |
 | `--magenta` | #B83E95 | grassi |
 
 Regole sul colore: verde = calorie e azioni; blu = proteine e peso; arancio = carboidrati e "sotto target"; magenta = grassi. Non riusare questi colori con altri significati. Il testo arancio chiaro (#E9861F) non va su fondo bianco per testi piccoli: usare `--orange-text`.
@@ -41,7 +41,11 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 - Elementi cliccabili sono `<button>` o `<a>`, mai `<div onClick>`. Pulsanti con sola icona hanno `aria-label`.
 - Ogni campo ha `<label>`. Campi numerici con `inputmode="decimal"` o `"numeric"`.
 - Rispettare `prefers-reduced-motion`. Safe area iOS gestite (notch e barra in basso).
-- I grafici hanno un testo alternativo che dice il risultato (es. "Peso in salita di 0,6 kg in 4 settimane").
+- I grafici hanno un testo alternativo che dice il risultato (es. "Peso in salita di 0,6 kg in 4 settimane"). I loro colori sono variabili CSS dei token (`var(--color-…)`), mai copie scritte a mano.
+- **Pannelli** (`SheetFrame`, ADR-084): all'apertura il focus va al titolo; Tab e Maiusc+Tab restano nel pannello; Esc o la X chiudono e il focus torna al pulsante che l'ha aperto; la pagina sotto non scorre. Altezza massima = schermo meno barra e zone sicure (`100dvh`): l'intestazione con la X resta ferma e scorre solo il contenuto.
+- **Focus da tastiera:** i campi hanno bordo e anello verdi; le scelte a carte e a segmenti (radio nascosti) hanno un anello verde sull'etichetta (`choiceFocusClass`, visibile solo con `:focus-visible`).
+- **Avvisi temporanei** (Toast, "Aggiunto · Annulla"): il timer si ferma finché hanno il focus o il puntatore sopra. L'avviso di aggiornamento sta sopra il tutorial.
+- Il testo arancio usa `--orange-text` (#A35200, 5,6:1 su bianco). La barra arancione dei carboidrati (2,7:1) non è testo: il valore è sempre scritto accanto.
 
 ## Schermate
 

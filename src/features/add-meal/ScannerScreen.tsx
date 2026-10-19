@@ -145,7 +145,7 @@ export function ScannerScreen() {
           )}
         </div>
         {scanning && (
-          <p role="status" className="absolute inset-x-0 bottom-6 text-center text-[15px] font-semibold">
+          <p role="status" className="absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+24px)] text-center text-[15px] font-semibold">
             {camera === 'starting' ? 'Avvio fotocamera…' : 'Inquadra il codice a barre nel riquadro'}
           </p>
         )}

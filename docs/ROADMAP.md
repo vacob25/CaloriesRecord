@@ -217,5 +217,12 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 30 · Accessibilità e PWA (revisione #8, #9, #45, #46, #48, #49, #51-#53; PR h, 19/10/2026)
+Fare: pannelli con focus e altezza massima, anelli di focus, avvisi che aspettano, etichette, zone sicure, manifest, login (ADR-084). Restano da decidere #47 e le schermate di avvio.
+Accettazione:
+- Con la tastiera o VoiceOver un pannello porta il focus al titolo, lo trattiene, lo restituisce alla chiusura; la pagina sotto non scorre.
+- Su uno schermo basso il pannello sta dentro lo schermo e la X si raggiunge.
+- Controllo axe: 0 violazioni; aree ≥ 44 px.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.
