@@ -139,6 +139,24 @@ export async function wire(ctx: BrowserContext): Promise<void> {
   })
 }
 
+/**
+ * Simula la rete che cade subito dopo un salvataggio: la prima richiesta che corrisponde arriva davvero al database
+ * (la riga viene scritta) ma la risposta si perde e l'app vede un errore. Le richieste dopo la prima passano normali.
+ */
+export async function loseNextResponse(ctx: BrowserContext, url: RegExp, method = 'POST'): Promise<{ lost: number }> {
+  const state = { lost: 0 }
+  await ctx.route(url, async (route) => {
+    const request = route.request()
+    if (request.method() !== method || state.lost > 0) return route.fallback()
+    state.lost += 1
+    const headers = { ...request.headers() }
+    delete headers.host
+    await route.fetch({ url: request.url().replace(`${SUPABASE_URL}/rest/v1`, REST_URL), headers })
+    await route.abort('failed')
+  })
+  return state
+}
+
 export async function login(page: Page, who = 'a'): Promise<void> {
   const user = USERS[who]
   if (!user) throw new Error(`utente di prova sconosciuto: ${who}`)
