@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { readPrivacyContact } from '../../data/env'
 import { PRIVACY_VERSION } from '../../lib/auth'
 import { formatLongDate } from '../../lib/dates'
+import { PRIVACY_DATA } from '../../lib/privacyData'
 
 /**
  * /privacy — pagina pubblica (anche senza login), linkata da Accedi e Registrati (step 18).
@@ -35,8 +36,9 @@ export function PrivacyScreen() {
       <h2 className={h2}>Quali dati</h2>
       <ul className={`${p} list-disc space-y-1 pl-5`}>
         <li>Account: email e password (la password è salvata cifrata da Supabase: nessuno la può leggere).</li>
-        <li>Profilo: sesso, data di nascita, altezza, peso obiettivo e parametri del calcolo.</li>
-        <li>Pesate, cibi, ricette, pasti, acqua, target giornalieri e stime della ricalibrazione.</li>
+        {Object.entries(PRIVACY_DATA).map(([table, text]) => (
+          <li key={table}>{text}</li>
+        ))}
         <li>Consenso: versione di questa informativa e data in cui l’hai accettata.</li>
       </ul>
 
