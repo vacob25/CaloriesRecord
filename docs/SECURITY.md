@@ -10,6 +10,8 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 
 `.gitignore` deve contenere almeno: `.env`, `.env.*` (con eccezione `!.env.example`), `node_modules`, `dist`, `.vercel`, `*.log`, `.DS_Store`.
 
+**Credenziali dei test (ADR-078).** In `tests/e2e/` e `.github/workflows/ci.yml` ci sono una password di Postgres, una dell'utente `authenticator` e una chiave JWT di PostgREST: valgono solo per i database usa e getta dei test (locale e CI), non sono quelle del progetto reale e non proteggono nulla. La CI non usa segreti di GitHub e non si collega mai al progetto Supabase reale.
+
 ## Cosa può stare nel frontend
 `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` (chiave publishable, `sb_publishable_…`). Sono pensate per essere esposte nel browser: la protezione dei dati sta nella RLS, non nel nascondere la chiave. Qualunque variabile `VITE_*` finisce nel bundle pubblico: mai metterci segreti.
 

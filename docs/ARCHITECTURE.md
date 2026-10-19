@@ -25,6 +25,7 @@ iPhone (Safari, PWA) ──► Vercel (file statici)
 | zod | validazione di input e risposte API | deciso (ADR-008, installato allo step 3) |
 | @vitejs/plugin-react, @tailwindcss/vite | plugin di build per React e Tailwind v4 | deciso (step 2) |
 | oxlint | lint (comando `npm run lint`) | deciso (ADR-016) |
+| @playwright/test, axe-core | test end-to-end e controllo di accessibilità (`npm run test:e2e`) | deciso (ADR-078); **solo di sviluppo**, versioni bloccate, non entrano nel pacchetto dell'app |
 | @fontsource-variable/plus-jakarta-sans | font servito dall'app, non da Google | deciso (ADR-017) |
 
 Non aggiungere altro senza motivarlo all'utente.

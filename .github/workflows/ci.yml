@@ -1,0 +1,95 @@
+# Controlli automatici su ogni PR e su main (revisione #1, ADR-078).
+# Nessun segreto e nessun accesso al progetto Supabase reale: i test end-to-end usano un Postgres usa e getta con le
+# migrazioni vere, PostgREST e un'autenticazione simulata, con dati fittizi.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  controlli:
+    name: Typecheck, lint, test e build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+
+  e2e:
+    name: Test end-to-end (Supabase simulato)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          # Database usa e getta della CI: la password non protegge nulla.
+          POSTGRES_PASSWORD: postgres-e2e-locale
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: true
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres-e2e-locale
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Database dei test (Supabase simulato + migrazioni)
+        run: bash tests/e2e/setup/init-db.sh
+      - name: PostgREST
+        run: |
+          docker run -d --name postgrest --network host \
+            -e PGRST_DB_URI=postgres://authenticator:authenticator-e2e-locale@localhost:5432/e2e \
+            -e PGRST_DB_SCHEMAS=public \
+            -e PGRST_DB_ANON_ROLE=anon \
+            -e PGRST_JWT_SECRET=segreto-solo-per-i-test-locali-0123456789 \
+            -e PGRST_SERVER_PORT=3001 \
+            postgrest/postgrest:v12.2.3
+          for i in $(seq 1 30); do curl -sf http://localhost:3001/ > /dev/null && exit 0; sleep 1; done
+          docker logs postgrest
+          exit 1
+      - name: Browser per Playwright
+        run: npx playwright install --with-deps chromium
+      - run: npm run build:e2e
+      - run: npm run test:e2e
+      - name: Log di PostgREST
+        if: failure()
+        run: docker logs postgrest > postgrest.log 2>&1 || true
+      - name: Report dei test (solo se falliscono)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            playwright-report
+            test-results
+            postgrest.log
+          retention-days: 7
