@@ -248,7 +248,7 @@ Ricalibrazione con bande in kg/settimana per obiettivo: massa +0,20/+0,40; mante
 **ADR-067 · Livello di attività alla registrazione**
 Il vecchio 1,60 rifletteva le abitudini del titolare. Chi si registra sceglie tra Poco attivo 1,2 · Leggero 1,375 · Medio 1,55 · Alto 1,725 (moltiplicatori standard); è l'errore più grande della stima (10-15%), ma la ricalibrazione lo corregge. Il bonus allenamento resta uno solo (+200) anche con due sport.
 
-**ADR-068 · Sport liberi e tipi di giorno derivati**
+**ADR-068 · Sport liberi e tipi di giorno derivati** — *corretta da ADR-077 (la 006 aveva assegnato Palestra e Calcio a tutti i profili, non solo al titolare)*
 `profiles.sports` (jsonb, 0-2 nomi, max 24 caratteri). I tipi di giorno non sono più `gym`/`football`: `rest`, `sport_1`, `sport_2`, `both` (etichette dagli sport: "Palestra + calcio"). La migrazione 006 converte `gym→sport_1`, `football→sport_2` e imposta gli sport del titolare a Palestra e Calcio, così i suoi dati e target restano identici. Se uno sport viene tolto, il giorno che lo usava torna a Riposo al prossimo ricalcolo. "Palestra" è proposto come consigliato.
 
 **ADR-069 · Tutorial a popup**
@@ -282,6 +282,11 @@ Sostituisce il bonus unico di 200 kcal (ADR-067). Per tennis, corsa, calcio e pa
 
 **ADR-076 · Campi numerici: tastiera numerica e pulizia centralizzata; obiettivo acqua in un pop-up**
 Ogni campo che chiede un numero ha `inputMode="decimal"` (cifre e virgola) o `"numeric"` (solo cifre: ml, codice a barre). La tastiera numerica da sola non basta (si può incollare, e su tastiere esterne si scrive tutto): `Field` pulisce ciò che arriva con `sanitizeNumberInput` — cifre e UN separatore (virgola o punto), niente lettere, spazi o segni — così vale per tutti i campi fatti con `Field`; i due campi senza `Field` (grammi del pasto, quantità delle porzioni) usano la stessa funzione. I campi di testo (nomi, email, password, ricerche) non cambiano. Si è scelto `inputMode` e non `type="number"`: quest'ultimo su iPhone non accetta la virgola in tutti i casi e dà valori vuoti con testo parziale. L'obiettivo dell'acqua si imposta da un pop-up in Oggi (`WaterGoalSheet`, ADR-049: facoltativo, scelto dall'utente) e resta anche nel Profilo.
+
+## Correzioni dopo la revisione del 19/10/2026
+
+**ADR-077 · Sport assegnati per errore: azzerati e scelti dall'utente (correzione #18)**
+La migrazione 006 ha eseguito `update public.profiles set sports = '["Palestra", "Calcio"]'` senza `WHERE`: tutti i profili esistenti, tester compresi, hanno ricevuto due sport mai scelti (e dallo step 22 le loro calorie). Decisione di Riccardo: non indovinare. La migrazione 009 azzera gli sport di chi ha ancora esattamente quel valore (anche il titolare, che li riseleziona con un tocco; chi li aveva già cambiati non è toccato), segna `sports_choice_pending = true` e cancella i target di oggi e dei giorni futuri di quei profili, che l'app ricrea come riposo. I giorni passati non si toccano (ADR-039). Alla prima apertura dopo la 009 l'app apre un pannello "Scegli i tuoi sport" (anche nessuno: "Non faccio sport"; "Più tardi" lo rimanda alla prossima apertura) e in Oggi resta un avviso finché non si sceglie; il pannello non si apre sopra il tutorial. **Target mentre lo sport non è scelto:** ogni giorno è riposo, cioè mantenimento con lo scostamento dell'obiettivo, senza calorie di allenamento. Salvare gli sport (nel pannello o nel Profilo) chiude la richiesta e ricalcola il target di oggi.
 
 ## Punti aperti (rispondere prima dello step indicato)
 - **Doppio conteggio allenamenti (step 22):** decidere se ridefinire i livelli di attività (1,2 / 1,375 / 1,55 / 1,725) come "giornata senza allenamento" e lasciare il resto alle calorie degli sport.

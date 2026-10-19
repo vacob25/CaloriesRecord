@@ -26,7 +26,7 @@ import { listEntriesBetween } from './meals'
 import { listTargetsBetween } from './targets'
 import { acceptProposal, rejectProposal, runWeeklyRecalibration, type TdeeEstimate } from './recalibration'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
-import { createProfile, getProfile, setTutorialDone, updateParams, updatePersonal, updatePlan } from './profile'
+import { chooseSports, createProfile, getProfile, setTutorialDone, updateParams, updatePersonal, updatePlan } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
 import type { MealEntry } from './types'
 import {
@@ -237,6 +237,18 @@ export function useUpdatePlan() {
     },
     // Il target di oggi si ricalcola con il nuovo obiettivo; statistiche e ricalibrazione seguono (bande diverse).
     onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
+  })
+}
+
+/** Sport scelti dopo l'azzeramento (correzione #18): come il Profilo, il target di oggi si ricalcola. */
+export function useChooseSports() {
+  const invalidate = useInvalidate()
+  return useMutation({
+    mutationFn: async ({ sports, today }: { sports: string[]; today: string }) => {
+      await chooseSports(sports)
+      await recomputeTarget(today)
+    },
+    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats),
   })
 }
 

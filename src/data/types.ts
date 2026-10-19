@@ -66,6 +66,8 @@ export interface Profile {
   cutRatePct: number
   /** Sport personali (al massimo 2): da qui i tipi di giorno. */
   sports: string[]
+  /** true = sport azzerati dalla migrazione 009 (correzione #18): l'app chiede di sceglierli. */
+  sportsChoicePending: boolean
   /** Quando ha finito il tutorial; null = da mostrare. */
   tutorialDoneAt: string | null
 }

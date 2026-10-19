@@ -19,11 +19,12 @@ interface ProfileRow {
   goal: string
   cut_rate_pct: number | string
   sports: unknown
+  sports_choice_pending: boolean | null
   tutorial_done_at: string | null
 }
 
 const PROFILE_COLUMNS =
-  'sex, birth_date, height_cm, activity_factor, surplus_pct, training_bonus_kcal, goal_weight_kg, protein_g_per_kg, fat_g_per_kg, water_goal_ml, goal, cut_rate_pct, sports, tutorial_done_at'
+  'sex, birth_date, height_cm, activity_factor, surplus_pct, training_bonus_kcal, goal_weight_kg, protein_g_per_kg, fat_g_per_kg, water_goal_ml, goal, cut_rate_pct, sports, sports_choice_pending, tutorial_done_at'
 
 function toProfile(row: ProfileRow): Profile {
   return {
@@ -40,6 +41,7 @@ function toProfile(row: ProfileRow): Profile {
     goal: isGoal(row.goal) ? row.goal : 'bulk',
     cutRatePct: Number(row.cut_rate_pct),
     sports: parseSports(row.sports),
+    sportsChoicePending: row.sports_choice_pending === true,
     tutorialDoneAt: row.tutorial_done_at,
   }
 }
@@ -71,7 +73,19 @@ export async function createProfile(values: PersonalValues, plan: PlanValues, ac
 export async function updatePlan(plan: PlanValues): Promise<void> {
   const { error } = await getSupabase()
     .from('profiles')
-    .update({ goal: plan.goal, cut_rate_pct: plan.cutRatePct, sports: plan.sports })
+    .update({ goal: plan.goal, cut_rate_pct: plan.cutRatePct, sports: plan.sports, sports_choice_pending: false })
+    .not('user_id', 'is', null)
+  throwIfError(error)
+}
+
+/**
+ * Sport scelti dopo l'azzeramento della correzione #18 (ADR-077): salvarli, anche vuoti ("non faccio sport"),
+ * chiude la richiesta. Il target di oggi lo ricalcola chi chiama.
+ */
+export async function chooseSports(sports: string[]): Promise<void> {
+  const { error } = await getSupabase()
+    .from('profiles')
+    .update({ sports, sports_choice_pending: false })
     .not('user_id', 'is', null)
   throwIfError(error)
 }

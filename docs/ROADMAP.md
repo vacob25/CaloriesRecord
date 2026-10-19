@@ -204,5 +204,12 @@ Accettazione:
 - Il pop-up si apre in Oggi, con il campo già attivo; "2 litri e mezzo" diventa "2", "2,5,7a" diventa "2,57"; 0 o un valore non valido mostra il messaggio nel pop-up; il salvataggio aggiorna "1,45 L di 2 L".
 - Lo stesso vale per peso, altezza, calorie, macro, grammi, ml, quantità delle porzioni e peso della ricetta (virgola o punto), e per codici a barre e capienze (solo cifre); nomi, email e password restano liberi.
 
+## Step 24 · Correzione #18 della revisione: sport assegnati per errore (19/10/2026)
+Fare: migrazione 009 (`sports_choice_pending`, azzeramento di `["Palestra","Calcio"]`, target di oggi e futuri di quei profili cancellati), pannello "Scegli i tuoi sport" alla prima apertura e avviso in Oggi (ADR-077).
+Accettazione:
+- Dopo la 009 un profilo con `["Palestra","Calcio"]` ha zero sport e la richiesta in attesa; un profilo con altri sport non cambia; i target dei giorni passati restano.
+- All'apertura il pannello si apre (non sopra il tutorial); "Più tardi" lo rimanda alla prossima apertura e lascia l'avviso in Oggi; nel frattempo oggi è riposo (3130 con il profilo di esempio).
+- "Salva i miei sport" o "Non faccio sport" chiudono la richiesta e ricalcolano il target di oggi; su iPhone SE i pulsanti restano visibili.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

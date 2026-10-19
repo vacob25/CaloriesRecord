@@ -29,8 +29,9 @@ Postgres su Supabase. Una migrazione SQL numerata per volta in `supabase/migrati
 | water_goal_ml | int | nullable, > 0; obiettivo acqua scelto dall'utente (migrazione 003, ADR-049) |
 | goal | text | default `bulk`, in (`bulk`,`maintain`,`cut`) (migrazione 006, ADR-066) |
 | cut_rate_pct | numeric(4,3) | default 0.005, `> 0` e `<= 0.05`: % del peso a settimana (solo cut) |
-| sports | jsonb | default `[]`, array di al più 4 nomi (migrazione 008, ADR-073; con la 006 erano 2); il titolare è migrato a `["Palestra","Calcio"]` |
+| sports | jsonb | default `[]`, array di al più 4 nomi (migrazione 008, ADR-073; con la 006 erano 2); la 006 aveva messo `["Palestra","Calcio"]` a tutti i profili esistenti; la 009 li azzera (ADR-077) |
 | tutorial_done_at | timestamptz | nullable; vuoto = il tutorial va ancora mostrato (ADR-069) |
+| sports_choice_pending | boolean | default false; true = sport azzerati dalla migrazione 009, l'app chiede di sceglierli (ADR-077). Torna false quando l'utente salva gli sport |
 | created_at, updated_at | timestamptz | |
 
 ### foods
