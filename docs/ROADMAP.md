@@ -217,5 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 31 · Prestazioni (revisione #15, #16, #17, #31, #33-#36; PR i, 19/10/2026)
+Fare: meno richieste uguali e dati che restano freschi (ADR-085). Non fatti: #29, #30, #32.
+Accettazione:
+- Aprire Oggi: il profilo si scarica una volta, le pesate al massimo 3 volte, in tutto al massimo 16 richieste (prima 20).
+- Tornare nell'app subito dopo non riscarica profilo, pasti, contenitori e cibi.
+- Toccare un tipo di giorno non riscarica profilo e pesate; una nuova pesata non riesegue la ricalibrazione.
+- Spostare una voce in un altro pasto è immediato; se il salvataggio di un profilo fallisce a metà la schermata mostra comunque il dato salvato.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

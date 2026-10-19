@@ -99,24 +99,26 @@ export async function setTutorialDone(done: boolean): Promise<void> {
   throwIfError(error)
 }
 
-export async function updatePersonal(values: PersonalValues): Promise<void> {
-  const { error } = await getSupabase()
-    .from('profiles')
-    .update({ sex: values.sex, birth_date: values.birthDate, height_cm: values.heightCm, goal_weight_kg: values.goalWeightKg })
-    .not('user_id', 'is', null)
-  throwIfError(error)
-}
-
-export async function updateParams(values: ParamsValues): Promise<void> {
-  const { error } = await getSupabase()
-    .from('profiles')
-    .update({
-      activity_factor: values.activityFactor,
-      surplus_pct: values.surplusPct,
-      training_bonus_kcal: values.trainingBonusKcal,
-      protein_g_per_kg: values.proteinGPerKg,
-      fat_g_per_kg: values.fatGPerKg,
-    })
-    .not('user_id', 'is', null)
+/**
+ * Salva insieme i dati personali e i parametri del profilo con UN solo UPDATE (revisione #33):
+ * prima erano due richieste in fila sulla stessa riga, e se la seconda falliva la prima restava salvata da sola.
+ */
+export async function updateProfileFields({ personal, params }: { personal?: PersonalValues; params?: ParamsValues }): Promise<void> {
+  const fields = {
+    ...(personal
+      ? { sex: personal.sex, birth_date: personal.birthDate, height_cm: personal.heightCm, goal_weight_kg: personal.goalWeightKg }
+      : {}),
+    ...(params
+      ? {
+          activity_factor: params.activityFactor,
+          surplus_pct: params.surplusPct,
+          training_bonus_kcal: params.trainingBonusKcal,
+          protein_g_per_kg: params.proteinGPerKg,
+          fat_g_per_kg: params.fatGPerKg,
+        }
+      : {}),
+  }
+  if (Object.keys(fields).length === 0) return
+  const { error } = await getSupabase().from('profiles').update(fields).not('user_id', 'is', null)
   throwIfError(error)
 }

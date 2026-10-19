@@ -171,6 +171,7 @@ Voci fittizie, mai valori veri del catalogo.
 ## Test end-to-end e CI (step 25, ADR-078)
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
+- `tests/e2e/step31-richieste.e2e.ts` (ADR-085): conta le richieste REST all'apertura di Oggi, al ritorno nell'app, al tocco su un tipo di giorno e dopo una pesata; profilo salvato a metà; spostamento ottimistico di una voce (con il salvataggio ritardato di 2 secondi). Tutti e tre falliscono sul codice precedente.
 - CI (`.github/workflows/ci.yml`) su ogni PR e su `main`: typecheck, lint, test unitari, build e test end-to-end. Nessun segreto e nessun accesso al progetto reale.
 - Ogni nuova funzione che si vede nell'app porta il suo test end-to-end nella stessa PR; ogni nuova migrazione entra da sola nel database dei test.
 

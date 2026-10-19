@@ -133,3 +133,9 @@ export const MEAL_NAME_MAX = 20
 
 /** Quanti giorni indietro si può registrare un pasto dimenticato (step 20). */
 export const BACKFILL_MAX_DAYS = 14
+
+/**
+ * Per quanto tempo i dati che cambiano solo con le scritture di questa app (profilo, pasti, contenitori, cibi, pesate,
+ * target) si considerano freschi: ogni loro scrittura li invalida, quindi non serve riscaricarli a ogni ritorno nell'app.
+ */
+export const QUERY_STALE_LONG_MS = 10 * 60_000

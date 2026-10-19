@@ -4,6 +4,7 @@ import { bmr, maintenance } from '../lib/nutrition'
 import { acceptedActivityFactor, evaluateRecalibration, type RecalEvaluation } from '../lib/recalibration'
 import { ageOn, weightForDay } from '../lib/weight'
 import { throwIfError } from './dbErrors'
+import type { Profile } from './types'
 import { listEntriesBetween } from './meals'
 import { getProfile } from './profile'
 import { getSupabase } from './supabase'
@@ -75,11 +76,11 @@ async function firstUseDate(): Promise<string | null> {
  * Esecuzione settimanale "pigra" (step 10): alla prima apertura di una nuova settimana si valuta
  * e si salva UNA riga in tdee_estimates (al massimo una proposta a settimana).
  */
-export async function runWeeklyRecalibration(today: string): Promise<RecalibrationState> {
+export async function runWeeklyRecalibration(today: string, known: { profile?: Profile | null } = {}): Promise<RecalibrationState> {
   const weekStart = weekRange(today).start
   const windowStart = addDays(today, -28)
   const [profile, weights, entries, targets, firstUse, existing] = await Promise.all([
-    getProfile(),
+    known.profile === undefined ? getProfile() : known.profile,
     listWeights(addDays(windowStart, -6)),
     listEntriesBetween(windowStart, addDays(today, -1)),
     listTargetsBetween(windowStart, addDays(today, -1)),

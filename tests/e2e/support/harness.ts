@@ -75,7 +75,7 @@ const sessionBody = (user: TestUser, metadata: Record<string, unknown> = {}) => 
  * (es. l'ultima pagina sta caricando l'elenco dei cibi): quella richiesta non conta più, gli altri errori sì.
  */
 const isClosedContextError = (error: unknown) =>
-  /Request context disposed|Target page, context or browser has been closed/.test(String(error))
+  /Request context disposed|has been closed|Failed to find browser context|Target closed/.test(String(error))
 
 /** Instrada le chiamate dell'app: REST → PostgREST locale, Auth → simulazione qui sotto. */
 export async function wire(ctx: BrowserContext): Promise<void> {

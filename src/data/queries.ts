@@ -26,7 +26,7 @@ import { listEntriesBetween } from './meals'
 import { listTargetsBetween } from './targets'
 import { acceptProposal, rejectProposal, runWeeklyRecalibration, type TdeeEstimate } from './recalibration'
 import { addEntry, deleteEntry, lastGramsByFood, listEntries, updateEntry, type NewEntry } from './meals'
-import { chooseSports, createProfile, getProfile, setTutorialDone, updateParams, updatePersonal, updatePlan } from './profile'
+import { chooseSports, createProfile, getProfile, setTutorialDone, updatePlan, updateProfileFields } from './profile'
 import { getOrCreateTarget, recomputeTarget, setTrainingType } from './targets'
 import type { MealEntry } from './types'
 import {
@@ -39,7 +39,8 @@ import {
   updateWaterGoal,
 } from './water'
 import { DataError } from './dbErrors'
-import { deleteWeight, listWeights, saveWeight } from './weights'
+import { QUERY_STALE_LONG_MS } from '../lib/constants'
+import { deleteWeight, listWeights, recentWeightsUntil, saveWeight } from './weights'
 
 /**
  * Hook dei dati condivisi tra le feature (componente → hook → data/*.ts → Supabase).
@@ -69,7 +70,7 @@ export const queryKeys = {
 }
 
 export function useMealSlots() {
-  return useQuery({ queryKey: queryKeys.mealSlots, queryFn: listMealSlots })
+  return useQuery({ queryKey: queryKeys.mealSlots, queryFn: listMealSlots, staleTime: QUERY_STALE_LONG_MS })
 }
 
 /** Crea, rinomina, ordina ed elimina i pasti. Ogni scrittura riscarica l'elenco; il diario si ricarica quando cambiano i nomi. */
@@ -91,7 +92,7 @@ export function useMealSlotActions() {
 }
 
 export function useFoods() {
-  return useQuery({ queryKey: queryKeys.foods, queryFn: listFoods })
+  return useQuery({ queryKey: queryKeys.foods, queryFn: listFoods, staleTime: QUERY_STALE_LONG_MS })
 }
 
 export function useFood(id: string | undefined) {
@@ -174,12 +175,26 @@ export function useAddEntry() {
   })
 }
 
+/**
+ * Modifica di una voce (grammi e/o pasto). Lo spostamento da un pasto all'altro è ottimistico (revisione #36): la voce
+ * compare subito nel nuovo pasto e torna al vecchio se il salvataggio fallisce. Grammi e calorie cambiano dopo la risposta.
+ */
 export function useUpdateEntry() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: ({ entry, grams, mealType }: { entry: MealEntry; grams: number; mealType: MealType }) =>
       updateEntry(entry, grams, mealType),
-    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.entries }),
+    onMutate: async ({ entry, mealType }) => {
+      const key = queryKeys.entriesForDay(entry.entryDate)
+      await client.cancelQueries({ queryKey: key })
+      const previous = client.getQueryData<MealEntry[]>(key)
+      client.setQueryData<MealEntry[]>(key, (list) => list?.map((item) => (item.id === entry.id ? { ...item, mealType } : item)))
+      return { key, previous }
+    },
+    onError: (_error, _input, context) => {
+      if (context?.previous) client.setQueryData(context.key, context.previous)
+    },
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.entries }),
   })
 }
 
@@ -202,12 +217,39 @@ export function useDeleteEntry(date: string) {
   })
 }
 
+// Dati che cambiano solo con le scritture di questa app: restano freschi a lungo (revisione #16).
+const profileQuery = { queryKey: queryKeys.profile, queryFn: getProfile, staleTime: QUERY_STALE_LONG_MS }
+const weightsUntilQuery = (day: string) => ({
+  queryKey: [...queryKeys.weights, 'until', day] as const,
+  queryFn: () => recentWeightsUntil(day),
+  staleTime: QUERY_STALE_LONG_MS,
+})
+
 export function useProfile() {
-  return useQuery({ queryKey: queryKeys.profile, queryFn: getProfile })
+  return useQuery(profileQuery)
+}
+
+/** Le ultime pesate fino a un giorno: una sola richiesta per Oggi, condivisa da promemoria, pill del peso e target. */
+export function useWeightsUntil(day: string) {
+  return useQuery(weightsUntilQuery(day))
+}
+
+/** Profilo e ultime pesate dalla cache (le riscarica solo se vecchi o invalidati): evita richieste doppie (revisione #17). */
+function useKnownData() {
+  const client = useQueryClient()
+  return async (day: string) => {
+    const [profile, weights] = await Promise.all([client.fetchQuery(profileQuery), client.fetchQuery(weightsUntilQuery(day))])
+    return { profile, weights }
+  }
 }
 
 export function useDayTarget(date: string) {
-  return useQuery({ queryKey: queryKeys.targetForDay(date), queryFn: () => getOrCreateTarget(date) })
+  const known = useKnownData()
+  return useQuery({
+    queryKey: queryKeys.targetForDay(date),
+    queryFn: async () => getOrCreateTarget(date, await known(date)),
+    staleTime: QUERY_STALE_LONG_MS,
+  })
 }
 
 function useInvalidate() {
@@ -223,7 +265,8 @@ export function useCreateProfile() {
       if (values.weightKg !== null) await saveWeight(today, values.weightKg)
       await createProfile(values, plan, activityFactor)
     },
-    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.weights, queryKeys.tdee),
+    // onSettled: se il secondo passo fallisce il primo è comunque salvato, quindi si rilegge sempre (revisione #15).
+    onSettled: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.weights, queryKeys.tdee),
   })
 }
 
@@ -236,7 +279,7 @@ export function useUpdatePlan() {
       await recomputeTarget(today)
     },
     // Il target di oggi si ricalcola con il nuovo obiettivo; statistiche e ricalibrazione seguono (bande diverse).
-    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
+    onSettled: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
   })
 }
 
@@ -248,7 +291,7 @@ export function useChooseSports() {
       await chooseSports(sports)
       await recomputeTarget(today)
     },
-    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats),
+    onSettled: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats),
   })
 }
 
@@ -262,20 +305,20 @@ export function useUpdateProfile() {
   const invalidate = useInvalidate()
   return useMutation({
     mutationFn: async ({ personal, params, today }: { personal?: PersonalValues; params?: ParamsValues; today: string }) => {
-      if (personal) await updatePersonal(personal)
-      if (params) await updateParams(params)
+      await updateProfileFields({ personal, params })
       await recomputeTarget(today)
     },
     // Anche statistiche (target del giorno) e ricalibrazione (BMR e mantenimento attuali).
-    onSuccess: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
+    onSettled: () => invalidate(queryKeys.profile, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
   })
 }
 
 export function useSetTrainingType(date: string) {
   const invalidate = useInvalidate()
+  const known = useKnownData()
   return useMutation({
-    mutationFn: (type: TrainingType) => setTrainingType(date, type),
-    onSuccess: () => invalidate(queryKeys.targets, queryKeys.stats),
+    mutationFn: async (type: TrainingType) => setTrainingType(date, type, await known(date)),
+    onSettled: () => invalidate(queryKeys.targets, queryKeys.stats),
   })
 }
 
@@ -283,19 +326,32 @@ export function useWeights(from: string | null) {
   return useQuery({ queryKey: [...queryKeys.weights, from ?? 'all'], queryFn: () => listWeights(from) })
 }
 
-export function useSaveWeight() {
+/**
+ * La ricalibrazione si valuta una volta a settimana (§7): una nuova pesata la segna "da rileggere" alla prossima
+ * apertura, ma non riesegue subito le 7 richieste della valutazione (revisione #35).
+ */
+function useRefreshAfterWeightChange() {
+  const client = useQueryClient()
   const invalidate = useInvalidate()
+  return async () => {
+    void client.invalidateQueries({ queryKey: queryKeys.tdee, refetchType: 'none' })
+    await invalidate(queryKeys.weights, queryKeys.targets, queryKeys.stats)
+  }
+}
+
+export function useSaveWeight() {
+  const refresh = useRefreshAfterWeightChange()
   return useMutation({
     mutationFn: ({ day, kg }: { day: string; kg: number }) => saveWeight(day, kg),
-    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
+    onSettled: refresh,
   })
 }
 
 export function useDeleteWeight() {
-  const invalidate = useInvalidate()
+  const refresh = useRefreshAfterWeightChange()
   return useMutation({
     mutationFn: (day: string) => deleteWeight(day),
-    onSuccess: () => invalidate(queryKeys.weights, queryKeys.targets, queryKeys.stats, queryKeys.tdee),
+    onSettled: refresh,
   })
 }
 
@@ -326,7 +382,12 @@ export function useStatsData(start: string, end: string, weightsFrom: string) {
 
 /** Ricalibrazione della settimana (eseguita alla prima apertura: Oggi e Profilo condividono la stessa cache). */
 export function useRecalibration(today: string) {
-  return useQuery({ queryKey: queryKeys.recalibration(today), queryFn: () => runWeeklyRecalibration(today), staleTime: 10 * 60_000 })
+  const client = useQueryClient()
+  return useQuery({
+    queryKey: queryKeys.recalibration(today),
+    queryFn: async () => runWeeklyRecalibration(today, { profile: await client.fetchQuery(profileQuery) }),
+    staleTime: 10 * 60_000,
+  })
 }
 
 export function useDecideProposal(today: string) {
@@ -363,7 +424,7 @@ export function useDeleteWater() {
 }
 
 export function useContainers() {
-  return useQuery({ queryKey: queryKeys.containers, queryFn: listContainers })
+  return useQuery({ queryKey: queryKeys.containers, queryFn: listContainers, staleTime: QUERY_STALE_LONG_MS })
 }
 
 export function useCreateContainer() {
