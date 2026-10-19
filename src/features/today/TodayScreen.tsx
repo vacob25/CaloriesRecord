@@ -9,7 +9,7 @@ import { WeightPill } from '../../components/WeightPill'
 import { cardClass, dangerButtonClass } from '../../components/ui'
 import { useToday } from '../../components/useToday'
 import { errorMessage } from '../../data/dbErrors'
-import { useDeleteEntry, useEntries, useFoods, useMealSlots, useRecalibration, useUpdateEntry } from '../../data/queries'
+import { useDeleteEntry, useEntries, useFoods, useMealSlots, useProfile, useRecalibration, useUpdateEntry } from '../../data/queries'
 import type { MealEntry } from '../../data/types'
 import { UNDO_SECONDS } from '../../lib/constants'
 import { formatLongDate } from '../../lib/dates'
@@ -21,6 +21,8 @@ import { formatQuantity } from '../../lib/portions'
 import { sumNutrients } from '../../lib/nutrition'
 import { dayQuery, dayTitle, nextViewedDay, previousViewedDay, viewedDay } from '../../lib/viewDay'
 import { MealSlotsSheet } from './MealSlotsSheet'
+import { SportsChoiceSheet } from './SportsChoiceSheet'
+import { sportsChoiceDeferred } from './sportsChoice'
 import { useEntryDrag } from './useEntryDrag'
 import { useDaySwipe } from './useDaySwipe'
 import { TargetCard } from './TargetCard'
@@ -48,6 +50,14 @@ export function TodayScreen() {
   })
   const entries = useEntries(day)
   const mealSlots = useMealSlots()
+  const profile = useProfile()
+  // Correzione #18 (ADR-077): sport azzerati dalla migrazione 009. Il pannello si apre da solo una volta per apertura
+  // dell'app (non sopra il tutorial); l'avviso resta in Oggi finché non si sceglie.
+  const sportsPending = profile.data?.sportsChoicePending === true
+  const [sportsSheet, setSportsSheet] = useState<'auto' | 'open' | 'closed'>('auto')
+  const showSportsSheet =
+    sportsPending &&
+    (sportsSheet === 'open' || (sportsSheet === 'auto' && !sportsChoiceDeferred() && profile.data?.tutorialDoneAt !== null))
   const [managingMeals, setManagingMeals] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -129,6 +139,22 @@ export function TodayScreen() {
       )}
 
       {isToday && <WeightReminder today={today} />}
+
+      {sportsPending && (
+        <section aria-label="Sport da scegliere" className="mx-5 mt-4 rounded-card bg-green-tint px-4 py-3">
+          <p className="text-[15px] font-bold text-green-dark">Scegli i tuoi sport</p>
+          <p className="mt-1 text-[13px] text-ink-2">
+            Per un errore ti avevamo assegnato Palestra e Calcio: li abbiamo tolti. Finché non scegli, ogni giorno conta come riposo.
+          </p>
+          <button
+            type="button"
+            onClick={() => setSportsSheet('open')}
+            className="mt-2 min-h-11 rounded-button bg-green px-4 text-[15px] font-bold text-surface"
+          >
+            Scegli gli sport
+          </button>
+        </section>
+      )}
 
       {pendingProposal && (
         <Link
@@ -252,6 +278,7 @@ export function TodayScreen() {
         />
       )}
 
+      {showSportsSheet && <SportsChoiceSheet onClose={() => setSportsSheet('closed')} />}
       {managingMeals && <MealSlotsSheet slots={slots} onClose={() => setManagingMeals(false)} />}
 
       {added && slots.some((slot) => slot.key === added.mealType) && (

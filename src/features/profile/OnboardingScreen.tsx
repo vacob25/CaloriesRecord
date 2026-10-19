@@ -21,7 +21,7 @@ import { ageOn } from '../../lib/weight'
 import { ActivityFields } from './ActivityFields'
 import { GoalFields } from './GoalFields'
 import { PersonalFields } from './PersonalFields'
-import { SportsFields } from './SportsFields'
+import { SportsFields } from '../../components/SportsFields'
 
 const STEPS = ['Dati', 'Obiettivo', 'Allenamento'] as const
 

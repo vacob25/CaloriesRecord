@@ -10,7 +10,7 @@ import { planWarnings } from '../../lib/goals'
 import { validatePlan, type PlanField, type PlanFormInput } from '../../lib/profileValidation'
 import { ageOn } from '../../lib/weight'
 import { GoalFields } from './GoalFields'
-import { SportsFields } from './SportsFields'
+import { SportsFields } from '../../components/SportsFields'
 
 /** Obiettivo, ritmo del cut e sport (step 19). Si salva da qui; il target di oggi si ricalcola, i giorni passati no (ADR-039). */
 export function PlanSection({ profile }: { profile: Profile }) {
