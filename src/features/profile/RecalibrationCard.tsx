@@ -112,6 +112,8 @@ function Body({
       </div>
     )
   }
+  // Una proposta senza riga in attesa non dovrebbe esistere (la riga si promuove, lib/recalibration.ts): niente messaggi falsi.
+  if (evaluation.status !== 'inBand') return null
   return (
     <p className="mt-3 text-[15px] text-ink-2">
       Sei nel ritmo voluto ({signed(evaluation.slopeKgWeek, 2)} kg/settimana, banda {signed(band.min, 2)} / {signed(band.max, 2)}): nessuna modifica proposta questa settimana.

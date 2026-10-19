@@ -110,7 +110,7 @@ export function validateFood(input: FoodFormInput): FoodValidation {
 
   const { name, brand, barcode, unit, basis, kcal, protein, carbs, fat } = parsed.data
   const written = { kcal, protein, carbs, fat }
-  const raw = basis === 'serving' && servingG !== null ? per100gFromServing(written, servingG) : written
+  const raw = (basis === 'serving' && servingG !== null ? per100gFromServing(written, servingG) : written) ?? written
   const per100g: Per100g = {
     kcal: round(raw.kcal, 2),
     protein: round(raw.protein, 2),
