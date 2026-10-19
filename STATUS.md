@@ -9,6 +9,13 @@ Stato di lavoro per le funzioni che procedono "a blocchi". I documenti di riferi
 - Fuso: giorni locali Europe/Rome (`YYYY-MM-DD`), calcolati con `Intl` in `src/lib/dates.ts`.
 - Step completati: 1-23 (vedi `docs/ROADMAP.md`). Ultima migrazione: 008.
 
+## Piano HO (revisione, promemoria, allenamenti) — dal 19/10/2026
+Ordine: Fase 0 revisione → correzioni scelte da Riccardo (PR piccole) → Fase 1 prova push su iPhone → Fase 2 promemoria → Fasi 3-8 allenamenti. Una fase alla volta, STOP a fine fase. Da ora ogni fase passa da una PR (niente più pubblicazione diretta su `main`).
+
+### Fase 0 · Revisione dell'app — FATTA, IN ATTESA DELLA SCELTA DELLE CORREZIONI
+- Report: `docs/REVIEW_2026-10-19.md` (55 problemi: 2 alti, 25 medi, 28 bassi) con le obiezioni ai file HO. Nessuna modifica al codice.
+- Decisioni che servono prima di andare avanti: quali correzioni fare e in che ordine; bonus allenamento (tenere lo step 22 o tornare al bonus unico); rete dell'ambiente per aprire le fonti (PubMed/PMC, Supabase docs) o PDF caricati; da dove parte il push di prova della Fase 1; sospensione automatica dopo 5 "non registrati"; seconda fonte per gli esercizi; ok a `@playwright/test` e `axe-core` per i test end-to-end nel repo.
+
 ## Funzione: promemoria intelligenti (peso, pranzo, cena)
 
 ### Blocco 1 · Diagnosi dello stack e proposta di consegna — FATTO, IN ATTESA DELL'OK
