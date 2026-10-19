@@ -70,6 +70,13 @@ const sessionBody = (user: TestUser, metadata: Record<string, unknown> = {}) => 
   })
 }
 
+/**
+ * Errore di Playwright quando il browser si chiude a fine test mentre una richiesta dell'app è ancora in volo
+ * (es. l'ultima pagina sta caricando l'elenco dei cibi): quella richiesta non conta più, gli altri errori sì.
+ */
+const isClosedContextError = (error: unknown) =>
+  /Request context disposed|Target page, context or browser has been closed/.test(String(error))
+
 /** Instrada le chiamate dell'app: REST → PostgREST locale, Auth → simulazione qui sotto. */
 export async function wire(ctx: BrowserContext): Promise<void> {
   await ctx.route(`${SUPABASE_URL}/rest/v1/**`, async (route) => {
@@ -77,11 +84,15 @@ export async function wire(ctx: BrowserContext): Promise<void> {
     const url = request.url().replace(`${SUPABASE_URL}/rest/v1`, REST_URL)
     const headers = { ...request.headers() }
     delete headers.host
-    const response = await route.fetch({ url, headers })
-    await route.fulfill({
-      response,
-      headers: { ...response.headers(), 'access-control-allow-origin': '*', 'access-control-expose-headers': 'content-range' },
-    })
+    try {
+      const response = await route.fetch({ url, headers })
+      await route.fulfill({
+        response,
+        headers: { ...response.headers(), 'access-control-allow-origin': '*', 'access-control-expose-headers': 'content-range' },
+      })
+    } catch (error) {
+      if (!isClosedContextError(error)) throw error
+    }
   })
   await ctx.route(`${SUPABASE_URL}/auth/v1/**`, async (route) => {
     const request = route.request()
