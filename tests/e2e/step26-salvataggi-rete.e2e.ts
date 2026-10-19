@@ -93,6 +93,8 @@ test('Step 26 · ricaricamento in background fallito: l’app resta dov’è', a
   await page.clock.install()
   await login(page)
   await page.getByRole('heading', { name: 'Oggi', exact: true }).waitFor()
+  // Tutte le letture iniziali devono essere finite: solo allora il profilo ha la sua data di aggiornamento.
+  await page.waitForLoadState('networkidle')
 
   // Il profilo è già in memoria; passa il tempo, i dati diventano "vecchi" e il ricaricamento fallisce.
   let hits = 0
@@ -101,15 +103,25 @@ test('Step 26 · ricaricamento in background fallito: l’app resta dov’è', a
     return route.abort('failed')
   })
   await page.clock.fastForward('01:00')
-  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')))
+  await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange', { bubbles: true })))
   // La rete e la libreria dei dati ritentano da sole (con pause): si fa passare il tempo simulato finché hanno finito.
-  for (let step = 0; step < 24; step += 1) {
+  await expect
+    .poll(
+      async () => {
+        await page.clock.fastForward('00:10')
+        return hits
+      },
+      { timeout: 20_000, intervals: [200] },
+    )
+    .toBeGreaterThanOrEqual(2)
+  for (let step = 0; step < 12; step += 1) {
     await page.waitForTimeout(150)
     await page.clock.fastForward('00:10')
   }
   await page.waitForTimeout(300)
   check(hits >= 2, 'il ricaricamento del profilo è stato tentato ed è fallito')
   check(await page.getByRole('heading', { name: 'Oggi', exact: true }).isVisible(), 'la schermata Oggi è ancora lì')
-  check((await page.getByRole('alert').count()) === 0, 'nessun errore a schermo intero al posto dell’app')
+  // Un riquadro che legge il profilo (il target) può mostrare il suo errore con "Riprova": il resto di Oggi resta usabile.
+  check(await page.getByRole('link', { name: /Colazione/ }).isVisible(), 'i pasti sono ancora lì, non un errore a schermo intero al posto dell’app')
   await ctx.close()
 })
