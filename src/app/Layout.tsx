@@ -54,7 +54,10 @@ export function Layout() {
       */}
       <main className="mx-auto min-h-dvh max-w-[480px] pt-[env(safe-area-inset-top)] pb-[calc(var(--spacing-nav)+env(safe-area-inset-bottom)+16px)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
         <OfflineBanner />
-        <Outlet />
+        {/* key = percorso: ogni cambio di schermata riparte con la piccola animazione d'ingresso. */}
+        <div key={pathname} className="page-enter">
+          <Outlet />
+        </div>
       </main>
       <BottomNav />
       {open && (

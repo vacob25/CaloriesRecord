@@ -60,7 +60,7 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 - Promemoria peso (step 13, ADR-047): card sotto l'intestazione se non ci si pesa da `WEIGHT_REMINDER_DAYS` giorni o più (o non c'è nessuna pesata), con la pill del peso. Non compare se la card del target sta già chiedendo il peso.
 - Ricalibrazione: se c'è una proposta in attesa, un avviso "Nuova proposta di ricalibrazione ›" porta alla sezione Ricalibrazione del Profilo.
 - Tocco su una voce: pannello con quantità, modifica ed elimina; se il cibo esiste ancora con la stessa unità mostra anche le sue porzioni casalinghe (i valori restano quelli dello snapshot, ADR-035).
-- Barra di navigazione in basso: Oggi, Cibi, "+" centrale, Statistiche, Profilo.
+- Barra di navigazione in basso (ADR-088): Palestra, Cibi, **Oggi al centro** (più grande e rialzata), Statistiche, Profilo. La voce in cui sei è **verde pieno con testo bianco** (Oggi resta accesa anche in Aggiungi pasto, scanner e Peso); le altre sono grigie. Il cambio di voce è una transizione di colore e dimensione (300 ms) e la schermata nuova compare piano (dissolvenza di 280 ms), tutto spento con `prefers-reduced-motion`. Il "+" non c'è più: si aggiunge un pasto dai pasti di Oggi.
 
 ### Aggiungi pasto
 - Barra in alto: indietro, titolo "Aggiungi a {pasto}". Scelta del pasto a 4 segmenti (default: in base all'ora).

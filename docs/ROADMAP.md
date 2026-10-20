@@ -217,6 +217,12 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 34 · Barra di navigazione e sezione Palestra (ADR-088)
+Fare: barra Palestra / Cibi / Oggi (centro, rialzata) / Statistiche / Profilo; voce attiva verde; animazione di passaggio; schermata Palestra (vuota, la riempie la Fase 3).
+Accettazione:
+- La voce in cui sei è verde e le altre grigie, anche in Aggiungi pasto (Oggi) e dopo aver aperto il Peso.
+- Passando da una sezione all'altra il colore e la schermata cambiano con un'animazione fluida; con "riduci movimento" attivo no.
+- Si registra un cibo da Oggi in 3 tocchi ("+ Aggiungi" del pasto, cibo, Aggiungi).
 ## Step 33 · Promemoria dei pasti (Fase 2, ADR-087)
 Fare: migrazione 012; Edge Function `send-reminders` e cron ogni 5 minuti; impostazioni nel Profilo (per ogni pasto: attivo, orario, orario diverso nel weekend); proposta di sospendere dopo 5 giorni; pasto registrato = niente promemoria.
 Passaggi tuoi: eseguire la 012 e `supabase/setup/reminders_cron.sql` (con l'indirizzo del progetto) nel SQL Editor; pubblicare la funzione; eseguire `rls_two_users.sql`.
