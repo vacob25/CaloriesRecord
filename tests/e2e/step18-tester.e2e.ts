@@ -27,7 +27,7 @@ test('Step 18 · tester invitati, consenso, esporta, elimina', async () => {
   await p.goto('http://localhost:4180/privacy');
   await p.getByRole('heading', { name: 'Privacy', level: 1 }).waitFor();
   const privacy = await p.locator('main').textContent();
-  check(privacy.includes('Testo di base da far rivedere') && privacy.includes('Francoforte') && privacy.includes('Contatto non ancora configurato'), 'PRIVACY: pubblica, avviso "da far rivedere", Francoforte, contatto assente gestito');
+  check(privacy.includes('Testo di base da far rivedere') && privacy.includes('Irlanda') && privacy.includes('Contatto non ancora configurato'), 'PRIVACY: pubblica, avviso "da far rivedere", Irlanda, contatto assente gestito');
 
   // Registrazione
   await p.goto('http://localhost:4180/login');
