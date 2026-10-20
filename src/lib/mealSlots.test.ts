@@ -5,7 +5,6 @@ import {
   canAddSlot,
   canRemoveSlot,
   dragTargetIndex,
-  cleanMealName,
   DEFAULT_MEAL_SLOTS,
   mealForHour,
   moveAnnouncement,
@@ -46,13 +45,6 @@ describe('mealForHour (pasti di partenza)', () => {
 
   it('se nessuno dei pasti di partenza esiste prende il primo dell’utente', () => {
     expect(mealForHour(13, [{ key: 'custom_1', name: 'Pasto 1' }])).toBe('custom_1')
-  })
-})
-
-describe('cleanMealName', () => {
-  it('sistema spazi e iniziale', () => {
-    expect(cleanMealName('  dopo   cena ')).toBe('Dopo cena')
-    expect(cleanMealName('   ')).toBe('')
   })
 })
 

@@ -69,7 +69,7 @@ export const AGE_MAX_YEARS = 100
 export const OFF_PRODUCT_READS_PER_MINUTE = 15
 export const OFF_SEARCHES_PER_MINUTE = 10
 
-/** Giorno "rispettato" (§5): 0,95 · target ≤ kcal ≤ 1,10 · target (soglie modificabili). */
+/** Giorno "rispettato" (§5): 0,95 · target ≤ kcal ≤ 1,10 · target (costanti, si cambiano qui). */
 export const RESPECTED_MIN_RATIO = 0.95
 export const RESPECTED_MAX_RATIO = 1.1
 

@@ -24,8 +24,15 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 16 | Catalogo di ingredienti mediterranei | in prova (195 voci CREA importate e validate; manca: prova sull'iPhone e le voci non trovate: uva, vitello, zucchero, tè, più quelle assenti dal CREA come bulgur, edamame, semi, patata dolce) |
 | 17 | Snack, acqua a contatori, peso giornaliero, Cibi con preferiti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 004 su Supabase e prova sull'iPhone) |
 | 18 | Tester invitati: registrazione, privacy, esporta, elimina account | in prova (fatto e provato contro Postgres + PostgREST locali con la hook vera; manca: migrazione 005 e impostazioni in Supabase, prova sull'iPhone) |
+| 19 | Obiettivo (massa, mantenimento, definizione), sport personali, tutorial | in prova (fatto e provato in locale; richiede la migrazione 006; manca: prova sull'iPhone) |
+| 20 | Giorni passati, pasti su misura, piatti comuni nel catalogo | in prova (fatto e provato in locale; richiede la migrazione 007; manca: prova sull'iPhone) |
+| 21 | Fino a 4 sport, giorni con più sport, voci trascinabili tra i pasti | in prova (fatto e provato in locale; richiede la migrazione 008; manca: prova sull'iPhone) |
+| 22 | Calorie per sport (MET) sommate nel target | in prova (fatto e provato in locale; manca: prova sull'iPhone) |
+| 23 | Pop-up dell'obiettivo acqua e campi numerici solo cifre | in prova (fatto e provato in locale; manca: prova sull'iPhone) |
+| 24 | Sport da scegliere (correzione #18 della revisione) | fatto (migrazione 009 eseguita e PR unita il 19/10/2026; manca: prova sull'iPhone) |
+| 25 | Test end-to-end nel repo e CI | fatto (PR unita il 19/10/2026, CI verde) |
 
-Gli step 1-7 portano a un primo uso reale quotidiano. Gli step 8-10 e 13-16 sono fatti e in prova, l'11 è in corso (vedi tabella); lo step 12 (OTP) resta da fare e si può anticipare in qualunque momento.
+Gli step 1-7 portano a un primo uso reale quotidiano. Gli step 8-10 e 13-23 sono fatti e in prova sull'iPhone, l'11 è in corso (vedi tabella); lo step 12 (OTP) non si fa più (ADR-064).
 
 ---
 
@@ -105,15 +112,8 @@ Accettazione:
 Fare: icona e schermata di avvio definitive, prestazioni, stati vuoti/errore/offline ovunque, accessibilità (contrasto, aree toccabili, label), 2 settimane di uso reale con elenco dei problemi.
 Accettazione: lista di problemi incontrati dall'utente corretta o classificata come v2; `npm audit` senza vulnerabilità alte.
 
-## Step 12 · Login con codice OTP (rinviato dallo step 3)
-Si può anticipare in qualunque momento dopo lo step 3: non dipende dagli altri step.
-Prima di scrivere: decidere con l'utente se l'OTP **sostituisce** la password o si **aggiunge** (es. "Accedi con un codice" come alternativa). Riprendere il codice dalla storia di git (commit `3a69c12`: schermata a due passaggi, timer di reinvio, login in attesa salvato, errori) invece di riscriverlo.
-Fare: invio email funzionante (Resend con API key dello stesso account del destinatario e mittente `onboarding@resend.dev`, oppure dominio verificato su Resend); template "Magic Link" di Supabase con `{{ .Token }}` e senza link; schermata codice con `inputmode="numeric"` e `autocomplete="one-time-code"`; "Invia un nuovo codice" dopo 60 s.
-Accettazione:
-- La mail con il codice arriva in Posta in arrivo (non solo in Spam) in meno di un minuto.
-- Login con codice funzionante **dentro la PWA installata**: si chiede il codice, lo si inserisce nell'app, si resta collegati.
-- `signInWithOtp` con `shouldCreateUser: false`; `verifyOtp` con `type: 'email'`; un'email non registrata non viene rivelata.
-- Codice sbagliato/scaduto, troppi tentativi e rete assente hanno messaggi chiari; la sessione resiste come allo step 3.
+## Step 12 · Login con codice OTP — superato da ADR-064
+Non si fa più: il login resta con email e password, definitivo (ADR-028, ADR-064). Un login con codice via email servirebbe solo se un giorno si comprasse un dominio per poter inviare email ai tester; in quel caso il codice del vecchio tentativo è nella storia di git (commit `3a69c12`) e le decisioni da riprendere sono in ADR-014 (codice invece del link magico, per la PWA installata su iOS).
 
 ## Step 13 · Peso più visibile e promemoria (richiesta dell'utente, 8/10/2026)
 Le regole di calcolo del peso (§4) NON cambiano: pesarsi spesso resta il modo per avere media, pendenza e ricalibrazione.

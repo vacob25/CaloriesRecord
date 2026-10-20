@@ -20,11 +20,6 @@ export interface Per100g {
 /** Quantità assolute di una porzione (come nello snapshot di `meal_entries`). */
 export type Nutrients = Per100g
 
-/** kcal di `grams` grammi di un cibo (le kcal dell'etichetta sono la fonte di verità, §3). */
-export function kcalOf(food: Pick<Per100g, 'kcal'>, grams: number): number {
-  return (food.kcal * grams) / 100
-}
-
 /** kcal, proteine, carboidrati e grassi di `grams` grammi di un cibo. */
 export function nutrientsFor(food: Per100g, grams: number): Nutrients {
   const factor = grams / 100

@@ -7,7 +7,6 @@ import {
   kcalFromMacros,
   macros,
   maintenance,
-  kcalOf,
   nutrientsFor,
   per100gFromServing,
   recipePer100g,
@@ -15,12 +14,6 @@ import {
   sumNutrients,
   totalGrams,
 } from './nutrition'
-
-describe('kcalOf', () => {
-  it('110 kcal/100 g, 200 g → 220 (TESTING.md)', () => {
-    expect(kcalOf({ kcal: 110 }, 200)).toBeCloseTo(220, 2)
-  })
-})
 
 describe('nutrientsFor', () => {
   it('scala tutti i valori sui grammi', () => {

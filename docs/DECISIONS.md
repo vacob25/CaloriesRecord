@@ -10,7 +10,7 @@ Costo 0 € contro 99 €/anno per l'Apple Developer Program (TestFlight). Uso p
 **ADR-002 · Dati online su Supabase, non solo locali**
 iOS può cancellare i dati locali dei siti poco usati. Il database online dà backup, accesso da più dispositivi e RLS. Scartato: solo localStorage/IndexedDB.
 
-**ADR-003 · Un solo target giornaliero, nessun recupero**
+**ADR-003 · Un solo target giornaliero, nessun recupero** — *la variante del bonus fisso è sostituita dalle calorie per sport (ADR-075)*
 Scelta dell'utente, coerente con l'obiettivo di massa: recuperare calorie saltate in blocco porta a mangiate forzate. Le statistiche settimanali sono descrittive. Variante: bonus fisso nei giorni di allenamento (gym/calcio/entrambi, un solo bonus).
 
 **ADR-004 · Mifflin-St Jeor come partenza, poi ricalibrazione adattiva**
@@ -79,7 +79,7 @@ La migrazione toglie ogni permesso ad `anon` e `authenticated` e poi concede ad 
 **ADR-023 · Sessione: "senza rete" è diverso da "uscito"**
 Con il token scaduto e la rete assente supabase-js conserva la sessione ma la comunica come nulla. L'app la legge con `getSession()` e, se l'errore è di rete, mostra "Serve la connessione" invece del login; il rientro è automatico quando torna la rete (al massimo ~60 s: supabase-js tiene in cache un rinnovo fallito per 60 s). Solo un errore vero del server (token revocato) porta al login. Scartato: usare l'evento `INITIAL_SESSION`, che in quel caso fa sembrare l'utente disconnesso.
 
-**ADR-024 · Login in attesa salvato sul telefono** — *sospesa con ADR-014 (vale solo per l'OTP)*
+**ADR-024 · Login in attesa salvato sul telefono** — *decaduta con ADR-064 (valeva solo per il codice OTP, che non c'è più)*
 Email e orario dell'invio del codice stanno in `localStorage` per al massimo 1 ora (validità del codice), e si cancellano all'accesso. Motivo: su iOS, passando a Mail per leggere il codice, la PWA può essere ricaricata e si perderebbe il passaggio. Non è un dato importante: se iOS lo cancella si richiede il codice.
 
 **ADR-025 · Email non registrata: stessa risposta di una registrata** — *col login a password vale come "Email o password non corretti" per entrambi i casi*
@@ -91,7 +91,7 @@ Con `shouldCreateUser: false` Supabase risponde con un errore se l'email non esi
 **ADR-027 · Schermata dati personali allo step 6, non allo step 3** (scelta dell'utente, 8/10/2026)
 I dati (sesso, data di nascita, altezza, peso obiettivo) servono solo ai calcoli del target, che arrivano allo step 6: costruire lì la schermata permette di provarla subito con i numeri veri, con le regole di validazione decise insieme. Fino ad allora la tabella `profiles` resta vuota; nessuna schermata dello step 4-5 la legge.
 
-**ADR-028 · Login con email e password (per ora)** (scelta dell'utente, 8/10/2026)
+**ADR-028 · Login con email e password** (scelta dell'utente, 8/10/2026) — *definitivo con ADR-064*
 L'OTP via email dipende da un servizio di invio (SMTP/Resend) che ha dato problemi di configurazione: senza mail non si entra. La password non dipende da nessun servizio esterno. ADR-014 la prevedeva già come alternativa. Come si fa: `signInWithPassword` di supabase-js; campi con `autocomplete="username"` e `"current-password"` per il Portachiavi iCloud (funziona anche nella PWA installata); nessuna regola sulla password al login (le impone Supabase alla creazione). Rischi accettati: la sicurezza dipende dalla password (repo pubblico, URL trovabile) → password lunga e unica, lunghezza minima alzata in Supabase; nessun "password dimenticata" in app (servirebbe l'email): la si reimposta dal pannello di Supabase. L'OTP torna allo step 12 della ROADMAP; il codice dell'OTP è nella storia di git (commit `3a69c12`) e si può riprendere da lì.
 
 ## Decise allo step 4 (8 ottobre 2026)
@@ -110,7 +110,7 @@ Si scaricano tutti i propri cibi (poche centinaia di righe) e si filtra in `lib/
 
 ## Decise allo step 5 (8 ottobre 2026) — da confermare con l'uso
 
-**ADR-033 · Pasto proposto in base all'ora**
+**ADR-033 · Pasto proposto in base all'ora** — *le fasce sono cambiate con i cinque pasti (ADR-060) e i pasti sono personalizzabili (ADR-071)*
 DESIGN.md dice "default: in base all'ora" senza orari. Fasce scelte (ora di Roma, in `lib/constants.ts`): 5-11 colazione, 11-15 pranzo, 15-18 snack, 18-23 cena, 23-5 snack. È solo il valore iniziale: si cambia con un tocco. Da correggere se non corrisponde alle tue abitudini.
 
 **ADR-034 · Grammi proposti quando registri un cibo**
@@ -174,7 +174,7 @@ Alla prima apertura di una settimana (lun-dom, Roma) si salva una riga in `tdee_
 
 ## Decise l'8/10/2026 con l'utente (step 13-16)
 
-**ADR-047 · Peso: pesata libera + promemoria dopo 5 giorni**
+**ADR-047 · Peso: pesata libera + promemoria dopo 5 giorni** — *il promemoria dei 5 giorni è sostituito da quello giornaliero (ADR-059); resta il riepilogo*
 L'utente voleva "registrare il peso ogni 5 giorni". Con una pesata ogni 5 giorni media mobile (≥ 4 in 7 giorni), pendenza e ricalibrazione (≥ 10 in 28 giorni) non sarebbero mai disponibili. Scelta dell'utente: le regole restano, la voce Peso diventa più visibile e compare un promemoria se non ci si pesa da 5 giorni, con un riepilogo degli ultimi 5 giorni.
 
 **ADR-048 · Porzioni casalinghe e liquidi in ml**
@@ -183,7 +183,7 @@ Ogni cibo ha `unit` (g o ml) e `portions` (lista di nome + quantità). Per i liq
 **ADR-049 · Acqua: contenitori e obiettivo scelto dall'utente**
 Contenitori rapidi predefiniti: bicchiere 200 ml, bottiglietta 500 ml, bottiglia 1,5 L (formati comuni in Italia), più contenitori personalizzati salvati nel database. Obiettivo giornaliero solo se lo imposta l'utente: nessun valore inventato. Si scrive in litri; l'unico limite è 10 L, contro gli errori di battitura (non è un consiglio). Una singola aggiunta e un contenitore vanno da 1 a 5000 ml, come il vincolo del database. L'acqua ha una tabella sua (`water_entries`) e non entra nel diario dei pasti.
 
-**ADR-050 · Catalogo di ingredienti da una fonte verificabile**
+**ADR-050 · Catalogo di ingredienti da una fonte verificabile** — *esteso dai piatti comuni calcolati dagli ingredienti (ADR-072)*
 Da questo ambiente le banche dati ufficiali (CREA, USDA, IEO) non sono raggiungibili e i valori non si scrivono a memoria. Il catalogo si produce in un'altra chat con ricerca web (testo in `docs/prompts/catalogo-ingredienti.md`), con la fonte per ogni voce; qui si valida con zod e le regole §9 prima di importarlo. È un file JSON statico nell'app (dati pubblici): niente tabella condivisa nel database, così la RLS per utente resta semplice; la voce scelta si copia tra i propri cibi. Dettagli (step 16): il file è `src/data/catalog/ingredienti.json`, caricato solo all'apertura della scheda Catalogo o durante una ricerca; le voci che non passano zod o §9 si scartano (e il test `ingredienti.test.ts` fallisce, così non arrivano in produzione); kcal incoerenti oltre il 20% sono ammesse solo con una nota che le spiega. La copia ha `source = manual` (nessuna migrazione per un nuovo valore) ed è riconosciuta per nome + unità: sceglierla di nuovo usa il cibo già salvato.
 
 ## Revisione dell'8/10/2026
@@ -245,10 +245,10 @@ Consenso esplicito alla registrazione (casella obbligatoria che nomina i dati su
 `profiles.goal` ∈ bulk / maintain / cut. Massa = +`surplus_pct` (come prima); mantenimento = 0; cut = deficit in kcal/giorno `peso · ritmo% · 7700 / 7`, ricalcolato ogni giorno col peso di quel giorno. Il ritmo è in **% del peso a settimana**, non in kcal fisse: un deficit fisso pesa troppo su chi è leggero. Tre ritmi: Graduale 0,5% (predefinito), Medio 0,7%, Deciso 1,0%; oltre l'1% si avvisa (rischio di perdere muscolo). Fonti: Helms et al. 2014 (J Int Soc Sports Nutr), posizione ISSN su diete e composizione corporea 2017, Garthe et al. 2011 (perdita lenta 0,7% vs veloce 1,4% a settimana: più massa magra conservata col ritmo lento). **Numeri da confermare con l'utente.**
 Ricalibrazione con bande in kg/settimana per obiettivo: massa +0,20/+0,40; mantenimento ±0,10; cut da −1,0% a −0,5% del peso (3 decimali). Il cut richiede un peso obiettivo sotto il peso attuale; durata stimata `ceil(ln(obiettivo/peso) / ln(1 − ritmo))` settimane. Avvisi non bloccanti: ritmo di massa > 0,5 kg/sett., cut > 1%, target di riposo sotto il BMR, cut sotto i 18 anni (nota di rivolgersi a un medico: l'app non lo vieta, scelta dell'utente). Limite dichiarato: 7700 kcal/kg è ottimistico in definizione; la ricalibrazione dopo 3 settimane corregge. Non fatta la "fase di osservazione" (registrare 2-3 settimane prima di fissare il deficit): possibile seguito.
 
-**ADR-067 · Livello di attività alla registrazione**
+**ADR-067 · Livello di attività alla registrazione** — *il bonus unico di +200 kcal è sostituito dalle calorie per sport (ADR-075)*
 Il vecchio 1,60 rifletteva le abitudini del titolare. Chi si registra sceglie tra Poco attivo 1,2 · Leggero 1,375 · Medio 1,55 · Alto 1,725 (moltiplicatori standard); è l'errore più grande della stima (10-15%), ma la ricalibrazione lo corregge. Il bonus allenamento resta uno solo (+200) anche con due sport.
 
-**ADR-068 · Sport liberi e tipi di giorno derivati** — *corretta da ADR-077 (la 006 aveva assegnato Palestra e Calcio a tutti i profili, non solo al titolare)*
+**ADR-068 · Sport liberi e tipi di giorno derivati** — *corretta da ADR-077 (la 006 aveva assegnato Palestra e Calcio a tutti i profili, non solo al titolare); il limite di 2 sport e i tipi di giorno `gym`/`football`/`both` sono sostituiti da ADR-073*
 `profiles.sports` (jsonb, 0-2 nomi, max 24 caratteri). I tipi di giorno non sono più `gym`/`football`: `rest`, `sport_1`, `sport_2`, `both` (etichette dagli sport: "Palestra + calcio"). La migrazione 006 converte `gym→sport_1`, `football→sport_2` e imposta gli sport del titolare a Palestra e Calcio, così i suoi dati e target restano identici. Se uno sport viene tolto, il giorno che lo usava torna a Riposo al prossimo ricalcolo. "Palestra" è proposto come consigliato.
 
 **ADR-069 · Tutorial a popup**
@@ -267,7 +267,7 @@ Modifica di ADR-050 (che escludeva i piatti composti) su richiesta dell'utente. 
 
 ## Step 21 (12/10/2026, richieste dell'utente)
 
-**ADR-073 · Fino a 4 sport; il giorno è un insieme di sport**
+**ADR-073 · Fino a 4 sport; il giorno è un insieme di sport** — *il bonus di +200 per giorno è sostituito dalle calorie per sport (ADR-075)*
 Sostituisce il limite di 2 sport (ADR-068). `daily_targets.training_type` non è più un elenco fisso (`rest`/`sport_1`/`sport_2`/`both`) ma `rest` oppure gli sport del giorno come `sport_1`, `sport_1+sport_3` (numeri in ordine = posizione nell'elenco del profilo). Con 4 sport le combinazioni sarebbero 15: non si elencano, nascono dai tocchi (Palestra, poi Nuoto → "Palestra + nuoto"; un secondo tocco toglie lo sport). Vincolo del database: `rest` o `sport_1…4` uniti da `+`. Il bonus allenamento resta uno solo (+200) per qualunque numero di sport (decisione di ADR-067, da riconsiderare se chi fa due sport nello stesso giorno risulta sotto-alimentato). Come prima, gli indici seguono l'ordine degli sport: togliere o riordinare gli sport cambia ciò che i vecchi giorni indicano (limite già accettato); al ricalcolo gli indici che non esistono più si tolgono. Il vecchio `both` è migrato a `sport_1+sport_2` e l'app lo legge ancora come i primi due sport.
 
 **ADR-074 · Trascinare le voci tra i pasti (home)**
@@ -291,6 +291,8 @@ La migrazione 006 ha eseguito `update public.profiles set sports = '["Palestra",
 **ADR-078 · Test end-to-end nel repo con Supabase simulato, e CI (correzione #1)**
 I test end-to-end stavano solo nella cartella temporanea della sessione di sviluppo. Ora sono in `tests/e2e/` con `@playwright/test` e `axe-core` (dipendenze **solo di sviluppo**, versioni bloccate, approvate da Riccardo il 19/10). Ambiente: Postgres con tutte le migrazioni vere e uno stub minimo di Supabase (ruoli, `auth.users`, `auth.uid()`), PostgREST 12.2.3 e un'autenticazione simulata nel test (login, registrazione con la hook vera della 005, logout). Alternativa scartata: la CLI di Supabase in locale (più fedele per Auth, ma pesante da avviare in CI e con più parti da aggiornare). Limite dichiarato: l'Auth simulata non prova il vero Supabase Auth (scadenza e rinnovo del token, email); quello resta da provare sull'iPhone. CI su GitHub Actions per ogni PR e per `main`: typecheck, lint, test, build ed end-to-end, senza segreti. Il video della fotocamera per lo scanner si genera durante il test (14 MB, non nel repo).
 
+**ADR-083 · Documenti allineati al codice (revisione #23-#26, #44, #55)**
+Nessuna decisione nuova: si toglie ciò che i documenti dicevano e il codice non fa più. L'accesso con codice OTP (step 12) è segnato "superato da ADR-064" ovunque; la tabella degli step arriva al 25; `STATUS.md` e `CLAUDE.md` non fissano più un numero di step; gli ADR sostituiti hanno il rimando a chi li ha sostituiti (003, 024, 028, 033, 047, 050, 067, 068, 073); `TESTING.md`, `DESIGN.md` e `DOMAIN_RULES.md` parlano di sport sommati, 4 sport e livelli di attività al posto di `football`/`both`, bonus unico di 200 kcal, "Giorno calcio +200" e fattore 1,60 di partenza; §8 dice "giorni registrati con un target" e §5 che le soglie sono costanti nel codice; ARCHITECTURE elenca i file veri, la variabile `VITE_PRIVACY_CONTACT` e le migrazioni 001-010 (le nuove con `begin;`/`commit;`). Nel codice: `cleanName` (lib/text.ts) sostituisce due funzioni identiche (`cleanMealName`, `cleanSportName`), e `kcalOf`, usata solo dai test, è rimossa. **Non toccato:** i testi storici dei vecchi step in ROADMAP (descrivono com'era allora).
 **ADR-082 · Sicurezza e privacy: anti-clickjacking, privacy legata alle tabelle, funzione del trigger (revisione #19, #21, #28)**
 **#19** `vercel.json` aggiunge `X-Frame-Options: DENY` e `Content-Security-Policy: frame-ancestors 'none'`: l'app non si può incorniciare in un altro sito. Una CSP completa non è inclusa di proposito: un errore romperebbe l'app in produzione (Supabase, Open Food Facts, font, fotocamera dello scanner, service worker) e da qui non si può provare sull'iPhone; resta un lavoro a parte. **#21** la pagina Privacy elenca ora i dati da `lib/privacyData.ts`, un `Record<ExportTable, string>`: aggiungere una tabella all'esportazione obbliga a descriverla (errore di compilazione) e l'esportazione è già legata alle tabelle delle migrazioni da un test, quindi una tabella nuova non può più restare fuori dalla pagina. L'informativa ora nomina obiettivo, ritmo del cut, sport, nomi dei pasti, contenitori e tipo di giorno: dati già salvati dagli step 19-22, dopo il consenso dei tester del 9/10. `PRIVACY_VERSION` passa al 19/10/2026 (vale per chi si registra da adesso). **#28** migrazione 010: `revoke execute` su `seed_meal_slots()` come le altre funzioni dei trigger; `rls_two_users.sql` ora controlla che nessuna funzione trigger sia eseguibile da anon/authenticated. **#20** resta un passaggio di Riccardo (eseguire i due controlli sul progetto reale, SECURITY.md).
 
@@ -309,7 +311,6 @@ Senza rete un salvataggio non falliva: restava "in pausa" (comportamento predefi
 - **Doppio conteggio allenamenti (step 22):** decidere se ridefinire i livelli di attività (1,2 / 1,375 / 1,55 / 1,725) come "giornata senza allenamento" e lasciare il resto alle calorie degli sport.
 - **Fase di osservazione per il cut (facoltativa):** registrare 2-3 settimane di peso e cibo prima di fissare il deficit, usando la ricalibrazione per stimare il vero mantenimento.
 - **Open Food Facts (quando vuoi):** per identificarsi come chiede OFF servirebbe uno User-Agent, impossibile dal browser. Opzioni: (a) restare con `app_name` (attuale, va bene per un uso personale con poche richieste); (b) una piccola funzione su Vercel che fa da proxy e imposta lo User-Agent (aggiunge un backend, oggi escluso da ARCHITECTURE). OFF suggerisce anche di compilare il loro modulo "API usage" per non rischiare blocchi.
-- **Step 12:** login con codice OTP (ADR-014). Decidere se sostituisce la password o si aggiunge; serve prima l'invio email funzionante (Resend con account e mittente corretti, o dominio verificato).
 - **Prestazioni (facoltativo):** pacchetto principale ~745 kB (~216 kB compressi). Misurato: react-dom 204 kB, supabase-js ~200 kB (di cui ~77 kB realtime/storage non usati), codice dell'app 95 kB, react-router 90 kB, zod 81 kB. Tagli possibili: `zod/mini` (stesso pacchetto, riscrivere gli schemi, −60/70 kB) o usare `@supabase/auth-js` + `@supabase/postgrest-js` al posto di supabase-js (−77 kB, ma cambia una dipendenza decisa). Il service worker mette tutto in cache dopo la prima apertura: decidere solo se l'avvio sull'iPhone risulta lento.
 - **Step 11 (tuo):** icone dell'app provvisorie (anello bianco su verde, generate allo step 2) e nessuna schermata di avvio iOS dedicata: decidere icona e schermata definitive.
 - **Step 11 (tuo):** 2 settimane di uso reale con l'elenco dei problemi (criterio di accettazione).

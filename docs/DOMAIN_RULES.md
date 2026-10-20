@@ -18,7 +18,7 @@ target_giorno = target_base + Σ calorie degli allenamenti del giorno      (step
 - Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052). L'arrotondamento è dentro `maintenance()` (revisione #37): i chiamanti non arrotondano.
 - **Limite noto (revisione #41):** il peso usato per un giorno si ricava dalle pesate di quel giorno; se sono state cancellate, dalle proteine salvate nel target divise per i g/kg proteine **attuali**. Se nel frattempo i g/kg sono cambiati, il bonus sport e i macro ricalcolati per quel giorno usano un peso leggermente sbagliato. Succede solo dopo aver cancellato le pesate e cambiato i g/kg; non si salva il peso nel target per non cambiare lo schema per un caso così raro.
 - Arrotondare il target al multiplo di 10 kcal più vicino.
-- `activity_factor` 1,60 = circa 6 sedute di allenamento a settimana, ad esempio 3 di palestra + 3 di sport di squadra (valore di partenza, poi corretto dalla ricalibrazione).
+- `activity_factor` 1,60 è il valore del **profilo di esempio** (usato in tutti i test) e il default del database: circa 6 sedute di allenamento a settimana. Chi si registra sceglie un livello: Poco attivo 1,2 · Leggero 1,375 · Medio 1,55 · Alto 1,725 (ADR-067); la ricalibrazione lo corregge. Le calorie degli sport si sommano al target (§2b) e il livello di attività può già includere gli allenamenti abituali: possibile doppio conteggio, **punto aperto** in DECISIONS (ADR-075).
 - `training_type`: `rest` oppure gli sport del giorno, `sport_1`, `sport_1+sport_3`… (step 21, ADR-073; i nomi vengono dagli sport del profilo, fino a 4).
 - **Calorie degli allenamenti (step 22, ADR-075), §2b:** ogni sport del giorno vale `(MET − 1) · peso_kg · ore` (il "− 1" toglie il metabolismo a riposo, già nel mantenimento); **più sport si sommano**. Tabella (`lib/sportEnergy.ts`): Tennis 8,0 MET · 60 min; Corsa 9,8 · 45 min; Calcio 7,0 · 60 min; Palestra 6,0 · 45 min. A 75 kg: Tennis 525, Corsa 495, Calcio 450, Palestra 281 kcal. Gli sport fuori tabella valgono il "Bonus per gli altri sport" del profilo (`training_bonus_kcal`, default 200). Il peso è quello del giorno. Esempio (profilo di esempio, +10%): Palestra + Calcio → 3132,8 + 281 + 450 = 3863,8 → **3860 kcal**; solo Calcio → **3580**.
 - **Attenzione, doppio conteggio:** il livello di attività (1,2-1,725) descrive la settimana *compresi* gli allenamenti; sommare anche le calorie di ogni seduta conta due volte una parte. La ricalibrazione corregge (max ±5% a settimana), ma un livello di attività più basso (che descriva solo la giornata senza allenamento) dà un target di riposo più realistico.
@@ -48,7 +48,7 @@ Le calorie di un cibo vengono dall'etichetta (`kcal_100g`) e restano la fonte di
 - **Pendenza (kg/settimana):** regressione lineare dei minimi quadrati sulle pesate degli ultimi 28 giorni, moltiplicata per 7. Servono almeno 10 pesate in 28 giorni.
 
 ## 5. Giorno "rispettato"
-`0,95 · target ≤ kcal_mangiate ≤ 1,10 · target` (soglie modificabili). Un giorno senza nessuna voce non è "sotto target": è "non registrato" e va escluso dalle medie e dai conteggi.
+`0,95 · target ≤ kcal_mangiate ≤ 1,10 · target` (soglie fisse nel codice: `RESPECTED_MIN_RATIO` e `RESPECTED_MAX_RATIO` in `constants.ts`; si cambiano lì). Un giorno senza nessuna voce non è "sotto target": è "non registrato" e va escluso dalle medie e dai conteggi.
 
 ## 6. Nessun recupero
 Le calorie non assunte un giorno non si recuperano né si riportano. L'obiettivo è solo giornaliero. Le statistiche settimanali e mensili sono solo descrittive. Motivo: in un bulk recuperare in blocco porta a mangiate forzate e non migliora il risultato.
@@ -82,7 +82,7 @@ Limiti da dichiarare all'utente: 7700 kcal/kg è una semplificazione (l'aumento 
 
 ## 8. Statistiche (definizioni)
 - **Media giornaliera**: media kcal dei soli giorni registrati nel periodo.
-- **Giorni rispettati**: n giorni "rispettati" / n giorni registrati.
+- **Giorni rispettati**: n giorni "rispettati" / n giorni registrati **che hanno un target** (un giorno registrato senza target non si può valutare).
 - **Peso**: variazione della media mobile tra inizio e fine periodo, in kg/settimana.
 - **Cibi più frequenti**: numero di voci per `food_id` (o `food_name` se il cibo è stato cancellato), non per grammi.
 - **Distribuzione pasti**: somma kcal per `meal_type` / totale kcal del periodo.
