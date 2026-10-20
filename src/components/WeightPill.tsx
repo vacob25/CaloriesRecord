@@ -50,6 +50,7 @@ export function WeightPill({ date, showTrendLink = true }: { date: string; showT
       <button
         type="button"
         onClick={openSheet}
+        aria-label={todayLog ? `${formatNumber(todayLog.kg, 1)} kg, modifica il peso` : undefined}
         className="min-h-11 rounded-full bg-surface px-4 text-[13px] font-bold text-blue shadow-[0_1px_3px_rgba(21,23,30,0.08)]"
       >
         {todayLog ? `${formatNumber(todayLog.kg, 1)} kg` : 'Registra peso'}

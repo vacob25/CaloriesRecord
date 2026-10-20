@@ -1,5 +1,6 @@
 import { RECAL_MIN_WEEKS } from '../../lib/constants'
 import { ACTIVITY_LEVELS, type ActivityLevelKey } from '../../lib/goals'
+import { choiceFocusClass } from '../../components/ui'
 
 interface ActivityFieldsProps {
   value: ActivityLevelKey | ''
@@ -16,7 +17,7 @@ export function ActivityFields({ value, onChange, error }: ActivityFieldsProps) 
         {ACTIVITY_LEVELS.map((level) => (
           <label
             key={level.key}
-            className={`block min-h-14 cursor-pointer rounded-card border-2 px-4 py-3 ${
+            className={`${choiceFocusClass} block min-h-14 cursor-pointer rounded-card border-2 px-4 py-3 ${
               value === level.key ? 'border-green bg-green-tint' : 'border-line bg-surface'
             }`}
           >

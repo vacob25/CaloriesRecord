@@ -170,6 +170,7 @@ Voci fittizie, mai valori veri del catalogo.
 ## Test end-to-end e CI (step 25, ADR-078)
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
+- `tests/e2e/step30-pannelli-accessibili.e2e.ts` (ADR-084): focus del pannello, Tab, Esc, scorrimento; pannelli su schermo basso; anello di focus verde; "Annulla" che aspetta con il focus; campi del login segnati solo quando sono sbagliati; grafici che seguono il token cambiato al volo. Tutti e sei falliscono sul codice precedente.
 - Privacy e sicurezza (ADR-082): `lib/privacyData.test.ts` (la pagina descrive tutte le tabelle esportate) e `app/securityHeaders.test.ts` (`vercel.json` ha gli header anti-clickjacking). `rls_two_users.sql` controlla le funzioni dei trigger.
 - `tests/e2e/step10-ricalibrazione.e2e.ts`: anche la riga "nessuna" di inizio settimana che diventa proposta (ADR-081, #11); l'attesa del +5% è "multiplo di 10 sotto il tetto".
 - `tests/e2e/step27-sposta-su-giu.e2e.ts` (ADR-080): riordino dei pasti con i pulsanti "Sposta su/giù" da tastiera, focus che resta, annuncio a voce, pulsante ≥ 44 px con il focus.

@@ -215,7 +215,7 @@ export function MealSlotsSheet({ slots: savedSlots, onClose }: MealSlotsSheetPro
   return (
     <SheetFrame title="I tuoi pasti" subtitle="Crea, rinomina e riordina i pasti della giornata." onClose={onClose}>
       {() => (
-        <div className="-mx-3 max-h-[62dvh] overflow-y-auto px-3 py-2">
+        <div className="py-2">
           <ul ref={listRef} className="mt-2 divide-y divide-line">
             {slots.map((slot, index) => {
               // Le altre righe si fanno da parte mentre quella sollevata passa.

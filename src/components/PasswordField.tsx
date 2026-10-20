@@ -11,12 +11,15 @@ interface PasswordFieldProps {
   autoComplete: 'current-password' | 'new-password'
   error?: string
   hint?: string
+  /** Per un messaggio che sta fuori dal campo (es. quello unico del login): segna il campo e lo collega al messaggio. */
+  invalid?: boolean
+  describedBy?: string
 }
 
 /** Campo password con "Mostra/Nascondi" (area 44 px) e messaggi collegati per VoiceOver. */
-export function PasswordField({ id, label, value, onChange, autoComplete, error, hint }: PasswordFieldProps) {
+export function PasswordField({ id, label, value, onChange, autoComplete, error, hint, invalid, describedBy: externalMessageId }: PasswordFieldProps) {
   const [shown, setShown] = useState(false)
-  const describedBy = [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(' ') || undefined
+  const describedBy = [hint ? `${id}-hint` : null, error ? `${id}-error` : null, externalMessageId ?? null].filter(Boolean).join(' ') || undefined
   return (
     <div>
       <label htmlFor={id} className="block text-[13px] font-semibold text-ink-2">
@@ -33,7 +36,7 @@ export function PasswordField({ id, label, value, onChange, autoComplete, error,
           required
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          aria-invalid={error ? true : undefined}
+          aria-invalid={error || invalid ? true : undefined}
           aria-describedby={describedBy}
           className={`${inputClass} pr-24`}
         />

@@ -13,6 +13,7 @@ import {
   type Goal,
 } from '../../lib/goals'
 import { formatNumber, parseDecimal } from '../../lib/numbers'
+import { choiceFocusClass } from '../../components/ui'
 
 interface GoalFieldsProps {
   goal: Goal | ''
@@ -45,7 +46,7 @@ export function GoalFields(props: GoalFieldsProps) {
           {GOALS.map((option) => (
             <label
               key={option}
-              className={`block min-h-14 cursor-pointer rounded-card border-2 px-4 py-3 ${
+              className={`${choiceFocusClass} block min-h-14 cursor-pointer rounded-card border-2 px-4 py-3 ${
                 goal === option ? 'border-green bg-green-tint' : 'border-line bg-surface'
               }`}
             >
@@ -72,7 +73,7 @@ export function GoalFields(props: GoalFieldsProps) {
             {CUT_PACES.map((option) => (
               <label
                 key={option.pct}
-                className={`flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-[12px] px-1 text-center ${
+                className={`${choiceFocusClass} flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-[12px] px-1 text-center ${
                   cutRatePct === option.pct ? 'bg-surface text-ink shadow-sm' : 'text-muted'
                 }`}
               >
