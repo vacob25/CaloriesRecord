@@ -65,6 +65,12 @@ Cosa controlla (a mano sarebbe così):
 - Eliminazione dell'account: funzione `delete_my_account()` (migrazione 005), solo per l'utente della sessione. Nessuna service_role, nessuna Edge Function.
 - Sessione: gestita da `supabase-js` (storage del browser). All'uscita: `signOut({ scope: 'local' })`, `queryClient.clear()` e rimozione da localStorage/sessionStorage delle chiavi `sb-…`, `off.…`, `caloriesrecord.…` (`clearUserStorage`, testato).
 
+## Notifiche push (Fase 1, ADR-086)
+- Chiave VAPID **pubblica**: variabile `VITE_VAPID_PUBLIC_KEY` (pubblica per natura). Chiave **privata** e `VAPID_SUBJECT` (`mailto:`): solo nei segreti di Supabase (`supabase secrets set`), mai nel repo né su Vercel.
+- La Edge Function `send-test-push` verifica il JWT di chi chiama (`verify_jwt` + `withSupabase({ auth: 'user' })`) e legge le subscription con il client dell'utente, quindi con la RLS: vede e usa solo le proprie. **Nessuna `service_role`** in questa fase (si valuta solo per i promemoria da cron, Fase 2).
+- Nei log solo conteggi e codici di stato, mai indirizzi, chiavi o testi. Il testo della notifica è generico perché passa dai server di Apple/Google.
+- Se la chiave privata trapela: generarne una nuova e riattivare le notifiche sui dispositivi (le subscription legate alla vecchia chiave smettono di funzionare).
+
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.

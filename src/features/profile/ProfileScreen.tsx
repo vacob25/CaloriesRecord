@@ -8,6 +8,7 @@ import { cardClass, primaryButtonClass, secondaryButtonClass } from '../../compo
 import { useToday } from '../../components/useToday'
 import { useTour } from '../../app/tour'
 import { signOut } from '../../data/auth'
+import { removeThisDeviceSubscription } from '../../data/push'
 import { errorMessage } from '../../data/dbErrors'
 import { useDayTarget, useProfile, useUpdateProfile } from '../../data/queries'
 import type { Profile } from '../../data/types'
@@ -24,6 +25,7 @@ import { planWarnings } from '../../lib/goals'
 import { fractionToPercent } from '../../lib/numbers'
 import { rescaledMaintenanceKcal } from '../../lib/targets'
 import { AccountSection } from './AccountSection'
+import { NotificationsSection } from './NotificationsSection'
 import { PersonalFields } from './PersonalFields'
 import { PlanSection } from './PlanSection'
 import { RecalibrationCard } from './RecalibrationCard'
@@ -50,6 +52,7 @@ export function ProfileScreen() {
   async function handleSignOut() {
     setBusy(true)
     // Al termine arriva SIGNED_OUT e la guardia di route porta al login.
+    await removeThisDeviceSubscription()
     await signOut()
     setBusy(false)
   }
@@ -66,6 +69,7 @@ export function ProfileScreen() {
           <PlanSection profile={profile.data} />
           <ParamsSection profile={profile.data} />
           <WaterSection profile={profile.data} />
+          <NotificationsSection />
           <AccountSection />
         </>
       )}

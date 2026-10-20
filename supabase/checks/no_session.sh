@@ -9,7 +9,7 @@ set -u
 case "$SUPABASE_PUBLISHABLE_KEY" in sb_secret_*) echo "Usa la chiave publishable, mai la secret." >&2; exit 2 ;; esac
 
 REST="${SUPABASE_URL%/}/rest/v1"
-TABLES="profiles foods recipe_items meal_entries weight_logs daily_targets tdee_estimates water_entries drink_containers meal_slots allowed_emails"
+TABLES="profiles foods recipe_items meal_entries weight_logs daily_targets tdee_estimates water_entries drink_containers meal_slots push_subscriptions allowed_emails"
 failed=0
 
 for t in $TABLES; do

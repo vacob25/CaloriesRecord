@@ -19,6 +19,7 @@ export const EXPORT_TABLES = [
 /** Tabelle che NON sono dati dell'utente (non si esportano), con il motivo. */
 export const NOT_EXPORTED_TABLES: Record<string, string> = {
   allowed_emails: 'elenco degli invitati: lo gestisce l’amministratore, l’app non può leggerlo',
+  push_subscriptions: 'indirizzi tecnici dei dispositivi per le notifiche, non dati dell’utente: si ricreano riattivando le notifiche',
 }
 
 export type ExportTable = (typeof EXPORT_TABLES)[number]

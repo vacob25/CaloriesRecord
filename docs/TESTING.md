@@ -168,6 +168,9 @@ Voci fittizie, mai valori veri del catalogo.
 - `exportData`: l'elenco `EXPORT_TABLES` coincide con le tabelle create nelle migrazioni (tranne `allowed_emails`, dichiarata); conferma eliminazione solo con "ELIMINA".
 - `readPrivacyContact`: assente o vuoto → null.
 
+### push.ts e sendTestPush (Fase 1)
+`readVapidPublicKey` (87 caratteri base64url, altrimenti null), `urlBase64ToUint8Array` ("AQID" → [1,2,3]; chiave VAPID → 65 byte), `parseSubscription` (solo https, chiavi presenti), `pushState` (non configurate / iPhone fuori dalla Home / non supportato / negato / on / off). `sendTestPush`: invii 2xx contati, 404/410 cancellati e si continua, altri errori = fallimenti senza cancellare, niente indirizzi o chiavi nei log, testo generico. e2e `step32-notifiche`: attiva/prova/disattiva/uscita con Push simulato nella pagina e la logica vera di `sendTestPush` al posto della funzione; permesso negato; iPhone non installata; service worker vero (Chromium completo, `channel: 'chromium'`) che riceve un push via CDP e mostra la notifica, scartando indirizzi esterni. Verificato a mano che `sw.js` cambia quando cambia solo `push-handler.js` (quindi arriva "Nuova versione disponibile"). La cifratura vera di `web-push` sotto Deno si prova a mano con lo script locale (non in CI).
+
 ## Test end-to-end e CI (step 25, ADR-078)
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
