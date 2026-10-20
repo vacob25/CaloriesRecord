@@ -16,6 +16,9 @@ export const EXPORT_TABLES = [
   'drink_containers',
   'reminder_settings',
   'user_exercises',
+  'workout_plans',
+  'workout_days',
+  'workout_day_exercises',
 ] as const
 
 /** Tabelle che NON sono dati dell'utente (non si esportano), con il motivo. */

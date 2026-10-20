@@ -89,6 +89,12 @@ Cosa controlla (a mano sarebbe così):
 - Esercizi, note e modifiche personali stanno in `user_exercises` (RLS per utente, controllata nello stesso script con due utenti).
 - Fonte dati: free-exercise-db, dominio pubblico (Unlicense). `wger` (CC-BY-SA) non è copiato: solo confronto. L'importazione genera SQL con testi di una fonte pubblica: nessun dato personale, nessun segreto.
 
+## Schede di allenamento (Fase 4, ADR-090)
+- Tre tabelle personali con RLS a 4 policy e chiavi esterne composte `(id, user_id)`: un utente non può agganciare giorni o esercizi alla scheda di un altro, né usare un esercizio personale altrui. `rls_two_users.sql` lo prova (inserimento a nome altrui, giorno e esercizio nella scheda altrui, duplicazione della scheda altrui, `anon`).
+- `duplicate_workout_plan` e `duplicate_workout_day` sono `security invoker`: nessun potere in più di chi le chiama; `no_session.sh` controlla che senza sessione non rispondano.
+- `supabase/checks/workout_plans.sql` (anche in CI) prova i vincoli (pesi, ripetizioni, un solo riferimento per esercizio), la duplicazione e che un esercizio usato non si cancelli.
+- Nessun dato di allenamento nelle notifiche (le notifiche di allenamento sono Fase 8).
+
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.
