@@ -217,6 +217,11 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 27 · Riordino dei pasti senza trascinare (revisione #10; PR d, 19/10/2026)
+Fare: pulsanti "Sposta su" e "Sposta giù" per ogni pasto, con annuncio a voce (ADR-080).
+Accettazione:
+- Con la tastiera o con VoiceOver si riordinano i pasti senza trascinare; il focus resta sul pulsante e la nuova posizione viene annunciata.
+- Ai bordi (primo e ultimo pasto) il pulsante è disattivato.
 ## Step 26 · Sessione e rete (revisione #2-#5, #7, #50, #54; PR c, 19/10/2026)
 Fare: id deciso dall'app e inserimento idempotente per voci pasto, acqua e contenitori; banner "Salvataggio in attesa"; il profilo non toglie l'app se il ricaricamento fallisce; pagina d'errore italiana su tutte le rotte; token scaduto gestito; controllo aggiornamenti al ritorno nell'app (ADR-079).
 Accettazione:
