@@ -74,6 +74,7 @@ Cosa controlla (a mano sarebbe così):
 - Chiave VAPID **pubblica**: variabile `VITE_VAPID_PUBLIC_KEY` (pubblica per natura). Chiave **privata** e `VAPID_SUBJECT` (`mailto:`): solo nei segreti di Supabase (`supabase secrets set`), mai nel repo né su Vercel.
 - La Edge Function `send-test-push` verifica il JWT di chi chiama (`verify_jwt` + `withSupabase({ auth: 'user' })`) e legge le subscription con il client dell'utente, quindi con la RLS: vede e usa solo le proprie. **Nessuna `service_role`** in questa fase (si valuta solo per i promemoria da cron, Fase 2).
 - Nei log solo conteggi e codici di stato, mai indirizzi, chiavi o testi. Il testo della notifica è generico perché passa dai server di Apple/Google.
+- I segreti si inseriscono **incollando il testo**, mai copiando da uno screenshot (il riconoscimento testo mette lettere cirilliche e a capo: successo il 20/10/2026 a `VITE_VAPID_PUBLIC_KEY` su Vercel e a `VAPID_PUBLIC_KEY` su Supabase). La funzione controlla i tre segreti all'avvio (`_shared/vapidConfig.ts`: lunghezza, caratteri, coppia pubblica/privata) e, se qualcosa non va, risponde 503 e scrive nei log **quale** segreto e perché, mai il valore.
 - Se la chiave privata trapela: generarne una nuova e riattivare le notifiche sui dispositivi (le subscription legate alla vecchia chiave smettono di funzionare).
 
 ## Input e rete
