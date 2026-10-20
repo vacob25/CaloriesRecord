@@ -1,6 +1,7 @@
 import { Field } from '../../components/Field'
 import { SEX_LABEL, type Sex } from '../../lib/labels'
 import type { PersonalField, PersonalFormInput } from '../../lib/profileValidation'
+import { choiceFocusClass } from '../../components/ui'
 
 interface PersonalFieldsProps {
   form: PersonalFormInput
@@ -25,7 +26,7 @@ export function PersonalFields({ form, errors, onChange, askWeight, askGoalWeigh
           {(['male', 'female'] as Sex[]).map((sex) => (
             <label
               key={sex}
-              className={`flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] text-[15px] font-semibold ${
+              className={`${choiceFocusClass} flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] text-[15px] font-semibold ${
                 form.sex === sex ? 'bg-surface text-ink shadow-sm' : 'text-muted'
               }`}
             >

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { describeDbError, OFFLINE_DATA_MESSAGE } from './dbErrors'
+import { DataError, describeDbError, isSessionExpiredCode, OFFLINE_DATA_MESSAGE, SESSION_EXPIRED_MESSAGE, throwIfError } from './dbErrors'
 
 describe('describeDbError', () => {
   it('barcode duplicato', () => {
@@ -41,5 +41,30 @@ describe('describeDbError', () => {
     expect(describeDbError({ code: 'XX000', message: 'boom' })).toBe(
       'Qualcosa è andato storto. Riprova tra poco. (Dettaglio: XX000, boom)',
     )
+  })
+
+  it('token scaduto: messaggio chiaro, non il dettaglio tecnico', () => {
+    expect(describeDbError({ code: 'PGRST303', message: 'JWT expired' })).toBe(SESSION_EXPIRED_MESSAGE)
+    expect(describeDbError({ code: 'PGRST301', message: 'JWT invalid' })).toBe(SESSION_EXPIRED_MESSAGE)
+  })
+})
+
+describe('sessione scaduta', () => {
+  it('riconosce solo i codici del token', () => {
+    expect(isSessionExpiredCode('PGRST303')).toBe(true)
+    expect(isSessionExpiredCode('PGRST301')).toBe(true)
+    expect(isSessionExpiredCode('42501')).toBe(false)
+    expect(isSessionExpiredCode(undefined)).toBe(false)
+  })
+
+  it('throwIfError conserva il codice per chi deve rinnovare la sessione', () => {
+    try {
+      throwIfError({ code: 'PGRST303', message: 'JWT expired' })
+      expect.unreachable()
+    } catch (error) {
+      expect(error).toBeInstanceOf(DataError)
+      expect((error as DataError).code).toBe('PGRST303')
+      expect((error as DataError).message).toBe(SESSION_EXPIRED_MESSAGE)
+    }
   })
 })

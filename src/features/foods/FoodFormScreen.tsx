@@ -5,12 +5,13 @@ import { ConfirmButton } from '../../components/ConfirmButton'
 import { Field } from '../../components/Field'
 import { ScreenHeader } from '../../components/ScreenHeader'
 import { ErrorState, FormMessage, ListSkeleton } from '../../components/States'
-import { primaryButtonClass } from '../../components/ui'
+import { primaryButtonClass, choiceFocusClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useDeleteFood, useFood, useSaveFood } from '../../data/queries'
 import type { Food } from '../../data/types'
 import { validateFood, type FoodField, type FoodFormInput } from '../../lib/foodValidation'
-import { PORTION_NAME_MAX, per100Label, validatePortionRows, type FoodUnit, type Portion, type PortionRowInput } from '../../lib/portions'
+import { PORTION_NAME_MAX } from '../../lib/constants'
+import { per100Label, validatePortionRows, type FoodUnit, type Portion, type PortionRowInput } from '../../lib/portions'
 import { sanitizeNumberInput } from '../../lib/numbers'
 
 const EMPTY_FORM: FoodFormInput = {
@@ -155,7 +156,7 @@ function FoodForm({ initial, food, source, note, returnTo }: FoodFormProps) {
             {(['g', 'ml'] as const satisfies readonly FoodUnit[]).map((option) => (
               <label
                 key={option}
-                className={`flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] text-[15px] font-semibold ${
+                className={`${choiceFocusClass} flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] text-[15px] font-semibold ${
                   unit === option ? 'bg-surface text-ink shadow-sm' : 'text-muted'
                 }`}
               >
@@ -183,7 +184,7 @@ function FoodForm({ initial, food, source, note, returnTo }: FoodFormProps) {
             {(['100g', 'serving'] as const).map((basis) => (
               <label
                 key={basis}
-                className={`flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] text-[15px] font-semibold ${
+                className={`${choiceFocusClass} flex min-h-11 cursor-pointer items-center justify-center rounded-[12px] text-[15px] font-semibold ${
                   form.basis === basis ? 'bg-surface text-ink shadow-sm' : 'text-muted'
                 }`}
               >

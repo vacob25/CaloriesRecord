@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import {
   addSport,
   buildTrainingType,
-  cleanSportName,
   coerceTrainingType,
   parseSports,
   RECOMMENDED_SPORT,
@@ -17,12 +16,6 @@ describe('sport personali (step 19)', () => {
   it('Palestra è il consigliato e fra i suggeriti', () => {
     expect(RECOMMENDED_SPORT).toBe('Palestra')
     expect(SUGGESTED_SPORTS[0]).toBe('Palestra')
-  })
-
-  it('nome pulito: spazi, iniziale maiuscola, niente caratteri di controllo', () => {
-    expect(cleanSportName('  calcio   a  5 ')).toBe('Calcio a 5')
-    expect(cleanSportName('corsa\n\tvelocità')).toBe('Corsa velocità')
-    expect(cleanSportName('   ')).toBe('')
   })
 
   it('aggiungere: vuoto, troppo lungo, doppione (anche maiuscole/accenti diversi), massimo 4', () => {

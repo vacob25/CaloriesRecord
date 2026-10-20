@@ -8,11 +8,24 @@ export interface DbErrorLike {
 
 /** Errore dei dati con un messaggio già pronto per l'utente. */
 export class DataError extends Error {
-  constructor(message: string) {
+  /** Codice dell'errore di origine (es. PGRST303), se c'era: serve a chi deve reagire, non all'utente. */
+  readonly code: string | undefined
+
+  constructor(message: string, code?: string) {
     super(message)
     this.name = 'DataError'
+    this.code = code
   }
 }
+
+/** PostgREST risponde così quando il token di accesso è scaduto (PGRST301: non valido o scaduto, PGRST303: scaduto). */
+const SESSION_EXPIRED_CODES = ['PGRST301', 'PGRST303']
+
+export function isSessionExpiredCode(code: string | undefined): boolean {
+  return code !== undefined && SESSION_EXPIRED_CODES.includes(code)
+}
+
+export const SESSION_EXPIRED_MESSAGE = 'La sessione era scaduta: l’ho rinnovata. Riprova.'
 
 export const OFFLINE_DATA_MESSAGE = 'Serve la connessione per caricare e salvare i dati. Controlla la rete e riprova.'
 
@@ -40,6 +53,9 @@ export function describeDbError(error: DbErrorLike, online = true): string {
       return 'Alcuni valori non sono validi. Controllali e riprova.'
     case '22003':
       return 'Un numero è troppo grande per essere salvato. Controlla i valori (es. il peso cotto della ricetta).'
+    case 'PGRST301':
+    case 'PGRST303':
+      return SESSION_EXPIRED_MESSAGE
     case '42501':
       return 'Permesso negato: la sessione potrebbe essere scaduta. Esci e accedi di nuovo.'
     case 'P0002':
@@ -66,7 +82,7 @@ function isOnline(): boolean {
 
 /** Lancia un DataError se la risposta di Supabase contiene un errore. */
 export function throwIfError(error: DbErrorLike | null): void {
-  if (error) throw new DataError(describeDbError(error, isOnline()))
+  if (error) throw new DataError(describeDbError(error, isOnline()), error.code)
 }
 
 /** Messaggio da mostrare per un errore qualunque arrivato dal livello dati. */

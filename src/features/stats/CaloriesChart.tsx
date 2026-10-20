@@ -5,18 +5,18 @@ import { DAY_STATUS_LABEL } from '../../lib/labels'
 import { formatNumber } from '../../lib/numbers'
 import type { DayStat, DayStatus } from '../../lib/stats'
 
-// Colori del design: verde = rispettato, arancio = sotto target (DESIGN.md). "Oltre" non ha un colore
+// Colori del design (variabili CSS dei token, un solo posto da cambiare): verde = rispettato, arancio = sotto target (DESIGN.md). "Oltre" non ha un colore
 // nel design e in un bulk non è un allarme: grigio. Testi e assi nei colori del testo.
 const STATUS_FILL: Record<DayStatus, string> = {
-  respected: '#1A7F5A',
-  under: '#E9861F',
-  over: '#5B6170',
-  noTarget: '#E4E8EE',
+  respected: 'var(--color-green)',
+  under: 'var(--color-orange)',
+  over: 'var(--color-muted)',
+  noTarget: 'var(--color-line)',
   unregistered: 'transparent',
 }
-const INK2 = '#3A3F4B'
-const MUTED = '#5B6170'
-const LINE = '#E4E8EE'
+const INK2 = 'var(--color-ink-2)'
+const MUTED = 'var(--color-muted)'
+const LINE = 'var(--color-line)'
 
 function TooltipContent({ active, payload }: { active?: boolean; payload?: { payload: DayStat }[] }) {
   const day = payload?.[0]?.payload

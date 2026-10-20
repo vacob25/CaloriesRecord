@@ -1,9 +1,9 @@
 import { FormMessage } from '../../components/States'
 import { Field } from '../../components/Field'
-import { RECAL_MIN_DAYS } from '../../lib/constants'
+import { RECAL_MIN_WEEKS } from '../../lib/constants'
 import {
   CUT_PACES,
-  cutDeficitKcal,
+  cutDeficitDisplayKcal,
   cutNeedsMedicalNote,
   describeTargetRate,
   GOALS,
@@ -13,6 +13,7 @@ import {
   type Goal,
 } from '../../lib/goals'
 import { formatNumber, parseDecimal } from '../../lib/numbers'
+import { choiceFocusClass } from '../../components/ui'
 
 interface GoalFieldsProps {
   goal: Goal | ''
@@ -45,7 +46,7 @@ export function GoalFields(props: GoalFieldsProps) {
           {GOALS.map((option) => (
             <label
               key={option}
-              className={`block min-h-14 cursor-pointer rounded-card border-2 px-4 py-3 ${
+              className={`${choiceFocusClass} block min-h-14 cursor-pointer rounded-card border-2 px-4 py-3 ${
                 goal === option ? 'border-green bg-green-tint' : 'border-line bg-surface'
               }`}
             >
@@ -72,7 +73,7 @@ export function GoalFields(props: GoalFieldsProps) {
             {CUT_PACES.map((option) => (
               <label
                 key={option.pct}
-                className={`flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-[12px] px-1 text-center ${
+                className={`${choiceFocusClass} flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-[12px] px-1 text-center ${
                   cutRatePct === option.pct ? 'bg-surface text-ink shadow-sm' : 'text-muted'
                 }`}
               >
@@ -108,7 +109,7 @@ export function GoalFields(props: GoalFieldsProps) {
         <div role="status" className="rounded-card bg-surface p-4 text-[15px] text-ink-2">
           <p>
             Ritmo scelto: {describeTargetRate({ goal: 'cut', surplusPct: 0, cutRatePct }, weightKg)}. Mangerai circa{' '}
-            <strong className="text-ink">{formatNumber(Math.round(cutDeficitKcal(weightKg, cutRatePct) / 10) * 10)} kcal</strong> al giorno in meno
+            <strong className="text-ink">{formatNumber(cutDeficitDisplayKcal(weightKg, cutRatePct))} kcal</strong> al giorno in meno
             del tuo mantenimento.
           </p>
           {weeks !== null && goalWeightKg !== null && (
@@ -126,7 +127,7 @@ export function GoalFields(props: GoalFieldsProps) {
           <p className="pb-2">
             L’app parte da una stima del tuo mantenimento (le calorie che bruci in un giorno) e{' '}
             {goal === 'cut' ? 'ne toglie quanto serve per il ritmo scelto' : goal === 'bulk' ? 'aggiunge un piccolo surplus' : 'mangia quanto il mantenimento'}.
-            La stima può sbagliare del 10-15%: dopo circa {Math.round(RECAL_MIN_DAYS / 7)} settimane di pasti e pesate registrati, la
+            La stima può sbagliare del 10-15%: dopo circa {RECAL_MIN_WEEKS} settimane di pasti e pesate registrati, la
             ricalibrazione la corregge con i tuoi dati veri. Più registri, più è precisa.
           </p>
         </details>

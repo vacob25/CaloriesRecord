@@ -44,6 +44,19 @@ export async function signOut(): Promise<void> {
   }
 }
 
+/**
+ * Rinnova il token dopo un errore "sessione scaduta". Se il rinnovo è rifiutato (non per la rete) la sessione
+ * non è più valida: si esce e si torna al login.
+ */
+export async function renewSession(): Promise<void> {
+  try {
+    const { error } = await getSupabase().auth.refreshSession()
+    if (error && !isAuthRetryableFetchError(error)) await signOut()
+  } catch {
+    // Senza rete non si può rinnovare né verificare: si riproverà alla prossima richiesta.
+  }
+}
+
 /** Toglie da localStorage e sessionStorage le chiavi con dati dell'utente (lib/auth.ts, USER_STORAGE_PREFIXES). */
 export function clearBrowserStorage(): void {
   for (const storage of [globalThis.localStorage, globalThis.sessionStorage]) {

@@ -5,6 +5,7 @@ import {
   adjustmentPct,
   ACTIVITY_LEVELS,
   CUT_PACES,
+  cutDeficitDisplayKcal,
   cutDeficitKcal,
   cutNeedsMedicalNote,
   describeTargetRate,
@@ -29,6 +30,10 @@ describe('cut: deficit dal ritmo in % del peso (step 19)', () => {
     expect(cutDeficitKcal(75, 0.005)).toBe(412.5)
     expect(cutDeficitKcal(75, 0.007)).toBe(577.5)
     expect(cutDeficitKcal(75, 0.01)).toBe(825)
+    // come lo si mostra: a 10 kcal (412,5 → 410, 577,5 → 580, 825 → 830)
+    expect(cutDeficitDisplayKcal(75, 0.005)).toBe(410)
+    expect(cutDeficitDisplayKcal(75, 0.007)).toBe(580)
+    expect(cutDeficitDisplayKcal(75, 0.01)).toBe(830)
   })
   it('scostamento dal mantenimento: massa +10%, mantenimento 0, cut negativo', () => {
     expect(adjustmentPct(bulk, 2848, 75)).toBe(0.1)
@@ -118,6 +123,12 @@ describe('avvisi di sicurezza (non bloccano)', () => {
   it('cut esattamente all’1% non avvisa, sopra sì', () => {
     expect(planWarnings({ ...cut, cutRatePct: 0.01 }, 2848, 75, 1780)).toEqual([])
     expect(planWarnings({ ...cut, cutRatePct: 0.015 }, 2848, 75, 1780)[0]).toContain('perderesti circa 1,13')
+  })
+  it('cut all’1,2% (TESTING.md): avviso sul ritmo, circa 0,9 kg a settimana a 75 kg', () => {
+    const warnings = planWarnings({ ...cut, cutRatePct: 0.012 }, 2848, 75, 1780)
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0]).toContain('circa 0,9')
+    expect(warnings[0]).toContain('oltre l’1%')
   })
   it('cut con target sotto il BMR: avviso', () => {
     const warnings = planWarnings(cut, 1800, 75, 1780)

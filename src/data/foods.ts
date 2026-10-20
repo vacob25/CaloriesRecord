@@ -222,6 +222,7 @@ export async function saveRecipe(input: RecipeInput): Promise<string> {
     input.items.map((item) => ({ per100g: item.ingredient.per100g, grams: item.grams })),
     input.cookedWeightG,
   )
+  if (!per100g) throw new DataError('Il peso della ricetta cotta deve essere maggiore di 0.')
   const { data, error } = await getSupabase().rpc('save_recipe', {
     p_recipe_id: input.id,
     p_name: input.name,
@@ -248,6 +249,7 @@ async function recomputeRecipesUsing(foodId: string): Promise<void> {
         recipe.items.map((item) => ({ per100g: item.ingredient.per100g, grams: item.grams })),
         recipe.food.cookedWeightG,
       )
+      if (!per100g) return
       const { error } = await getSupabase().from('foods').update(valuesToRow(per100g)).eq('id', id)
       throwIfError(error)
     }),
