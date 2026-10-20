@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+
 import { chromium, expect, test, type BrowserContext } from '@playwright/test'
 
 import { sendTestPush } from '../../supabase/functions/_shared/sendTestPush'
@@ -165,10 +167,50 @@ test('Step 32 · il service worker mostra la notifica e il tocco apre la pagina 
   const shown = await p.evaluate(async () => (await (await navigator.serviceWorker.ready).getNotifications()).map((n) => ({ title: n.title, url: (n.data as { url: string }).url })))
   check(shown[0]?.title === 'Calorie' && shown[0]?.url === '/profilo', 'push ricevuto: notifica mostrata con il percorso interno')
 
-  // Un percorso esterno nel payload non viene mai seguito.
-  await cdp.send('ServiceWorker.deliverPushMessage', { origin: APP_URL, registrationId: registrationId(), data: payload('Altra', 'https://evil.example.test/', 'due') })
-  await expect.poll(count).toBe(2)
-  const urls = await p.evaluate(async () => (await (await navigator.serviceWorker.ready).getNotifications()).map((n) => (n.data as { url: string }).url))
-  check(urls.every((u) => u.startsWith('/')), 'un indirizzo esterno nel payload diventa "/"')
   await b.close()
+})
+
+test('Step 32 · push-handler.js: percorsi interni, click che apre o riusa la finestra', async () => {
+  // Il file è lo stesso che il service worker carica; qui gira in un contesto finto per provare anche i casi che il
+  // browser non permette di forzare in modo affidabile (indirizzi esterni nel payload, click senza finestre aperte).
+  const code = readFileSync(new URL('../../public/push-handler.js', import.meta.url), 'utf8')
+  const listeners: Record<string, (event: unknown) => void> = {}
+  const shown: { title: string; options: { data: { url: string }; body: string } }[] = []
+  const opened: string[] = []
+  const navigated: string[] = []
+  let focused = 0
+  let windows: { focus: () => Promise<void>; navigate: (url: string) => Promise<void> }[] = []
+  const self = {
+    location: { origin: 'https://app.example.test' },
+    addEventListener: (name: string, fn: (event: unknown) => void) => void (listeners[name] = fn),
+    registration: { showNotification: async (title: string, options: { data: { url: string }; body: string }) => void shown.push({ title, options }) },
+    clients: {
+      matchAll: async () => windows,
+      openWindow: async (url: string) => void opened.push(url),
+    },
+  }
+  new Function('self', 'URL', code)(self, URL)
+  const push = async (payload: unknown) => {
+    let pending: Promise<unknown> = Promise.resolve()
+    listeners.push!({ data: { json: () => payload }, waitUntil: (promise: Promise<unknown>) => void (pending = promise) })
+    await pending
+  }
+
+  await push({ title: 'Calorie', body: 'ciao', url: '/profilo' })
+  await push({ title: 'Altra', url: 'https://evil.example.test/' })
+  await push({ title: 'Altra', url: '//evil.example.test/' })
+  await push({})
+  check(shown.map((n) => n.options.data.url).join(',') === '/profilo,/,/,/', 'solo percorsi interni: gli indirizzi esterni diventano "/"')
+  check(shown[3]?.title === 'Calorie', 'senza titolo si usa "Calorie"')
+
+  const click = async (url: string) => {
+    let pending: Promise<unknown> = Promise.resolve()
+    listeners.notificationclick!({ notification: { close: () => {}, data: { url } }, waitUntil: (promise: Promise<unknown>) => void (pending = promise) })
+    await pending
+  }
+  await click('/profilo')
+  check(opened.join() === 'https://app.example.test/profilo', 'senza finestre aperte il tocco apre la pagina giusta')
+  windows = [{ focus: async () => void (focused += 1), navigate: async (url) => void navigated.push(url) }]
+  await click('/profilo')
+  check(focused === 1 && navigated.join() === 'https://app.example.test/profilo', 'con l’app aperta riusa la finestra e va alla pagina giusta')
 })
