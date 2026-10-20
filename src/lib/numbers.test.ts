@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatFixed, formatNumber, formatSigned, parseDecimal, round, sanitizeNumberInput } from './numbers'
+import { formatFixed, formatNumber, formatSigned, fractionToPercent, parseDecimal, round, sanitizeNumberInput } from './numbers'
 
 describe('parseDecimal', () => {
   it.each([
@@ -59,5 +59,14 @@ describe('sanitizeNumberInput', () => {
     expect(sanitizeNumberInput('250 ml', 'integer')).toBe('250')
     expect(sanitizeNumberInput('1,5', 'integer')).toBe('15')
     expect(sanitizeNumberInput('800123456789x', 'integer')).toBe('800123456789')
+  })
+})
+
+describe('fractionToPercent', () => {
+  it('una frazione diventa percentuale con un decimale', () => {
+    expect(fractionToPercent(0.005)).toBe(0.5)
+    expect(fractionToPercent(0.0123)).toBe(1.2)
+    expect(fractionToPercent(0.1)).toBe(10)
+    expect(fractionToPercent(0)).toBe(0)
   })
 })

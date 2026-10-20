@@ -33,7 +33,7 @@ export function computeDayTarget(
   trainingType: TrainingType = 'rest',
 ): DayTargetValues {
   const bmrKcal = bmr({ sex: profile.sex, weightKg, heightCm: profile.heightCm, ageYears: ageOn(profile.birthDate, day) })
-  const maintenanceKcal = Math.round(maintenance(bmrKcal, profile.activityFactor))
+  const maintenanceKcal = maintenance(bmrKcal, profile.activityFactor)
   return withTrainingType(maintenanceKcal, profile, weightKg, trainingType)
 }
 
@@ -70,12 +70,4 @@ export function ringStatus(eatenKcal: number, targetKcal: number): { remaining: 
 /** Avanzamento di una barra macro (0-1). */
 export function progress(eaten: number, goal: number): number {
   return goal > 0 ? Math.min(1, Math.max(0, eaten / goal)) : 0
-}
-
-/**
- * Mantenimento di oggi riscalato su un nuovo fattore di attività (modulo dei Parametri, prima del salvataggio):
- * il BMR è lo stesso, cambia solo il moltiplicatore.
- */
-export function rescaledMaintenanceKcal(maintenanceToday: number, currentActivityFactor: number, newActivityFactor: number): number {
-  return (maintenanceToday / currentActivityFactor) * newActivityFactor
 }

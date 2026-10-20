@@ -69,7 +69,7 @@ export const AGE_MAX_YEARS = 100
 export const OFF_PRODUCT_READS_PER_MINUTE = 15
 export const OFF_SEARCHES_PER_MINUTE = 10
 
-/** Giorno "rispettato" (§5): 0,95 · target ≤ kcal ≤ 1,10 · target (soglie modificabili). */
+/** Giorno "rispettato" (§5): 0,95 · target ≤ kcal ≤ 1,10 · target (costanti, si cambiano qui). */
 export const RESPECTED_MIN_RATIO = 0.95
 export const RESPECTED_MAX_RATIO = 1.1
 
@@ -133,3 +133,17 @@ export const MEAL_NAME_MAX = 20
 
 /** Quanti giorni indietro si può registrare un pasto dimenticato (step 20). */
 export const BACKFILL_MAX_DAYS = 14
+
+/** Porzioni casalinghe (step 14): lunghezza del nome e passo del numero di porzioni (anche "mezzo"). */
+export const PORTION_NAME_MAX = 40
+export const PORTION_COUNT_STEP = 0.5
+
+/** Swipe tra i giorni di Oggi: distanza minima (px) e quanto deve prevalere l'orizzontale sul verticale. */
+export const SWIPE_MIN_PX = 60
+export const SWIPE_DOMINANCE = 1.5
+
+/** Settimane di uso dopo le quali la ricalibrazione corregge la stima di partenza (21 giorni = 3 settimane). */
+export const RECAL_MIN_WEEKS = RECAL_MIN_DAYS / 7
+
+/** Sotto questa differenza (kg) il peso si considera stabile o l'obiettivo raggiunto. */
+export const WEIGHT_STABLE_KG = 0.05

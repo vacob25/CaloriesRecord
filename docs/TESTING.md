@@ -1,9 +1,9 @@
 # Strategia di test
 
 ## Principio
-Le funzioni di `src/lib/` sono pure e si testano con Vitest, file `*.test.ts` accanto al sorgente. Ogni funzione di dominio ha test prima di essere usata da un componente. Ci sono test unitari anche fuori da `lib/`: in `src/data/` (`env`, `authErrors`, `dbErrors` e i dati del catalogo `catalog/ingredienti.test.ts`) e in `src/app/` (`navItems`). La UI non ha test di componenti: si prova sull'iPhone a ogni step.
+Le funzioni di `src/lib/` sono pure e si testano con Vitest, file `*.test.ts` accanto al sorgente. Ogni funzione di dominio ha test prima di essere usata da un componente. Ci sono test unitari anche fuori da `lib/`: in `src/data/` (`env`, `authErrors`, `dbErrors`, `ids` e i dati del catalogo `catalog/ingredienti.test.ts`) e in `src/app/` (`navItems`). La UI non ha test di componenti: si prova sull'iPhone a ogni step.
 
-Prove end-to-end: si fanno a mano con Playwright contro Postgres + PostgREST locali; gli script non sono nel repo.
+Prove end-to-end: Playwright in `tests/e2e/` contro Postgres + PostgREST (vedi la sezione "Test end-to-end e CI").
 
 Comandi: `npm run test` (una volta), `npm run test:watch` mentre sviluppi. Uno step non è finito se `typecheck`, `lint`, `test` e `build` non passano tutti.
 
@@ -18,13 +18,12 @@ Tolleranza per i decimali: `toBeCloseTo(valore, 2)`.
 | `bmr` (uomo) | 75 kg, 180 cm, 20 anni | 1780 |
 | `bmr` (donna) | 60 kg, 165 cm, 30 anni | 1320,25 |
 | `maintenance` | bmr 1780, fattore 1,6 | 2848 |
-| `dayTarget` | mantenimento 2848, surplus 0,10, `rest`, bonus 200 | 3130 |
-| `dayTarget` | stesso, `football` | 3330 |
-| `dayTarget` | stesso, `both` | 3330 (il bonus non si somma) |
+| `dayTarget` | mantenimento 2848, surplus 0,10, calorie di allenamento 0 (giorno di riposo) | 3130 |
+| `dayTarget` | stesso, +200 kcal di allenamento | 3330 |
+| `dayTarget` | stesso, +731 kcal (Palestra 281 + Calcio 450: gli sport si sommano, ADR-075) | 3860 |
 | `macros` | 3130 kcal, 75 kg, 2,0 g/kg P, 1,0 g/kg F | P 150, F 75, C 464 |
 | `macros` | 3330 kcal, stessi parametri | P 150, F 75, C 514 |
 | `macros` | 2000 kcal, 75 kg, stessi parametri | P 150, F 75, C 181 (2,4 g/kg, quindi avviso carboidrati < 3 g/kg) |
-| `kcalOf(food, grams)` | 110 kcal/100 g, 200 g | 220 |
 
 Verifica di coerenza: per ogni `macros`, `4·P + 4·C + 9·F` deve essere entro ±5 kcal dal target.
 
@@ -72,8 +71,8 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | Funzione | Input | Atteso |
 | --- | --- | --- |
 | `computeDayTarget` | profilo di esempio, riposo | mantenimento 2848 (intero), target 3130, macro 150/75/464 |
-| `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,6, surplus 0,10 | ≈ 0,2589 kg/settimana |
-| `estimatedGainKgPerWeek` | 2848, fattore 1,6 → 1,8, surplus 0,20 | ≈ 0,5825 (2848 / 1,6 · 1,8 = 3204; oltre l'avviso) |
+| `plannedRateKgWeek` | massa, mantenimento 2848, 75 kg, surplus 0,10 | ≈ 0,2589 kg/settimana |
+| `plannedRateKgWeek` | massa, mantenimento 3204, surplus 0,20 | ≈ 0,5825 (oltre l'avviso del +0,5) |
 
 ### goals.ts, sports.ts, tutorial.ts (step 19)
 | Funzione | Input | Atteso |
@@ -83,10 +82,10 @@ Altri casi: un giorno con kcal < 50% del target non conta come registrato; la pr
 | `rateBandKgWeek` | cut, 75 kg | da −0,75 a −0,375 |
 | `weeksToGoal` | 75 → 70 kg, 0,5% | ceil(ln(70/75)/ln(0,995)) = 14 |
 | `planWarnings` | cut 1,2% | avviso ritmo; cut under 18 → nota medica |
-| `addSport` / `cleanSportName` | duplicati con accenti/maiuscole, > 24 caratteri, terzo sport | rifiutati |
+| `addSport` / `cleanName` (`lib/text.ts`) | duplicati con accenti/maiuscole, > 24 caratteri, quinto sport (il massimo è 4, ADR-073) | rifiutati |
 | `toggleSportInType` | rest → 0 → 2 → 1 → 0 | `sport_1`, `sport_1+sport_3`, `sport_1+sport_2+sport_3`, `sport_2+sport_3` |
 | `trainingLabel` | `sport_1+sport_2+sport_4` con 4 sport | Palestra + calcio + CrossFit (le sigle restano) |
-| `trainingSportIndexes` | `both`, `sport_3+sport_1`, `gym`, `sport_1+x` | [0,1], [0,2], [], [] |
+| `trainingSportIndexes` | `sport_1+sport_3`, `sport_3+sport_1`, `gym`, `sport_1+x`; il vecchio `both` (righe anteriori alla migrazione 008) | [0,2], [0,2], [], []; [0,1] |
 | `coerceTrainingType` | `sport_1+sport_2` con un solo sport / `sport_2` con uno | `sport_1` / `rest` |
 | `nextStep` / `previousStep` / `tourLabel` | indici 0-7 | ferma agli estremi; "1/8"…"8/8" |
 
@@ -172,6 +171,10 @@ Voci fittizie, mai valori veri del catalogo.
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
 - `tests/e2e/step30-pannelli-accessibili.e2e.ts` (ADR-084): focus del pannello, Tab, Esc, scorrimento; pannelli su schermo basso; anello di focus verde; "Annulla" che aspetta con il focus; campi del login segnati solo quando sono sbagliati; grafici che seguono il token cambiato al volo. Tutti e sei falliscono sul codice precedente.
+- Privacy e sicurezza (ADR-082): `lib/privacyData.test.ts` (la pagina descrive tutte le tabelle esportate) e `app/securityHeaders.test.ts` (`vercel.json` ha gli header anti-clickjacking). `rls_two_users.sql` controlla le funzioni dei trigger.
+- `tests/e2e/step10-ricalibrazione.e2e.ts`: anche la riga "nessuna" di inizio settimana che diventa proposta (ADR-081, #11); l'attesa del +5% è "multiplo di 10 sotto il tetto".
+- `tests/e2e/step27-sposta-su-giu.e2e.ts` (ADR-080): riordino dei pasti con i pulsanti "Sposta su/giù" da tastiera, focus che resta, annuncio a voce, pulsante ≥ 44 px con il focus.
+- `tests/e2e/step26-salvataggi-rete.e2e.ts` (ADR-079): risposta persa + "Riprova" = una sola voce; salvataggio senza rete (banner, poi parte da solo); "Esci" con il logout che fallisce; schermata che non si carica; ricaricamento del profilo fallito in background (orologio simulato). Ogni test fallisce sul codice precedente alla PR, tranne "Esci", che resta come protezione.
 - CI (`.github/workflows/ci.yml`) su ogni PR e su `main`: typecheck, lint, test unitari, build e test end-to-end. Nessun segreto e nessun accesso al progetto reale.
 - Ogni nuova funzione che si vede nell'app porta il suo test end-to-end nella stessa PR; ogni nuova migrazione entra da sola nel database dei test.
 

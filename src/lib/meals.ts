@@ -74,7 +74,7 @@ export function groupByMeal<T extends EntryLike>(
   return groups
 }
 
-/** Cibi usati di recente, dal più recente (DATA_MODEL: last_used_at desc, limite 20). */
+/** Cibi usati di recente, dal più recente (DATA_MODEL: last_used_at desc, limite RECENT_FOODS_LIMIT = 8). */
 export function recentFoods<T extends { lastUsedAt: string | null }>(foods: readonly T[], limit = RECENT_FOODS_LIMIT): T[] {
   return foods
     .filter((food) => food.lastUsedAt !== null)

@@ -7,6 +7,7 @@ import { ScreenHeader } from '../../components/ScreenHeader'
 import { EmptyState, ErrorState, ListSkeleton } from '../../components/States'
 import { cardClass, inputClass, primaryButtonClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
+import { useAttemptIds } from '../../data/ids'
 import { useAddEntry, useFoods, useLastGrams, useMealSlots } from '../../data/queries'
 import type { Food } from '../../data/types'
 import { useToday } from '../../components/useToday'
@@ -72,6 +73,7 @@ export function AddMealScreen() {
   const foods = useFoods()
   const lastGrams = useLastGrams()
   const addEntry = useAddEntry()
+  const attempts = useAttemptIds()
   const [query, setQuery] = useState('')
   const [chosenTab, setChosenTab] = useState<Tab | null>(null)
   const [selected, setSelected] = useState<Food | null>(null)
@@ -105,11 +107,15 @@ export function AddMealScreen() {
 
   function handleAdd(grams: number) {
     if (!current || slots.length === 0) return
+    // Stesso gesto ripetuto (doppio tocco, "Riprova") = stesso id = nessuna voce doppia.
+    const id = attempts.idFor(`${day}|${meal}|${current.id}|${grams}`)
     addEntry.mutate(
-      { date: day, mealType: meal, food: current, grams },
+      { id, date: day, mealType: meal, food: current, grams },
       {
-        onSuccess: (entry) =>
-          navigate({ pathname: '/', search: dayParam ? `?${dayParam}` : '' }, { state: { added: { id: entry.id, mealType: meal } } }),
+        onSuccess: (entry) => {
+          attempts.done()
+          navigate({ pathname: '/', search: dayParam ? `?${dayParam}` : '' }, { state: { added: { id: entry.id, mealType: meal } } })
+        },
       },
     )
   }

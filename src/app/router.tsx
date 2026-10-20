@@ -12,12 +12,14 @@ import { TodayScreen } from '../features/today/TodayScreen'
 import { OnboardingScreen } from '../features/profile/OnboardingScreen'
 import { Layout } from './Layout'
 import { ProfileGate } from './ProfileGate'
+import { RouteError } from './RouteError'
 import { ScannerPage, StatsPage, WeightPage } from './lazyPages'
 import { PublicOnly, RequireAuth } from './routeGuards'
 
 export const router = createBrowserRouter([
   {
     path: '/login',
+    errorElement: <RouteError />,
     element: (
       <PublicOnly>
         <LoginScreen />
@@ -26,6 +28,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/registrati',
+    errorElement: <RouteError />,
     element: (
       <PublicOnly>
         <SignupScreen />
@@ -33,9 +36,10 @@ export const router = createBrowserRouter([
     ),
   },
   // Pubblica: leggibile prima di registrarsi e anche da loggati.
-  { path: '/privacy', element: <PrivacyScreen /> },
+  { path: '/privacy', errorElement: <RouteError />, element: <PrivacyScreen /> },
   {
     path: '/benvenuto',
+    errorElement: <RouteError />,
     element: (
       <RequireAuth>
         <OnboardingScreen />
@@ -44,6 +48,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    errorElement: <RouteError />,
     element: (
       <RequireAuth>
         <ProfileGate>
