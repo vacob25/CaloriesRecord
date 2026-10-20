@@ -67,3 +67,20 @@
   border-radius: var(--radius-card);
   transition: outline-color 0.2s;
 }
+
+/*
+ * Cambio di sezione: la nuova schermata compare piano (spenta con "riduci movimento" dal blocco sopra).
+ * Solo opacità, niente `transform`: un transform renderebbe la schermata il "contenitore" degli elementi a posizione
+ * fissa (pannelli, scanner), che durante l'animazione si sposterebbero.
+ */
+@keyframes page-enter {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.page-enter {
+  animation: page-enter 0.28s ease-out;
+}

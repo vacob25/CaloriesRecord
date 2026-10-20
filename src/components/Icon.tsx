@@ -4,7 +4,7 @@ import type { NavIcon } from '../app/navItems'
 const PATHS: Record<NavIcon, string> = {
   today: 'M4 5h16v15H4zM4 9h16M8 3v4M16 3v4',
   foods: 'M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 21V3c-2 1-3 4-3 7s1 4 3 4',
-  add: 'M12 5v14M5 12h14',
+  gym: 'M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11',
   stats: 'M5 20V11M12 20V4M19 20v-6',
   profile: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
 }

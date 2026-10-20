@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import { AddMealScreen } from '../features/add-meal/AddMealScreen'
+import { GymScreen } from '../features/gym/GymScreen'
 import { LoginScreen } from '../features/auth/LoginScreen'
 import { SignupScreen } from '../features/auth/SignupScreen'
 import { PrivacyScreen } from '../features/privacy/PrivacyScreen'
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <TodayScreen /> },
+      { path: 'palestra', element: <GymScreen /> },
       { path: 'cibi', element: <FoodsScreen /> },
       { path: 'cibi/nuovo', element: <FoodFormScreen /> },
       { path: 'cibi/ricette/nuova', element: <RecipeFormScreen /> },

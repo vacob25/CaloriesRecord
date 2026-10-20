@@ -41,7 +41,7 @@ test('Step 5 · aggiungi pasto e modifica delle voci', async () => {
   // ACCETTAZIONE: cibo recente in al massimo 3 tocchi
   await p.waitForTimeout(300);
   let taps = 0;
-  await p.getByRole('link', { name: 'Aggiungi pasto' }).click(); taps++;
+  await p.getByRole('link', { name: /Aggiungi/ }).first().click(); taps++; // dal pasto in Oggi (la barra non ha più il "+")
   await p.getByRole('tab', { name: 'Recenti' }).waitFor();
   check(await p.getByRole('tab', { name: 'Recenti' }).getAttribute('aria-selected') === 'true', 'con recenti si apre "Recenti"');
   await p.getByRole('button', { name: /^Pasta/ }).click(); taps++;
