@@ -217,6 +217,12 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 29 · Sicurezza e privacy (revisione #19, #20, #21, #28; PR f, 19/10/2026)
+Fare: header anti-clickjacking, pagina Privacy legata alle tabelle, migrazione 010 (ADR-082). Passaggio tuo: eseguire la 010 e i controlli RLS sul progetto reale.
+Accettazione:
+- `vercel.json` ha `X-Frame-Options: DENY` e `frame-ancestors 'none'` (un test lo verifica).
+- La pagina Privacy nomina obiettivo, ritmo del cut, sport, nomi dei pasti, contenitori e tipo di giorno; aggiungere una tabella all'esportazione senza descriverla non compila.
+- `rls_two_users.sql` passa sul progetto reale dopo la 010, e `no_session.sh` risponde "Nessun dato senza sessione".
 ## Step 28 · Correzioni ai calcoli (revisione #11, #12, #22, #27, #37-#43; PR e, 19/10/2026)
 Fare: le correzioni di ADR-081 (arrotondamenti, null al posto di Infinity, avviso carboidrati solo in massa, riga settimanale della ricalibrazione, costanti in un solo file) con i test mancanti.
 Accettazione:

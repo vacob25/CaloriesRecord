@@ -46,6 +46,13 @@ begin
   where table_schema = 'public' and grantee = 'anon';
   if n > 0 then raise exception 'FALLITO: ci sono % permessi su tabelle di public per anon', n; end if;
 
+  -- Le funzioni dei trigger non le chiama nessuno via API (DATA_MODEL): né anon né authenticated hanno execute
+  -- (neanche tramite PUBLIC). Revisione #28: la 007 se n'era dimenticata, la migrazione 010 le rimette in regola.
+  select count(*) into n from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
+  where ns.nspname = 'public' and p.prorettype = 'trigger'::regtype
+    and (has_function_privilege('anon', p.oid, 'execute') or has_function_privilege('authenticated', p.oid, 'execute'));
+  if n > 0 then raise exception 'FALLITO: % funzioni di trigger eseguibili da anon o authenticated (migrazione 010?)', n; end if;
+
   -- ADR-021: agli utenti loggati solo select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER).
   select count(*) into n from information_schema.role_table_grants
   where table_schema = 'public' and grantee = 'authenticated'

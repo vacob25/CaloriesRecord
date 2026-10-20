@@ -40,6 +40,9 @@ Dalla migrazione 005 lo script controlla anche: email non invitata rifiutata e i
 
 Dalla migrazione 007 controlla anche `meal_slots` (B non può inserire pasti a nome di A; il trigger che crea i pasti passa dalla RLS). Provato "rompendo" la policy di insert: si ferma con FALLITO. Esito locale 11/10/2026: superato, 11 tabelle con RLS.
 
+**Da fare sul progetto reale (revisione #20, passaggio tuo):** la RLS reale è stata verificata l'ultima volta il 9/10 (migrazioni 002-005). Le migrazioni 006-010 sono provate in locale ma l'esito reale non è registrato. Dopo aver eseguito la 010: (1) SQL Editor → incolla ed esegui `supabase/checks/rls_two_users.sql`, esito atteso `RLS verificata: tutti i controlli superati`; (2) dal terminale `SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=sb_publishable_… bash supabase/checks/no_session.sh`, esito atteso `Nessun dato senza sessione`. Poi scrivi qui l'esito con la data.
+
+Dal 19/10/2026 (ADR-082) lo script controlla anche che nessuna funzione trigger sia eseguibile da anon o authenticated (era il caso di `seed_meal_slots` prima della 010). Provato: fallisce prima della 010, passa dopo.
 Dal 19/10/2026 (ADR-079) controlla anche l'inserimento idempotente dell'app (`INSERT … ON CONFLICT (id) DO NOTHING`): B che passa l'id di una voce di A non scrive niente e non vede niente. Esito locale: superato.
 
 Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. Rieseguito il 9/10/2026 dopo le migrazioni 002-005: superato (vedi Esiti).
@@ -72,7 +75,7 @@ Cosa controlla (a mano sarebbe così):
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.
 - Open Food Facts: chiamate in sola lettura, senza inviare dati personali (solo codice a barre o testo cercato) e senza credenziali (ADR-041). Il conteggio delle richieste sta in `sessionStorage` (solo orari, nessun dato personale).
 - Dipendenze: `npm audit` a ogni step e prima di un deploy. Nessun pacchetto sconosciuto o con pochi download senza averlo detto all'utente.
-- Intestazioni di sicurezza in `vercel.json` per tutte le risposte: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()` (fotocamera solo per l'app stessa, per lo scanner).
+- Intestazioni di sicurezza in `vercel.json` per tutte le risposte: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()` (fotocamera solo per l'app stessa, per lo scanner), `X-Frame-Options: DENY` e `Content-Security-Policy: frame-ancestors 'none'` (l'app non si può incorniciare in un altro sito: clickjacking, revisione #19; un test legge `vercel.json`). Una Content-Security-Policy completa (script, connessioni, immagini) è un lavoro a parte: va provata sull'iPhone (fotocamera, service worker, installazione) prima di pubblicarla.
 - Vercel: variabili d'ambiente solo dalle impostazioni del progetto; le anteprime (preview) non devono usare credenziali di produzione se in futuro si aggiungono segreti.
 
 ## Privacy
