@@ -5,6 +5,10 @@ import { ExerciseFormScreen } from '../features/gym/ExerciseFormScreen'
 import { ExerciseScreen } from '../features/gym/ExerciseScreen'
 import { ExercisesScreen } from '../features/gym/ExercisesScreen'
 import { GymScreen } from '../features/gym/GymScreen'
+import { PlanDayScreen } from '../features/gym/PlanDayScreen'
+import { PlanFormScreen } from '../features/gym/PlanFormScreen'
+import { PlanScreen } from '../features/gym/PlanScreen'
+import { PlansScreen } from '../features/gym/PlansScreen'
 import { LoginScreen } from '../features/auth/LoginScreen'
 import { SignupScreen } from '../features/auth/SignupScreen'
 import { PrivacyScreen } from '../features/privacy/PrivacyScreen'
@@ -63,6 +67,10 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <TodayScreen /> },
       { path: 'palestra', element: <GymScreen /> },
+      { path: 'palestra/schede', element: <PlansScreen /> },
+      { path: 'palestra/schede/nuova', element: <PlanFormScreen /> },
+      { path: 'palestra/schede/:planId', element: <PlanScreen /> },
+      { path: 'palestra/schede/:planId/giorno/:dayId', element: <PlanDayScreen /> },
       { path: 'palestra/esercizi', element: <ExercisesScreen /> },
       { path: 'palestra/esercizi/nuovo', element: <ExerciseFormScreen mode="new" /> },
       { path: 'palestra/esercizi/:key', element: <ExerciseScreen /> },

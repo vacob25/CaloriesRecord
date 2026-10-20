@@ -68,6 +68,7 @@ jobs:
         run: |
           psql -v ON_ERROR_STOP=1 -q -d e2e -f supabase/checks/rls_two_users.sql
           psql -v ON_ERROR_STOP=1 -q -d e2e -f supabase/checks/due_reminders.sql
+          psql -v ON_ERROR_STOP=1 -q -d e2e -f supabase/checks/workout_plans.sql
       - name: PostgREST
         run: |
           docker run -d --name postgrest --network host \

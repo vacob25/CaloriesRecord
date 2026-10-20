@@ -9,7 +9,7 @@ set -u
 case "$SUPABASE_PUBLISHABLE_KEY" in sb_secret_*) echo "Usa la chiave publishable, mai la secret." >&2; exit 2 ;; esac
 
 REST="${SUPABASE_URL%/}/rest/v1"
-TABLES="profiles foods recipe_items meal_entries weight_logs daily_targets tdee_estimates water_entries drink_containers meal_slots push_subscriptions reminder_settings reminder_status reminder_log exercise_catalog user_exercises allowed_emails"
+TABLES="profiles foods recipe_items meal_entries weight_logs daily_targets tdee_estimates water_entries drink_containers meal_slots push_subscriptions reminder_settings reminder_status reminder_log exercise_catalog user_exercises workout_plans workout_days workout_day_exercises allowed_emails"
 failed=0
 
 for t in $TABLES; do
@@ -21,7 +21,7 @@ for t in $TABLES; do
   else echo "FALLITO: $t risposta inattesa $code: $data"; failed=1; fi
 done
 
-for fn in delete_my_account save_recipe hook_before_user_created; do
+for fn in delete_my_account save_recipe hook_before_user_created duplicate_workout_plan duplicate_workout_day; do
   code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$REST/rpc/$fn" -H "apikey: $SUPABASE_PUBLISHABLE_KEY" -H 'Content-Type: application/json' -d '{}')
   # Atteso: 401/403 (permesso negato) o 404 (funzione non esposta). Mai 200/204.
   case "$code" in 401|403|404) echo "OK   rpc/$fn ($code)" ;; *) echo "FALLITO: rpc/$fn senza sessione risponde $code"; failed=1 ;; esac

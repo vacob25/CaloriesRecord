@@ -21,6 +21,9 @@ declare
   a_ingredient uuid;
   a_recipe uuid;
   a_entry uuid;
+  a_plan uuid;
+  a_day uuid;
+  a_custom uuid;
   rows_touched int;
   b_food uuid;
   n int;
@@ -30,7 +33,7 @@ declare
   invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
-  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status', 'user_exercises'];
+  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status', 'user_exercises', 'workout_plans', 'workout_days', 'workout_day_exercises'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
@@ -96,6 +99,13 @@ begin
   if 'user_exercises' = any (tables) then
     insert into public.user_exercises (name, equipment, primary_muscles) values ('Esercizio di A', 'cable', array['lats']);
     insert into public.user_exercises (catalog_id, notes) select id, 'Nota di A' from public.exercise_catalog limit 1;
+  end if;
+  if 'workout_plans' = any (tables) then
+    insert into public.user_exercises (name, equipment, primary_muscles) values ('Esercizio per scheda di A', 'machine', array['chest']) returning id into a_custom;
+    insert into public.workout_plans (name) values ('Scheda di A') returning id into a_plan;
+    insert into public.workout_days (plan_id, name, weekday, position) values (a_plan, 'Push', 1, 0) returning id into a_day;
+    insert into public.workout_day_exercises (day_id, user_exercise_id, sets, reps_min, reps_max, weights_kg) values (a_day, a_custom, 3, 8, 12, array[60.0, 60.0]);
+    insert into public.workout_day_exercises (day_id, catalog_id, position) select a_day, id, 1 from public.exercise_catalog limit 1;
   end if;
 
   foreach t in array tables loop
@@ -229,6 +239,35 @@ begin
     end;
   end if;
 
+  -- Migrazione 016: schede personali. B non può scriverne a nome di A né agganciare le proprie righe a quelle di A.
+  if 'workout_plans' = any (tables) then
+    begin
+      execute format('insert into public.workout_plans (user_id, name) values (%L, %L)', a, 'Rubata');
+      raise exception 'FALLITO: B ha inserito in workout_plans a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      insert into public.workout_days (plan_id, name) values (a_plan, 'Giorno di B nella scheda di A');
+      raise exception 'FALLITO: B ha aggiunto un giorno alla scheda di A';
+    exception when foreign_key_violation then null;
+    end;
+    begin
+      insert into public.workout_day_exercises (day_id, catalog_id) select a_day, id from public.exercise_catalog limit 1;
+      raise exception 'FALLITO: B ha aggiunto un esercizio al giorno di A';
+    exception when foreign_key_violation then null;
+    end;
+    begin
+      perform public.duplicate_workout_plan(a_plan);
+      raise exception 'FALLITO: B ha duplicato la scheda di A';
+    exception when no_data_found then null;
+    end;
+    begin
+      perform public.duplicate_workout_day(a_day);
+      raise exception 'FALLITO: B ha duplicato il giorno di A';
+    exception when no_data_found then null;
+    end;
+  end if;
+
   -- Migrazione 007: i pasti dell'utente (creati dal trigger alla creazione del profilo) sono protetti come il resto.
   if 'meal_slots' = any (tables) then
     begin
@@ -301,6 +340,13 @@ begin
     exception when insufficient_privilege then null; -- atteso: anon non ha permessi
     end;
   end loop;
+  if to_regprocedure('public.duplicate_workout_plan(uuid)') is not null then
+    begin
+      perform public.duplicate_workout_plan(gen_random_uuid());
+      raise exception 'FALLITO: senza login si duplica una scheda';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
   begin
     perform count(*) from public.exercise_catalog;
     raise exception 'FALLITO: senza login si legge il catalogo esercizi';
@@ -401,6 +447,11 @@ begin
     end if;
     if 'user_exercises' = any (tables) then
       insert into public.user_exercises (name, equipment, primary_muscles) values ('Esercizio di B', 'machine', array['chest']);
+    end if;
+    if 'workout_plans' = any (tables) then
+      insert into public.workout_plans (name) values ('Scheda di B') returning id into a_plan;
+      insert into public.workout_days (plan_id, name) values (a_plan, 'Gambe') returning id into a_day;
+      insert into public.workout_day_exercises (day_id, catalog_id) select a_day, id from public.exercise_catalog limit 1;
     end if;
     reset role;
     foreach t in array tables loop

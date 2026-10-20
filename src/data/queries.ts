@@ -21,6 +21,27 @@ import {
 } from './foods'
 import { resolveBarcode } from './barcode'
 import { searchProducts } from './openFoodFacts'
+import {
+  addDay,
+  addPlanExercise,
+  createPlan,
+  deleteDay,
+  deletePlan,
+  duplicateDay,
+  duplicatePlan,
+  getPlan,
+  listPlans,
+  removePlanExercise,
+  renamePlan,
+  reorderDays,
+  reorderPlanExercises,
+  setPlanArchived,
+  updateDay,
+  updatePlanExercise,
+  type NewPlanExercise,
+  type PlanDetail,
+  type PlanExercisePatch,
+} from './workoutPlans'
 import { createCustomExercise, deleteUserExercise, listCatalog, listUserExercises, saveExercise, type ExercisePatch } from './exercises'
 import { listReminderSettings, readReminderHistory, saveReminderSetting } from './reminders'
 import { createMealSlot, deleteMealSlot, listMealSlots, renameMealSlot, reorderMealSlots } from './mealSlots'
@@ -45,6 +66,7 @@ import { DataError } from './dbErrors'
 import { QUERY_STALE_LONG_MS } from '../lib/constants'
 import type { ReminderSetting } from '../lib/reminders'
 import { buildExerciseList, type Exercise } from '../lib/exercises'
+import type { PlanExercise } from '../lib/workoutPlans'
 import { deleteWeight, listWeights, recentWeightsUntil, saveWeight } from './weights'
 
 /**
@@ -70,6 +92,8 @@ export const queryKeys = {
   catalog: ['catalog'] as const,
   exerciseCatalog: ['exercise_catalog'] as const,
   userExercises: ['user_exercises'] as const,
+  plans: ['workout_plans'] as const,
+  plan: (id: string) => ['workout_plans', 'detail', id] as const,
   reminders: ['reminder_settings'] as const,
   reminderHistory: (today: string) => ['reminder_settings', 'history', today] as const,
   /** Statistiche: dipendono da voci, target e pesate (stanno sotto meal_entries per le voci). */
@@ -108,6 +132,64 @@ export function useExerciseActions() {
     }),
     create: useMutation({ mutationFn: createCustomExercise, onSettled: refresh }),
     remove: useMutation({ mutationFn: (id: string) => deleteUserExercise(id), onSettled: refresh }),
+  }
+}
+
+function applyPatch(item: PlanExercise, patch: PlanExercisePatch): PlanExercise {
+  return {
+    ...item,
+    ...(patch.sets !== undefined && { sets: patch.sets }),
+    ...(patch.repsMin !== undefined && { repsMin: patch.repsMin }),
+    ...(patch.repsMax !== undefined && { repsMax: patch.repsMax }),
+    ...(patch.weightsKg !== undefined && { weightsKg: patch.weightsKg }),
+    ...(patch.restSeconds !== undefined && { restSeconds: patch.restSeconds }),
+    ...(patch.note !== undefined && { note: patch.note.trim() === '' ? '' : patch.note }),
+  }
+}
+
+/** Schede di allenamento (Fase 4): elenco, dettaglio di una scheda e tutte le modifiche. Ogni scrittura riscarica le schede. */
+export function useWorkoutPlans() {
+  return useQuery({ queryKey: queryKeys.plans, queryFn: listPlans, staleTime: QUERY_STALE_LONG_MS })
+}
+
+export function useWorkoutPlan(id: string | undefined) {
+  return useQuery({ queryKey: queryKeys.plan(id ?? ''), queryFn: () => getPlan(id ?? ''), enabled: Boolean(id), staleTime: QUERY_STALE_LONG_MS })
+}
+
+export function useWorkoutActions() {
+  const client = useQueryClient()
+  const refresh = () => client.invalidateQueries({ queryKey: queryKeys.plans })
+  return {
+    createPlan: useMutation({ mutationFn: ({ name, days }: { name: string; days: { name: string; weekday: number | null }[] }) => createPlan(name, days), onSettled: refresh }),
+    renamePlan: useMutation({ mutationFn: ({ id, name }: { id: string; name: string }) => renamePlan(id, name), onSettled: refresh }),
+    archivePlan: useMutation({ mutationFn: ({ id, archived }: { id: string; archived: boolean }) => setPlanArchived(id, archived), onSettled: refresh }),
+    deletePlan: useMutation({ mutationFn: (id: string) => deletePlan(id), onSettled: refresh }),
+    duplicatePlan: useMutation({ mutationFn: (id: string) => duplicatePlan(id), onSettled: refresh }),
+    addDay: useMutation({ mutationFn: ({ planId, name, position }: { planId: string; name: string; position: number }) => addDay(planId, name, position), onSettled: refresh }),
+    updateDay: useMutation({ mutationFn: ({ id, patch }: { id: string; patch: { name?: string; weekday?: number | null } }) => updateDay(id, patch), onSettled: refresh }),
+    reorderDays: useMutation({ mutationFn: (ids: readonly string[]) => reorderDays(ids), onSettled: refresh }),
+    deleteDay: useMutation({ mutationFn: (id: string) => deleteDay(id), onSettled: refresh }),
+    duplicateDay: useMutation({ mutationFn: (id: string) => duplicateDay(id), onSettled: refresh }),
+    addExercise: useMutation({ mutationFn: (values: NewPlanExercise) => addPlanExercise(values), onSettled: refresh }),
+    // Ottimistico: due tocchi veloci su "+" o due pesi scritti di fila partono ciascuno dal valore già cambiato dal tocco prima,
+    // senza aspettare che le schede si riscarichino (altrimenti il secondo cancellerebbe il primo).
+    updateExercise: useMutation({
+      mutationFn: ({ id, patch }: { id: string; patch: PlanExercisePatch }) => updatePlanExercise(id, patch),
+      onMutate: async ({ id, patch }) => {
+        await client.cancelQueries({ queryKey: queryKeys.plans })
+        const previous = client.getQueriesData<PlanDetail | null>({ queryKey: ['workout_plans', 'detail'] })
+        client.setQueriesData<PlanDetail | null>({ queryKey: ['workout_plans', 'detail'] }, (detail) =>
+          detail ? { ...detail, items: detail.items.map((item) => (item.id === id ? applyPatch(item, patch) : item)) } : detail,
+        )
+        return { previous }
+      },
+      onError: (_error, _variables, context) => {
+        for (const [key, data] of context?.previous ?? []) client.setQueryData(key, data)
+      },
+      onSettled: refresh,
+    }),
+    reorderExercises: useMutation({ mutationFn: (ids: readonly string[]) => reorderPlanExercises(ids), onSettled: refresh }),
+    removeExercise: useMutation({ mutationFn: (id: string) => removePlanExercise(id), onSettled: refresh }),
   }
 }
 

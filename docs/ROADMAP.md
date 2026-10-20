@@ -217,6 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 36 · Schede di allenamento (Fase 4, ADR-090)
+Fare: migrazione 016; Palestra → Schede: crea (nome, giorni, giorno della settimana facoltativo), esercizi per giorno scelti per gruppo muscolare, serie con − e +, ripetizioni (10 o 8-12), peso per serie, recupero, nota, riordino, duplica giorno e scheda, archivia, elimina. Passaggi tuoi: nessuno (la 016 la applico io). Non c'è nessun tempo di recupero di partenza: serve una fonte (Fase 7).
+Accettazione:
+- Crei una scheda con 3 giorni e in ognuno aggiungi esercizi dal selettore (gruppi apribili); cercando "pulldown" lo trovi.
+- Serie, ripetizioni (anche 8-12), pesi per serie, recupero e nota si salvano; togliendo una serie sparisce il suo peso.
+- Duplica giorno e scheda copiano tutto; archivia toglie la scheda dall'elenco (si rivede con "Mostra anche le archiviate").
+- Un esercizio usato in una scheda non si elimina: l'app dice di nasconderlo.
 ## Step 35 · Libreria esercizi (Fase 3, ADR-089)
 Fare: migrazioni 013 (catalogo globale + esercizi personali) e 014 (718 esercizi); schermate Palestra → Esercizi (ricerca, filtri per gruppo e attrezzo, scheda con note, modifica, nascondi, ripristina, crea ed elimina i tuoi); script di importazione, glossario e report.
 Passaggi tuoi: (fatto: i 5 casi di `docs/REPORT_ESERCIZI_CONTROLLO.md` sono decisi, migrazione 015); rivedere i nomi segnati "Nome da rivedere" quando ti capitano.

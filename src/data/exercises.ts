@@ -1,5 +1,5 @@
 import type { CatalogExercise, EquipmentKey, MuscleKey, UserExercise } from '../lib/exercises'
-import { throwIfError } from './dbErrors'
+import { DataError, throwIfError } from './dbErrors'
 import { getSupabase } from './supabase'
 
 // Libreria esercizi (Fase 3, ADR-089): catalogo globale (sola lettura) e copie/esercizi personali (RLS: solo propri).
@@ -128,5 +128,7 @@ export async function createCustomExercise(values: CustomExerciseValues): Promis
 
 export async function deleteUserExercise(id: string): Promise<void> {
   const { error } = await getSupabase().from('user_exercises').delete().eq('id', id)
+  // 23503 = chiave esterna: l'esercizio è in una scheda (o, più avanti, in una sessione).
+  if (error?.code === '23503') throw new DataError('Questo esercizio è usato in una scheda: puoi nasconderlo invece di eliminarlo.', error.code)
   throwIfError(error)
 }

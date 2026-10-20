@@ -18,5 +18,8 @@ export const PRIVACY_DATA: Record<ExportTable, string> = {
   water_entries: 'L’acqua che bevi, giorno per giorno.',
   drink_containers: 'I tuoi contenitori (per esempio la borraccia) con la loro capacità.',
   user_exercises: 'I tuoi esercizi di palestra: quelli che crei, le modifiche ai nomi e ai gruppi muscolari, le tue note e quali hai nascosto.',
+  workout_plans: 'Le tue schede di allenamento: nome e se sono archiviate.',
+  workout_days: 'I giorni delle tue schede: nome, giorno della settimana e ordine.',
+  workout_day_exercises: 'Gli esercizi di ogni giorno della scheda: serie, ripetizioni, pesi per serie, recupero e note.',
   reminder_settings: 'I promemoria dei pasti: quali sono attivi e a che ora (nei giorni feriali e nel weekend).',
 }
