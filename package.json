@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "lint": "oxlint --deny-warnings",
     "typecheck": "tsc -b",
-    "build:e2e": "VITE_SUPABASE_URL=https://progetto-finto.supabase.co VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_finta vite build --outDir dist-e2e --emptyOutDir",
+    "build:e2e": "VITE_SUPABASE_URL=https://progetto-finto.supabase.co VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_finta VITE_VAPID_PUBLIC_KEY=BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB vite build --outDir dist-e2e --emptyOutDir",
     "test:e2e": "playwright test -c tests/e2e/playwright.config.ts"
   },
   "dependencies": {

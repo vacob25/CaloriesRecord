@@ -40,6 +40,10 @@ export function PrivacyScreen() {
           <li key={table}>{text}</li>
         ))}
         <li>Consenso: versione di questa informativa e data in cui l’hai accettata.</li>
+        <li>
+          Notifiche (solo se le attivi, per dispositivo): l’indirizzo tecnico che il tuo telefono dà all’app per riceverle. Non contiene dati
+          sulla salute.
+        </li>
       </ul>
 
       <h2 className={h2}>Perché</h2>
@@ -53,6 +57,10 @@ export function PrivacyScreen() {
       <ul className={`${p} list-disc space-y-1 pl-5`}>
         <li>Database e account: Supabase, server nella regione di Irlanda (eu-west-1, UE).</li>
         <li>Il sito dell’app: Vercel (serve solo i file dell’app, non i tuoi dati).</li>
+        <li>
+          Notifiche: passano dai server di Apple o Google. Il testo è sempre generico (mai peso, calorie o cibi), perché quei
+          server lo vedono.
+        </li>
         <li>Email: l’app non ne invia. Se in futuro servirà, passeranno da Resend.</li>
         <li>
           Ricerca prodotti: a Open Food Facts arrivano solo il codice a barre o il testo che cerchi, mai i tuoi dati.

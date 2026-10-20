@@ -111,6 +111,9 @@ Il trigger `profiles_seed_meal_slots` crea i cinque pasti di partenza alla creaz
 ### allowed_emails (migrazione 005)
 `email text` chiave primaria (`check`: minuscola, senza spazi ai lati, forma di un'email), `note text`, `created_at`. Nessun `user_id`: non è un dato di un utente ma l'elenco degli invitati. RLS attiva, `revoke all … from anon, authenticated, public`, nessuna policy per loro: dall'app non si legge né si scrive. Solo `supabase_auth_admin` ha `select` (con una policy), per la hook. Le email si aggiungono dal SQL Editor.
 
+### push_subscriptions (migrazione 011, Fase 1 notifiche, ADR-086)
+Un indirizzo tecnico per ogni dispositivo con le notifiche attive. `id uuid`, `user_id` (default `auth.uid()`, cascade), `endpoint text` (https, 20-2048), `p256dh_key text`, `auth_secret text`, `created_at`; unico `(user_id, endpoint)`. RLS: select/insert/update/delete solo delle proprie righe. Non sono dati di salute e non si esportano (`NOT_EXPORTED_TABLES`). Da sole non bastano per inviare: serve la chiave VAPID privata, solo nei segreti di Supabase.
+
 ## Funzioni
 - `save_recipe(p_recipe_id, p_name, p_cooked_weight_g, p_kcal_100g, p_protein_100g, p_carbs_100g, p_fat_100g, p_items)` (migrazione 002, ADR-029): crea o aggiorna una ricetta e sostituisce i suoi `recipe_items` in una sola transazione; almeno un ingrediente. `security invoker` (vale la RLS), `set search_path = ''`, `revoke execute … from public, anon` e `grant execute … to authenticated`. I valori per 100 g li calcola l'app.
 - `hook_before_user_created(event jsonb)` (migrazione 005, ADR-064): auth hook "Before User Created". Legge `event->'user'->>'email'`, la confronta in minuscolo con `allowed_emails`: `{}` = crea l'utente, `{"error": {"http_code": 403, "message": …}}` = rifiuta. Non security definer: execute solo a `supabase_auth_admin` (revocato a public, anon, authenticated), `set search_path = ''`.

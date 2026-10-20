@@ -8,7 +8,7 @@ import { expect, type BrowserContext, type Page } from '@playwright/test'
 
 /** Uguale al `PGRST_JWT_SECRET` con cui si avvia PostgREST nei test (vedi tests/e2e/README.md). Non è un segreto. */
 export const JWT_SECRET = process.env.E2E_JWT_SECRET ?? 'segreto-solo-per-i-test-locali-0123456789'
-const SUPABASE_URL = 'https://progetto-finto.supabase.co'
+export const SUPABASE_URL = 'https://progetto-finto.supabase.co'
 const REST_URL = process.env.E2E_REST_URL ?? 'http://localhost:3001'
 export const APP_URL = 'http://localhost:4180'
 export const PASSWORD = 'password-di-prova'
@@ -173,7 +173,7 @@ export async function login(page: Page, who = 'a'): Promise<void> {
  */
 export function resetDatabase(): void {
   sql(`truncate public.water_entries, public.drink_containers, public.meal_entries, public.recipe_items, public.foods,
-    public.daily_targets, public.weight_logs, public.tdee_estimates, public.meal_slots, public.profiles, public.allowed_emails`)
+    public.daily_targets, public.weight_logs, public.tdee_estimates, public.meal_slots, public.profiles, public.allowed_emails, public.push_subscriptions`)
   sql(`delete from auth.users where id not in ('${USERS.a!.id}', '${USERS.b!.id}')`)
   sql(`insert into auth.users (id, email, aud, role) values
     ('${USERS.a!.id}', ${lit(USERS.a!.email)}, 'authenticated', 'authenticated'),
