@@ -217,6 +217,15 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 33 · Promemoria dei pasti (Fase 2, ADR-087)
+Fare: migrazione 012; Edge Function `send-reminders` e cron ogni 5 minuti; impostazioni nel Profilo (per ogni pasto: attivo, orario, orario diverso nel weekend); proposta di sospendere dopo 5 giorni; pasto registrato = niente promemoria.
+Passaggi tuoi: eseguire la 012 e `supabase/setup/reminders_cron.sql` (con l'indirizzo del progetto) nel SQL Editor; pubblicare la funzione; eseguire `rls_two_users.sql`.
+Accettazione:
+- Sull'iPhone con le notifiche attive, un pasto con orario tra pochi minuti fa arrivare "È ora di registrare il pasto."; toccarla apre l'app.
+- Se il pasto è già registrato prima dell'orario, la notifica non arriva.
+- Con un orario diverso nel weekend, sabato e domenica arriva a quell'ora.
+- Con il promemoria acceso e il pasto non registrato per 5 giorni di fila compare la proposta di sospendere; "Continua" la nasconde per altri 5 giorni.
+- Nessuna notifica ripetuta nello stesso giorno per lo stesso pasto.
 ## Step 32 · Notifiche: push di prova (Fase 1, ADR-086)
 Fare: tabella `push_subscriptions` (migrazione 011); sezione Notifiche nel Profilo (attiva, prova, disattiva); gestori push nel service worker; Edge Function `send-test-push` senza `service_role`. Nessun promemoria automatico (Fase 2, solo dopo il tuo OK).
 Accettazione:

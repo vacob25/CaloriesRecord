@@ -14,12 +14,15 @@ export const EXPORT_TABLES = [
   'tdee_estimates',
   'water_entries',
   'drink_containers',
+  'reminder_settings',
 ] as const
 
 /** Tabelle che NON sono dati dell'utente (non si esportano), con il motivo. */
 export const NOT_EXPORTED_TABLES: Record<string, string> = {
   allowed_emails: 'elenco degli invitati: lo gestisce l’amministratore, l’app non può leggerlo',
   push_subscriptions: 'indirizzi tecnici dei dispositivi per le notifiche, non dati dell’utente: si ricreano riattivando le notifiche',
+  reminder_status: 'registro tecnico dei pasti già registrati, serve solo a non mandare promemoria inutili',
+  reminder_log: 'registro tecnico dei promemoria già partiti, lo scrive solo il server',
 }
 
 export type ExportTable = (typeof EXPORT_TABLES)[number]

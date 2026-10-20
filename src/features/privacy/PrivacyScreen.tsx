@@ -42,7 +42,8 @@ export function PrivacyScreen() {
         <li>Consenso: versione di questa informativa e data in cui l’hai accettata.</li>
         <li>
           Notifiche (solo se le attivi, per dispositivo): l’indirizzo tecnico che il tuo telefono dà all’app per riceverle. Non contiene dati
-          sulla salute.
+          sulla salute. Con i promemoria, il database tiene anche il registro tecnico dei pasti già registrati e dei promemoria già partiti
+          (solo giorno e pasto, per non mandarne di inutili).
         </li>
       </ul>
 

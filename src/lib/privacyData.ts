@@ -17,4 +17,5 @@ export const PRIVACY_DATA: Record<ExportTable, string> = {
   tdee_estimates: 'Le stime settimanali della ricalibrazione e le tue scelte (accettata o rifiutata).',
   water_entries: 'L’acqua che bevi, giorno per giorno.',
   drink_containers: 'I tuoi contenitori (per esempio la borraccia) con la loro capacità.',
+  reminder_settings: 'I promemoria dei pasti: quali sono attivi e a che ora (nei giorni feriali e nel weekend).',
 }

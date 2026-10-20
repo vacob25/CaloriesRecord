@@ -74,7 +74,15 @@ Cosa controlla (a mano sarebbe così):
 - Chiave VAPID **pubblica**: variabile `VITE_VAPID_PUBLIC_KEY` (pubblica per natura). Chiave **privata** e `VAPID_SUBJECT` (`mailto:`): solo nei segreti di Supabase (`supabase secrets set`), mai nel repo né su Vercel.
 - La Edge Function `send-test-push` verifica il JWT di chi chiama (`verify_jwt` + `withSupabase({ auth: 'user' })`) e legge le subscription con il client dell'utente, quindi con la RLS: vede e usa solo le proprie. **Nessuna `service_role`** in questa fase (si valuta solo per i promemoria da cron, Fase 2).
 - Nei log solo conteggi e codici di stato, mai indirizzi, chiavi o testi. Il testo della notifica è generico perché passa dai server di Apple/Google.
+- I segreti si inseriscono **incollando il testo**, mai copiando da uno screenshot (il riconoscimento testo mette lettere cirilliche e a capo: successo il 20/10/2026 a `VITE_VAPID_PUBLIC_KEY` su Vercel e a `VAPID_PUBLIC_KEY` su Supabase). La funzione controlla i tre segreti all'avvio (`_shared/vapidConfig.ts`: lunghezza, caratteri, coppia pubblica/privata) e, se qualcosa non va, risponde 503 e scrive nei log **quale** segreto e perché, mai il valore.
 - Se la chiave privata trapela: generarne una nuova e riattivare le notifiche sui dispositivi (le subscription legate alla vecchia chiave smettono di funzionare).
+
+## Promemoria dei pasti (Fase 2, ADR-087): qui c'è una chiave di servizio
+- La Edge Function `send-reminders` usa la chiave di servizio, perché deve leggere le subscription di tutti gli utenti. La chiave è la variabile che Supabase imposta da solo nella funzione (`SUPABASE_SECRET_KEYS`): non è nel repo, non è su Vercel, non è nell'app (regola 2 di CLAUDE.md invariata per il frontend).
+- Chi può chiamarla: solo chi conosce il segreto del cron. `verify_jwt` è spento (il cron non ha un JWT utente) e il controllo sta nel codice: l'intestazione `x-cron-secret` è confrontata dal database con `verify_cron_secret`, che legge il segreto da Vault; senza o sbagliato → 401 prima di qualsiasi lettura. Il segreto lo genera il database (`supabase/setup/reminders_cron.sql`), non passa mai da chat o repo.
+- `due_reminders` e `verify_cron_secret` sono eseguibili solo da `service_role` (controllato da `supabase/checks/due_reminders.sql`, che gira anche in CI); `reminder_log` è in sola lettura per l'utente. `supabase/checks/rls_two_users.sql` copre le nuove tabelle e gira in CI sul database di prova.
+- Il codice filtra sempre per `user_id` quando legge o cancella subscription; nei log solo conteggi e codici di stato.
+- Se il segreto del cron trapela: `vault.update_secret` con un nuovo valore e rieseguire lo script del cron.
 
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.

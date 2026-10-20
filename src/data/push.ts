@@ -1,3 +1,5 @@
+import { FunctionsHttpError } from '@supabase/supabase-js'
+
 import { readVapidPublicKey, parseSubscription, pushState, testResultSchema, urlBase64ToUint8Array, type PushState, type TestResult } from '../lib/push'
 import { DataError } from './dbErrors'
 import { getSupabase } from './supabase'
@@ -97,7 +99,13 @@ export async function removeThisDeviceSubscription(): Promise<void> {
 /** Chiede alla Edge Function di mandare la notifica di prova ai dispositivi dell'utente. */
 export async function sendTestPush(): Promise<TestResult> {
   const { data, error } = await getSupabase().functions.invoke('send-test-push', { method: 'POST' })
-  if (error) throw new DataError('Non sono riuscito a mandare la prova. Controlla la connessione e riprova.')
+  if (error) {
+    // 503 = la funzione dice che i segreti VAPID sul server mancano o non sono validi: la rete non c'entra.
+    if (error instanceof FunctionsHttpError && error.context.status === 503) {
+      throw new DataError('Le notifiche non sono configurate bene sul server (chiavi mancanti o non valide). Avvisa chi gestisce l’app.')
+    }
+    throw new DataError('Non sono riuscito a mandare la prova. Controlla la connessione e riprova.')
+  }
   const parsed = testResultSchema.safeParse(data)
   if (!parsed.success) throw new DataError('Risposta inattesa dal server. Riprova.')
   return parsed.data

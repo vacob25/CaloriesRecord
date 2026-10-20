@@ -13,19 +13,19 @@ import { withSupabase } from 'npm:@supabase/server@1.9.2'
 import webpush from 'npm:web-push@3.6.7'
 
 import { sendTestPush, type StoredSubscription } from '../_shared/sendTestPush.ts'
+import { checkVapidConfig } from '../_shared/vapidConfig.ts'
 
-const publicKey = Deno.env.get('VAPID_PUBLIC_KEY')
-const privateKey = Deno.env.get('VAPID_PRIVATE_KEY')
-const subject = Deno.env.get('VAPID_SUBJECT')
-const configured = Boolean(publicKey && privateKey && subject)
-if (configured) webpush.setVapidDetails(subject!, publicKey!, privateKey!)
+const config = checkVapidConfig({
+  publicKey: Deno.env.get('VAPID_PUBLIC_KEY'),
+  privateKey: Deno.env.get('VAPID_PRIVATE_KEY'),
+  subject: Deno.env.get('VAPID_SUBJECT'),
+})
+if (config.ok) webpush.setVapidDetails(config.subject, config.publicKey, config.privateKey)
+else console.error(`push: segreti VAPID non validi: ${config.problems.join(' | ')}`) // solo cosa non va, mai i valori
 
 export default {
   fetch: withSupabase({ auth: 'user' }, async (_req, ctx) => {
-    if (!configured) {
-      console.error('push: chiavi VAPID non impostate nei segreti')
-      return Response.json({ error: 'not_configured' }, { status: 503 })
-    }
+    if (!config.ok) return Response.json({ error: 'not_configured', problems: config.problems }, { status: 503 })
 
     const result = await sendTestPush({
       listSubscriptions: async () => {

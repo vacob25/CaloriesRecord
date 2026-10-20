@@ -5,6 +5,7 @@ import { cardClass, primaryButtonClass, secondaryButtonClass } from '../../compo
 import { errorMessage } from '../../data/dbErrors'
 import { disablePush, enablePush, readPushState, sendTestPush } from '../../data/push'
 import { testResultMessage, type PushState } from '../../lib/push'
+import { RemindersSettings } from './RemindersSettings'
 
 const stateQueryKey = ['push-state'] as const
 
@@ -15,7 +16,7 @@ const EXPLANATION: Partial<Record<PushState, string>> = {
   denied: 'Hai negato il permesso. Per riattivarlo: Impostazioni di iPhone → Notifiche → Calorie.',
 }
 
-/** Notifiche (Fase 1, ADR-086): attivazione per dispositivo e notifica di prova. Per ora nessun promemoria automatico. */
+/** Notifiche: attivazione per dispositivo e notifica di prova (Fase 1, ADR-086), promemoria dei pasti (Fase 2, ADR-087). */
 export function NotificationsSection() {
   const client = useQueryClient()
   const state = useQuery({ queryKey: stateQueryKey, queryFn: readPushState, staleTime: 0, gcTime: 0 })
@@ -51,6 +52,7 @@ export function NotificationsSection() {
           <button type="button" onClick={() => disable.mutate()} disabled={disable.isPending} className={`${secondaryButtonClass} mt-3`}>
             {disable.isPending ? 'Disattivazione…' : 'Disattiva'}
           </button>
+          <RemindersSettings />
         </>
       )}
       {enable.isError && <FormMessage kind="error">{errorMessage(enable.error)}</FormMessage>}
