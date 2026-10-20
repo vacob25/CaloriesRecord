@@ -95,6 +95,9 @@ Cosa controlla (a mano sarebbe così):
 - `supabase/checks/workout_plans.sql` (anche in CI) prova i vincoli (pesi, ripetizioni, un solo riferimento per esercizio), la duplicazione e che un esercizio usato non si cancelli.
 - Nessun dato di allenamento nelle notifiche (le notifiche di allenamento sono Fase 8).
 
+## Sessioni di allenamento (Fase 5a, ADR-091)
+`workout_sessions`, `workout_session_exercises` e `workout_sets` hanno `user_id` e RLS a 4 policy; le chiavi composte impediscono di agganciare esercizi o serie alla sessione di un altro (provato in `rls_two_users.sql`). `last_sets` è `security invoker` e non è chiamabile senza login (`no_session.sh`). La funzione-trigger `mark_workout_reminder_done` non è chiamabile dai client. I dati sono personali: si esportano e si cancellano con l'account.
+
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.

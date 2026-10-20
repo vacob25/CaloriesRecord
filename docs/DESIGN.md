@@ -116,6 +116,9 @@ Pagina pubblica, leggibile anche senza login (`/privacy`): avviso in testa "Test
 ### Profilo · I tuoi dati (step 18)
 "Esporta i miei dati" apre il foglio di condivisione di iOS con il file JSON; se non disponibile mostra il testo con "Copia tutto". "Elimina account": spiegazione, campo "Scrivi ELIMINA per confermare", pulsante distruttivo "Elimina account e dati" attivo solo con la parola esatta.
 
+### Palestra · Allenamento (Fase 5a)
+Pulsante principale "Inizia allenamento" / "Riprendi allenamento: <giorno>". Sessione: gruppo "Tempi" (durata, ultimo recupero), riga "Fatti · saltati · da fare · serie di lavoro", un riquadro per esercizio con stato Da fare/Fatto/Saltato (`aria-pressed`), righe serie con kg e rip. (salvati all'uscita dal campo), spunta ✓, tipo, "Togli", "+ Aggiungi serie", nota. "Termina allenamento" apre una conferma che elenca gli esercizi saltati; "Scarta" richiede due tocchi. Sessione conclusa: riepilogo in sola lettura.
+
 ## Stati comuni
 Caricamento = scheletro con la stessa forma del contenuto. Errore = messaggio + "Riprova". Vuoto = frase + azione. Offline = banner "Serve la connessione". L'avviso "Nuova versione disponibile" (Aggiorna / Dopo) sta sopra l'avviso "Aggiunto · Annulla": i due non si sovrappongono mai.
 

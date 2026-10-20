@@ -19,6 +19,9 @@ export const EXPORT_TABLES = [
   'workout_plans',
   'workout_days',
   'workout_day_exercises',
+  'workout_sessions',
+  'workout_session_exercises',
+  'workout_sets',
 ] as const
 
 /** Tabelle che NON sono dati dell'utente (non si esportano), con il motivo. */

@@ -21,5 +21,8 @@ export const PRIVACY_DATA: Record<ExportTable, string> = {
   workout_plans: 'Le tue schede di allenamento: nome e se sono archiviate.',
   workout_days: 'I giorni delle tue schede: nome, giorno della settimana e ordine.',
   workout_day_exercises: 'Gli esercizi di ogni giorno della scheda: serie, ripetizioni, pesi per serie, recupero e note.',
+  workout_sessions: 'I tuoi allenamenti: giorno, orario di inizio e fine, nome della scheda e del giorno, nota.',
+  workout_session_exercises: 'Gli esercizi di ogni allenamento (nome, attrezzo e gruppi muscolari di quel momento), se fatti, saltati o da fare, e le note.',
+  workout_sets: 'Le serie di ogni allenamento: tipo, peso, ripetizioni e se spuntate.',
   reminder_settings: 'I promemoria dei pasti: quali sono attivi e a che ora (nei giorni feriali e nel weekend).',
 }

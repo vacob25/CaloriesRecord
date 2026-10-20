@@ -5,6 +5,9 @@ import { ExerciseFormScreen } from '../features/gym/ExerciseFormScreen'
 import { ExerciseScreen } from '../features/gym/ExerciseScreen'
 import { ExercisesScreen } from '../features/gym/ExercisesScreen'
 import { GymScreen } from '../features/gym/GymScreen'
+import { SessionScreen } from '../features/gym/SessionScreen'
+import { SessionsScreen } from '../features/gym/SessionsScreen'
+import { StartSessionScreen } from '../features/gym/StartSessionScreen'
 import { PlanDayScreen } from '../features/gym/PlanDayScreen'
 import { PlanFormScreen } from '../features/gym/PlanFormScreen'
 import { PlanScreen } from '../features/gym/PlanScreen'
@@ -67,6 +70,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <TodayScreen /> },
       { path: 'palestra', element: <GymScreen /> },
+      { path: 'palestra/allenamento/nuovo', element: <StartSessionScreen /> },
+      { path: 'palestra/allenamento/:id', element: <SessionScreen /> },
+      { path: 'palestra/allenamenti', element: <SessionsScreen /> },
       { path: 'palestra/schede', element: <PlansScreen /> },
       { path: 'palestra/schede/nuova', element: <PlanFormScreen /> },
       { path: 'palestra/schede/:planId', element: <PlanScreen /> },
