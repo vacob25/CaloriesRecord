@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { EQUIPMENT_KEYS, EQUIPMENT_LABEL, MUSCLE_KEYS, MUSCLE_LABEL } from '../../src/lib/exercises'
 // @ts-expect-error: modulo .mjs senza tipi (è uno script, non fa parte dell'app)
-import { EQUIPMENT, excludeReason, mapEquipment, mapMuscles, MUSCLE_MAP, MUSCLES, translateName } from './lib.mjs'
+import { EQUIPMENT, applyOverride, excludeReason, mapEquipment, mapMuscles, MUSCLE_MAP, MUSCLES, translateName } from './lib.mjs'
 
 describe('vocabolari uguali tra script e app', () => {
   it('muscoli e attrezzi coincidono (chiavi ed etichette)', () => {
@@ -64,5 +64,21 @@ describe('translateName', () => {
   it('non inventa: nome vuoto o solo articoli torna com’era e va da rivedere', () => {
     expect(translateName('The').review).toBe(true)
     expect(translateName('The').it).toBe('The')
+  })
+})
+
+describe('applyOverride', () => {
+  const row = { primary: ['hamstrings'], secondary: ['calves', 'glutes', 'quadriceps'], equipment: 'barbell' }
+  it('nuovo principale: il vecchio principale e i secondari restano secondari, senza doppioni', () => {
+    const out = applyOverride(row, { primary: 'glutes', secondaryFirst: ['hamstrings', 'quadriceps', 'traps'] })
+    expect(out.primary).toEqual(['glutes'])
+    expect(out.secondary).toEqual(['hamstrings', 'quadriceps', 'traps', 'calves'])
+    expect(out.equipment).toBe('barbell')
+  })
+  it('solo attrezzo: i muscoli non cambiano', () => {
+    expect(applyOverride(row, { equipment: 'ez_bar' })).toEqual({ ...row, equipment: 'ez_bar' })
+  })
+  it('senza correzione restituisce la riga com\u2019è', () => {
+    expect(applyOverride(row, undefined)).toBe(row)
   })
 })

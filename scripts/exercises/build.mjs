@@ -3,6 +3,7 @@
 // Scarica prima il file da https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json
 // (licenza Unlicense, pubblico dominio). Scrive:
 //   supabase/migrations/014_exercise_catalog_seed.sql   i dati, pronti da eseguire (idempotenti)
+//   supabase/migrations/015_exercise_catalog_corrections.sql   le correzioni decise dopo il controllo incrociato (overrides.mjs)
 //   docs/REPORT_ESERCIZI.md                             scartati e nomi da rivedere
 //   docs/GLOSSARIO_ESERCIZI.md                          il glossario usato per tradurre i nomi
 // Dopo l'importazione l'app non dipende più dalla rete esterna: i dati stanno nel nostro database.
@@ -10,7 +11,8 @@ import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync } from 'node:fs'
 
 import { PHRASES, TOKENS } from './glossary.mjs'
-import { EQUIPMENT, excludeReason, mapEquipment, mapMuscles, translateName, checkSourceId } from './lib.mjs'
+import { OVERRIDES } from './overrides.mjs'
+import { EQUIPMENT, applyOverride, excludeReason, mapEquipment, mapMuscles, translateName, checkSourceId } from './lib.mjs'
 
 const [, , input, flag] = process.argv
 if (!input) throw new Error('uso: node scripts/exercises/build.mjs <exercises.json> [--check]')
@@ -77,6 +79,31 @@ on conflict (source, source_id) do update set
   category = excluded.category, mechanic = excluded.mechanic, force = excluded.force, level = excluded.level;
 `
 if (flag !== '--check') writeFileSync(new URL('../../supabase/migrations/014_exercise_catalog_seed.sql', import.meta.url), sql)
+
+// Correzioni: migrazione separata, perché la 014 è già stata eseguita sul database vero (le migrazioni non si riscrivono).
+const corrections = Object.entries(OVERRIDES).map(([sourceId, override]) => {
+  const row = kept.find((e) => e.sourceId === sourceId)
+  if (!row) throw new Error(`correzione per un esercizio che non c'è nel catalogo: ${sourceId}`)
+  return { sourceId, why: override.why, after: applyOverride(row, override) }
+})
+const fix = `-- Migrazione 015 (Fase 3, ADR-089): correzioni al catalogo decise da Riccardo il 20/10/2026 dopo il controllo incrociato
+-- (docs/REPORT_ESERCIZI_CONTROLLO.md). GENERATA da scripts/exercises/build.mjs a partire da scripts/exercises/overrides.mjs.
+-- Convenzione: il primo muscolo è il principale, gli altri secondari. Ogni UPDATE deve toccare esattamente una riga.
+do $$
+declare n int;
+begin
+${corrections
+  .map(
+    (c) => `  -- ${c.sourceId}: ${c.why}
+  update public.exercise_catalog set primary_muscles = ${array(c.after.primary)}, secondary_muscles = ${array(c.after.secondary)}, equipment = ${quote(c.after.equipment)}
+    where source = 'free-exercise-db' and source_id = ${quote(c.sourceId)};
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'correzione fallita per ${c.sourceId}: % righe', n; end if;`,
+  )
+  .join('\n')}
+end $$;
+`
+if (flag !== '--check') writeFileSync(new URL('../../supabase/migrations/015_exercise_catalog_corrections.sql', import.meta.url), fix)
 
 // ── Report ──────────────────────────────────────────────────────────────
 const review = kept.filter((e) => e.review)
