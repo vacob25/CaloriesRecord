@@ -1,3 +1,4 @@
+import { WEIGHT_STABLE_KG } from './constants'
 import { formatNumber } from './numbers'
 import type { WeightPoint } from './weight'
 import { averageChange } from './weight'
@@ -11,6 +12,6 @@ export function weightSummary(points: readonly WeightPoint[]): string {
   }
   const weeks = change.days / 7
   const span = weeks >= 1.5 ? `${formatNumber(weeks, 0)} settimane` : `${formatNumber(change.days, 0)} giorni`
-  if (Math.abs(change.kg) < 0.05) return `Media stabile in ${span}.`
+  if (Math.abs(change.kg) < WEIGHT_STABLE_KG) return `Media stabile in ${span}.`
   return `Media in ${change.kg > 0 ? 'salita' : 'discesa'} di ${formatNumber(Math.abs(change.kg), 1)} kg in ${span}.`
 }

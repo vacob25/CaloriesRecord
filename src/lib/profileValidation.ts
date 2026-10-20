@@ -17,12 +17,14 @@ type Result<T> = { ok: true; value: T } | { ok: false; message: string }
 
 /** Peso 30-250 kg (§9), un decimale. */
 export function validateWeight(input: string): Result<number> {
-  const value = parseDecimal(input)
-  if (value === null) return { ok: false, message: 'Inserisci il peso in kg.' }
+  const parsed = parseDecimal(input)
+  if (parsed === null) return { ok: false, message: 'Inserisci il peso in kg.' }
+  // Si arrotonda prima di controllare, come per i grammi: "250,04" diventa 250,0 e va bene, "250,06" no.
+  const value = round(parsed, 1)
   if (value < WEIGHT_MIN_KG || value > WEIGHT_MAX_KG) {
     return { ok: false, message: `Il peso deve essere tra ${WEIGHT_MIN_KG} e ${WEIGHT_MAX_KG} kg.` }
   }
-  return { ok: true, value: round(value, 1) }
+  return { ok: true, value }
 }
 
 export interface PersonalFormInput {

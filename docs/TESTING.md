@@ -171,6 +171,7 @@ Voci fittizie, mai valori veri del catalogo.
 ## Test end-to-end e CI (step 25, ADR-078)
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
+- `tests/e2e/step10-ricalibrazione.e2e.ts`: anche la riga "nessuna" di inizio settimana che diventa proposta (ADR-081, #11); l'attesa del +5% è "multiplo di 10 sotto il tetto".
 - `tests/e2e/step27-sposta-su-giu.e2e.ts` (ADR-080): riordino dei pasti con i pulsanti "Sposta su/giù" da tastiera, focus che resta, annuncio a voce, pulsante ≥ 44 px con il focus.
 - `tests/e2e/step26-salvataggi-rete.e2e.ts` (ADR-079): risposta persa + "Riprova" = una sola voce; salvataggio senza rete (banner, poi parte da solo); "Esci" con il logout che fallisce; schermata che non si carica; ricaricamento del profilo fallito in background (orologio simulato). Ogni test fallisce sul codice precedente alla PR, tranne "Esci", che resta come protezione.
 - CI (`.github/workflows/ci.yml`) su ogni PR e su `main`: typecheck, lint, test unitari, build e test end-to-end. Nessun segreto e nessun accesso al progetto reale.

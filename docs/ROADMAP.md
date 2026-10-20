@@ -217,6 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 28 · Correzioni ai calcoli (revisione #11, #12, #22, #27, #37-#43; PR e, 19/10/2026)
+Fare: le correzioni di ADR-081 (arrotondamenti, null al posto di Infinity, avviso carboidrati solo in massa, riga settimanale della ricalibrazione, costanti in un solo file) con i test mancanti.
+Accettazione:
+- La proposta di ricalibrazione non supera mai il ±5% del mantenimento attuale.
+- Se lunedì mancavano i dati e poi arriva una proposta, la scheda del Profilo la mostra (una sola riga a settimana).
+- In definizione l'avviso "carboidrati sotto 3 g/kg" non compare.
+- Restano da decidere #13 e #14 (vedi Punti aperti di DECISIONS).
 ## Step 27 · Riordino dei pasti senza trascinare (revisione #10; PR d, 19/10/2026)
 Fare: pulsanti "Sposta su" e "Sposta giù" per ogni pasto, con annuncio a voce (ADR-080).
 Accettazione:

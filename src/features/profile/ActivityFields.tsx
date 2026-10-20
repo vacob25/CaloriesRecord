@@ -1,4 +1,4 @@
-import { RECAL_MIN_DAYS } from '../../lib/constants'
+import { RECAL_MIN_WEEKS } from '../../lib/constants'
 import { ACTIVITY_LEVELS, type ActivityLevelKey } from '../../lib/goals'
 
 interface ActivityFieldsProps {
@@ -27,7 +27,7 @@ export function ActivityFields({ value, onChange, error }: ActivityFieldsProps) 
         ))}
       </div>
       <p className="mt-2 text-[13px] text-muted">
-        Nel dubbio scegli il livello più basso: dopo circa {Math.round(RECAL_MIN_DAYS / 7)} settimane la ricalibrazione lo corregge con i tuoi
+        Nel dubbio scegli il livello più basso: dopo circa {RECAL_MIN_WEEKS} settimane la ricalibrazione lo corregge con i tuoi
         dati.
       </p>
       {error && <p className="mt-1 text-[13px] font-semibold">⚠︎ {error}</p>}
