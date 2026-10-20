@@ -81,7 +81,7 @@ test('Step 18 · tester invitati, consenso, esporta, elimina', async () => {
   await box.waitFor();
   const exported = JSON.parse(await box.inputValue());
   check(exported.account === NEW && exported.tabelle.weight_logs.length === 1 && exported.tabelle.profiles.length === 1 && exported.tabelle.meal_entries.length === 0, 'ESPORTA: JSON con i soli dati del nuovo utente (1 profilo, 1 pesata, 0 pasti)');
-  check(Object.keys(exported.tabelle).length === 15, 'ESPORTA: tutte le 15 tabelle');
+  check(Object.keys(exported.tabelle).length === 18, 'ESPORTA: tutte le 18 tabelle');
 
   // Logout: niente dati del vecchio utente nel browser
   await p.getByRole('button', { name: 'Esci' }).click();

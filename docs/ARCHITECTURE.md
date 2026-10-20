@@ -111,6 +111,7 @@ Ogni schermata gestisce tre stati: caricamento (scheletro), errore (messaggio + 
 
 ### Schede di allenamento (Fase 4, ADR-090)
 `lib/workoutPlans.ts` (pura: validazione, ripetizioni "10" o "8-12", pesi, recupero "1:30", riordino, esercizi divisi per gruppo muscolare, esercizio "effettivo" di una riga), `data/workoutPlans.ts`, hook `useWorkoutPlans/usePlan/useWorkoutActions` in `data/queries.ts` (le modifiche agli esercizi di scheda sono ottimistiche). Schermate in `features/gym/`: `PlansScreen`, `PlanFormScreen`, `PlanScreen`, `PlanDayScreen` (con `ExercisePicker` e `PlanExerciseCard`). Percorsi: `/palestra/schede`, `/palestra/schede/nuova`, `/palestra/schede/:planId`, `/palestra/schede/:planId/giorno/:dayId`.
+`lib/workoutSession.ts` (pura: costruzione della sessione dalla scheda, precompilazione "ultima volta", funzioni che modificano serie/esercizi, cronometri da timestamp, riepilogo) e `data/useSessionEditor.ts` (cache come fonte, modifica ottimistica e salvataggio in coda ordinata); schermate in `features/gym/` (Start/Session/Sessions); `useWakeLock`.
 
 ## Variabili d'ambiente
 `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026). Facoltativa: `VITE_VAPID_PUBLIC_KEY` (notifiche). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.

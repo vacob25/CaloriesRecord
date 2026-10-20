@@ -217,6 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 37 · Sessione di allenamento (Fase 5a, ADR-091)
+Fare: migrazione 017 (sessioni, esercizi, serie, `last_sets`); Palestra → Inizia/Riprendi allenamento, Allenamenti (storico); serie con kg, ripetizioni, tipo e spunta; stato esercizio; cronometri; "ultima volta"; schermo acceso; riepilogo. Passaggi tuoi: nessuno (la 017 la applico io). Resta alla 5b: salvataggio offline.
+Accettazione:
+- Avvii da una scheda (giorno suggerito) o in modo libero; peso e ripetizioni sono precompilati dall'ultima volta.
+- Spunti le serie, aggiungi/togli serie, salti o aggiungi esercizi; ricaricando la pagina tutto resta.
+- Termina riassume i saltati; lo storico non cambia se poi rinomini l'esercizio.
+- Con una sessione aperta non se ne avvia un'altra.
 ## Step 36 · Schede di allenamento (Fase 4, ADR-090)
 Fare: migrazione 016; Palestra → Schede: crea (nome, giorni, giorno della settimana facoltativo), esercizi per giorno scelti per gruppo muscolare, serie con − e +, ripetizioni (10 o 8-12), peso per serie, recupero, nota, riordino, duplica giorno e scheda, archivia, elimina. Passaggi tuoi: nessuno (la 016 la applico io). Non c'è nessun tempo di recupero di partenza: serve una fonte (Fase 7).
 Accettazione:

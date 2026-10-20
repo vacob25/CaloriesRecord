@@ -24,6 +24,8 @@ declare
   a_plan uuid;
   a_day uuid;
   a_custom uuid;
+  a_session uuid;
+  a_session_ex uuid;
   rows_touched int;
   b_food uuid;
   n int;
@@ -33,7 +35,7 @@ declare
   invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
-  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status', 'user_exercises', 'workout_plans', 'workout_days', 'workout_day_exercises'];
+  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status', 'user_exercises', 'workout_plans', 'workout_days', 'workout_day_exercises', 'workout_sessions', 'workout_session_exercises', 'workout_sets'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
@@ -106,6 +108,11 @@ begin
     insert into public.workout_days (plan_id, name, weekday, position) values (a_plan, 'Push', 1, 0) returning id into a_day;
     insert into public.workout_day_exercises (day_id, user_exercise_id, sets, reps_min, reps_max, weights_kg) values (a_day, a_custom, 3, 8, 12, array[60.0, 60.0]);
     insert into public.workout_day_exercises (day_id, catalog_id, position) select a_day, id, 1 from public.exercise_catalog limit 1;
+  end if;
+  if 'workout_sessions' = any (tables) then
+    insert into public.workout_sessions (session_date, plan_name, day_name) values (current_date, 'Scheda di A', 'Push') returning id into a_session;
+    insert into public.workout_session_exercises (session_id, exercise_name, equipment) values (a_session, 'Esercizio di A', 'machine') returning id into a_session_ex;
+    insert into public.workout_sets (session_exercise_id, set_number, weight_kg, reps, done) values (a_session_ex, 1, 60, 8, true);
   end if;
 
   foreach t in array tables loop
@@ -268,6 +275,27 @@ begin
     end;
   end if;
 
+  -- Migrazione 017: sessioni personali. B non può scriverne a nome di A né aggiungere esercizi o serie alle sessioni di A.
+  if 'workout_sessions' = any (tables) then
+    begin
+      execute format('insert into public.workout_sessions (user_id, session_date) values (%L, current_date)', a);
+      raise exception 'FALLITO: B ha inserito in workout_sessions a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      insert into public.workout_session_exercises (session_id, exercise_name, equipment) values (a_session, 'Intruso', 'other');
+      raise exception 'FALLITO: B ha aggiunto un esercizio alla sessione di A';
+    exception when foreign_key_violation then null;
+    end;
+    begin
+      insert into public.workout_sets (session_exercise_id, set_number) values (a_session_ex, 9);
+      raise exception 'FALLITO: B ha aggiunto una serie alla sessione di A';
+    exception when foreign_key_violation then null;
+    end;
+    select count(*) into n from public.last_sets(array[]::uuid[], array[]::uuid[]);
+    if n <> 0 then raise exception 'FALLITO: last_sets restituisce righe senza richiesta'; end if;
+  end if;
+
   -- Migrazione 007: i pasti dell'utente (creati dal trigger alla creazione del profilo) sono protetti come il resto.
   if 'meal_slots' = any (tables) then
     begin
@@ -340,6 +368,13 @@ begin
     exception when insufficient_privilege then null; -- atteso: anon non ha permessi
     end;
   end loop;
+  if to_regprocedure('public.last_sets(uuid[], uuid[])') is not null then
+    begin
+      perform public.last_sets(array[]::uuid[], array[]::uuid[]);
+      raise exception 'FALLITO: senza login si chiama last_sets';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
   if to_regprocedure('public.duplicate_workout_plan(uuid)') is not null then
     begin
       perform public.duplicate_workout_plan(gen_random_uuid());
@@ -452,6 +487,11 @@ begin
       insert into public.workout_plans (name) values ('Scheda di B') returning id into a_plan;
       insert into public.workout_days (plan_id, name) values (a_plan, 'Gambe') returning id into a_day;
       insert into public.workout_day_exercises (day_id, catalog_id) select a_day, id from public.exercise_catalog limit 1;
+    end if;
+    if 'workout_sessions' = any (tables) then
+      insert into public.workout_sessions (session_date) values (current_date) returning id into a_session;
+      insert into public.workout_session_exercises (session_id, exercise_name, equipment) values (a_session, 'Esercizio di B', 'cable') returning id into a_session_ex;
+      insert into public.workout_sets (session_exercise_id, set_number) values (a_session_ex, 1);
     end if;
     reset role;
     foreach t in array tables loop

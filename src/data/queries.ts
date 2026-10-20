@@ -42,6 +42,7 @@ import {
   type PlanDetail,
   type PlanExercisePatch,
 } from './workoutPlans'
+import { getActiveSession, listRecentSessions } from './workoutSessions'
 import { createCustomExercise, deleteUserExercise, listCatalog, listUserExercises, saveExercise, type ExercisePatch } from './exercises'
 import { listReminderSettings, readReminderHistory, saveReminderSetting } from './reminders'
 import { createMealSlot, deleteMealSlot, listMealSlots, renameMealSlot, reorderMealSlots } from './mealSlots'
@@ -191,6 +192,15 @@ export function useWorkoutActions() {
     reorderExercises: useMutation({ mutationFn: (ids: readonly string[]) => reorderPlanExercises(ids), onSettled: refresh }),
     removeExercise: useMutation({ mutationFn: (id: string) => removePlanExercise(id), onSettled: refresh }),
   }
+}
+
+/** Sessione di allenamento in corso (per "Riprendi allenamento") e sessioni recenti. Sempre fresche: si guardano aprendo la Palestra. */
+export function useActiveSession() {
+  return useQuery({ queryKey: ['workout_sessions', 'active'], queryFn: getActiveSession, staleTime: 0 })
+}
+
+export function useRecentSessions() {
+  return useQuery({ queryKey: ['workout_sessions', 'recent'], queryFn: () => listRecentSessions(20), staleTime: 0 })
 }
 
 export function useReminderSettings() {
