@@ -161,9 +161,20 @@ test('Step 32 · il service worker mostra la notifica e il tocco apre la pagina 
   await expect.poll(() => ids.has(registration)).toBe(true)
   const registrationId = () => ids.get(registration)!
   const payload = (title: string, url: string, tag: string) => JSON.stringify({ title, body: 'corpo', url, tag })
-  await cdp.send('ServiceWorker.deliverPushMessage', { origin: APP_URL, registrationId: registrationId(), data: payload('Calorie', '/profilo', 'uno') })
   const count = () => p.evaluate(async () => (await (await navigator.serviceWorker.ready).getNotifications()).length)
-  await expect.poll(count).toBe(1)
+  // Su un runner lento il service worker può non essere ancora pronto a ricevere il primo push (in CI è fallito, a intermittenza,
+  // il 20/10). Si ripete l'invio finché la notifica compare: il `tag` è lo stesso, quindi i push ripetuti si sostituiscono
+  // a vicenda e le notifiche restano una sola.
+  await expect
+    .poll(
+      async () => {
+        await cdp.send('ServiceWorker.deliverPushMessage', { origin: APP_URL, registrationId: registrationId(), data: payload('Calorie', '/profilo', 'uno') })
+        await new Promise((resolve) => setTimeout(resolve, 400))
+        return count()
+      },
+      { timeout: 25_000, intervals: [500] },
+    )
+    .toBe(1)
   const shown = await p.evaluate(async () => (await (await navigator.serviceWorker.ready).getNotifications()).map((n) => ({ title: n.title, url: (n.data as { url: string }).url })))
   check(shown[0]?.title === 'Calorie' && shown[0]?.url === '/profilo', 'push ricevuto: notifica mostrata con il percorso interno')
 
