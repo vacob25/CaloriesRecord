@@ -1,5 +1,5 @@
 import type { FoodFormInput } from '../lib/foodValidation'
-import { findFoodByBarcode, saveOffFood } from './foods'
+import { createFood, findFoodByBarcode } from './foods'
 import { lookupBarcode } from './openFoodFacts'
 import type { Food } from './types'
 
@@ -19,5 +19,6 @@ export async function resolveBarcode(code: string): Promise<BarcodeResolution> {
   if (lookup.conversion.kind === 'incomplete') {
     return { kind: 'incomplete', form: lookup.conversion.form, missing: lookup.conversion.missing }
   }
-  return { kind: 'food', food: await saveOffFood(lookup.conversion.values) }
+  // Il codice è già stato cercato tra i propri cibi qui sopra: si crea direttamente, senza cercarlo di nuovo (revisione #31).
+  return { kind: 'food', food: await createFood(lookup.conversion.values, 'open_food_facts') }
 }

@@ -96,13 +96,14 @@ test('Step 26 · ricaricamento in background fallito: l’app resta dov’è', a
   // Tutte le letture iniziali devono essere finite: solo allora il profilo ha la sua data di aggiornamento.
   await page.waitForLoadState('networkidle')
 
-  // Il profilo è già in memoria; passa il tempo, i dati diventano "vecchi" e il ricaricamento fallisce.
+  // Il profilo è già in memoria; passa il tempo, i dati diventano "vecchi" (restano freschi 10 minuti, revisione #16)
+  // e il ricaricamento fallisce. Attenzione: in Playwright '11:00' sono 11 minuti (mm:ss), non 11 ore.
   let hits = 0
   await ctx.route('**/rest/v1/profiles**', (route) => {
     hits += 1
     return route.abort('failed')
   })
-  await page.clock.fastForward('01:00')
+  await page.clock.fastForward('11:00')
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange', { bubbles: true })))
   // La rete e la libreria dei dati ritentano da sole (con pause): si fa passare il tempo simulato finché hanno finito.
   await expect
