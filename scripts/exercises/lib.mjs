@@ -138,3 +138,14 @@ export function checkSourceId(id) {
   if (!/^[A-Za-z0-9_().,'’+-]+$/.test(id)) throw new Error(`id della fonte inatteso: ${id}`)
   return id
 }
+
+/**
+ * Applica una correzione (overrides.mjs) a una riga già mappata. Il principale precedente e i secondari che c'erano
+ * restano tra i secondari (a meno che non diventino il nuovo principale).
+ */
+export function applyOverride(row, override) {
+  if (!override) return row
+  const primary = override.primary ? [override.primary] : row.primary
+  const secondary = [...new Set([...(override.secondaryFirst ?? []), ...(override.primary ? row.primary : []), ...row.secondary])].filter((muscle) => !primary.includes(muscle))
+  return { ...row, primary, secondary, equipment: override.equipment ?? row.equipment }
+}

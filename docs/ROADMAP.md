@@ -219,7 +219,7 @@ Accettazione:
 
 ## Step 35 · Libreria esercizi (Fase 3, ADR-089)
 Fare: migrazioni 013 (catalogo globale + esercizi personali) e 014 (718 esercizi); schermate Palestra → Esercizi (ricerca, filtri per gruppo e attrezzo, scheda con note, modifica, nascondi, ripristina, crea ed elimina i tuoi); script di importazione, glossario e report.
-Passaggi tuoi: decidere i 5 casi di `docs/REPORT_ESERCIZI_CONTROLLO.md`; rivedere i nomi segnati "Nome da rivedere" quando ti capitano.
+Passaggi tuoi: (fatto: i 5 casi di `docs/REPORT_ESERCIZI_CONTROLLO.md` sono decisi, migrazione 015); rivedere i nomi segnati "Nome da rivedere" quando ti capitano.
 Accettazione:
 - Palestra → Esercizi mostra 718 esercizi; cercando "pulldown" o "panca" compaiono quelli giusti; il filtro per gruppo e attrezzo restringe l'elenco.
 - Scrivere una nota o cambiare un nome non cambia il catalogo degli altri; "Ripristina i valori originali" riporta il nome.
