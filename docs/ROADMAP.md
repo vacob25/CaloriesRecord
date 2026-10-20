@@ -217,6 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 32 · Notifiche: push di prova (Fase 1, ADR-086)
+Fare: tabella `push_subscriptions` (migrazione 011); sezione Notifiche nel Profilo (attiva, prova, disattiva); gestori push nel service worker; Edge Function `send-test-push` senza `service_role`. Nessun promemoria automatico (Fase 2, solo dopo il tuo OK).
+Accettazione:
+- Sull'iPhone con l'app dalla schermata Home, "Attiva le notifiche" chiede il permesso e "Invia notifica di prova" fa arrivare una notifica; toccarla apre l'app.
+- Dal browser (non installata) la sezione spiega che serve installare l'app; con permesso negato indica dove cambiarlo.
+- "Esci" toglie solo la subscription di quel dispositivo; un altro utente non vede né riceve nulla dei dispositivi altrui (controllo RLS a due utenti).
+- Dopo un aggiornamento che cambia solo `push-handler.js` compare "Nuova versione disponibile".
 ## Step 31 · Prestazioni (revisione #15, #16, #17, #31, #33-#36; PR i, 19/10/2026)
 Fare: meno richieste uguali e dati che restano freschi (ADR-085). Non fatti: #29, #30, #32.
 Accettazione:
@@ -257,4 +264,4 @@ Accettazione:
 - `rls_two_users.sql` passa, anche con il caso dell'id di una voce altrui.
 
 ## Fuori scope in v1 (v2+)
-Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.
+Foto del piatto con stima IA, stima IA per piatti composti, promemoria automatici (Fase 2), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

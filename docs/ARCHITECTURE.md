@@ -100,5 +100,9 @@ docs/
 ## Errori e stati
 Ogni schermata gestisce tre stati: caricamento (scheletro), errore (messaggio + riprova), vuoto (invito all'azione). Gli errori di rete non cancellano mai ciò che l'utente stava scrivendo.
 
+## Notifiche push (Fase 1, ADR-086)
+`lib/push.ts` (pura: chiave, subscription, stato), `data/push.ts` (browser + Supabase), `features/profile/NotificationsSection.tsx`. Il service worker generato da vite-plugin-pwa carica `public/push-handler.js` con `workbox.importScripts` (gestori `push` e `notificationclick`): resta `generateSW`, niente `injectManifest`. La Edge Function sta in `supabase/functions/send-test-push/`, la logica testabile in `supabase/functions/_shared/sendTestPush.ts`. Le funzioni si distribuiscono con la CLI di Supabase usata via `npx`, non come dipendenza.
+
 ## Variabili d'ambiente
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026). Facoltativa: `VITE_VAPID_PUBLIC_KEY` (notifiche). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.
 `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026) e `VITE_PRIVACY_CONTACT` (il contatto mostrato nella pagina Privacy, ADR-065: sta nelle variabili di Vercel, mai nel repo). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.

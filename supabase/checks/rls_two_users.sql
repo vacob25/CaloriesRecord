@@ -30,7 +30,7 @@ declare
   invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
-  extra text[] := array['water_entries', 'drink_containers', 'meal_slots'];
+  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
@@ -84,6 +84,10 @@ begin
   if 'water_entries' = any (tables) then
     insert into public.water_entries (entry_date, ml) values (current_date, 200);
     insert into public.drink_containers (name, ml) values ('Borraccia di prova', 750);
+  end if;
+  if 'push_subscriptions' = any (tables) then
+    insert into public.push_subscriptions (endpoint, p256dh_key, auth_secret)
+      values ('https://push.example.invalid/a-' || a, 'chiave-p256dh-di-prova-aaaaaaaaaa', 'segreto-di-prova');
   end if;
 
   foreach t in array tables loop
@@ -158,6 +162,15 @@ begin
     begin
       execute format('insert into public.drink_containers (user_id, name, ml) values (%L, %L, 100)', a, 'x');
       raise exception 'FALLITO: B ha inserito in drink_containers a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
+
+  -- Migrazione 011: nessuno può registrare notifiche a nome di un altro (si finirebbero per mandargliele).
+  if 'push_subscriptions' = any (tables) then
+    begin
+      execute format('insert into public.push_subscriptions (user_id, endpoint, p256dh_key, auth_secret) values (%L, %L, %L, %L)', a, 'https://push.example.invalid/rubata', 'chiave-p256dh-di-prova-bbbbbbbbbb', 'segreto-di-prova');
+      raise exception 'FALLITO: B ha inserito in push_subscriptions a nome di A';
     exception when insufficient_privilege then null;
     end;
   end if;
@@ -318,6 +331,10 @@ begin
     if 'water_entries' = any (tables) then
       insert into public.water_entries (entry_date, ml) values (current_date, 500);
       insert into public.drink_containers (name, ml) values ('Bottiglia di B', 1000);
+    end if;
+    if 'push_subscriptions' = any (tables) then
+      insert into public.push_subscriptions (endpoint, p256dh_key, auth_secret)
+        values ('https://push.example.invalid/b-' || b, 'chiave-p256dh-di-prova-cccccccccc', 'segreto-di-prova');
     end if;
     reset role;
     foreach t in array tables loop
