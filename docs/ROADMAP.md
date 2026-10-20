@@ -217,5 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Step 26 · Sessione e rete (revisione #2-#5, #7, #50, #54; PR c, 19/10/2026)
+Fare: id deciso dall'app e inserimento idempotente per voci pasto, acqua e contenitori; banner "Salvataggio in attesa"; il profilo non toglie l'app se il ricaricamento fallisce; pagina d'errore italiana su tutte le rotte; token scaduto gestito; controllo aggiornamenti al ritorno nell'app (ADR-079).
+Accettazione:
+- Se la risposta di un salvataggio si perde e si preme "Riprova", la voce è una sola.
+- Senza rete il salvataggio aspetta, il banner lo dice e, tornata la rete, parte da solo una volta sola.
+- Una schermata che non si carica mostra un messaggio in italiano con "Riprova"; un ricaricamento del profilo fallito in background non toglie l'app.
+- `rls_two_users.sql` passa, anche con il caso dell'id di una voce altrui.
+
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.
