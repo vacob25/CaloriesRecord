@@ -1,9 +1,10 @@
 import type { GoalProfile } from '../lib/goals'
 import { addDays, weekRange } from '../lib/dates'
 import { bmr, maintenance } from '../lib/nutrition'
-import { acceptedActivityFactor, evaluateRecalibration, type RecalEvaluation } from '../lib/recalibration'
+import { acceptedActivityFactor, evaluateRecalibration, weeklyRowAction, type RecalEvaluation } from '../lib/recalibration'
 import { ageOn, weightForDay } from '../lib/weight'
 import { throwIfError } from './dbErrors'
+import type { Profile } from './types'
 import { listEntriesBetween } from './meals'
 import { getProfile } from './profile'
 import { getSupabase } from './supabase'
@@ -75,11 +76,11 @@ async function firstUseDate(): Promise<string | null> {
  * Esecuzione settimanale "pigra" (step 10): alla prima apertura di una nuova settimana si valuta
  * e si salva UNA riga in tdee_estimates (al massimo una proposta a settimana).
  */
-export async function runWeeklyRecalibration(today: string): Promise<RecalibrationState> {
+export async function runWeeklyRecalibration(today: string, known: { profile?: Profile | null } = {}): Promise<RecalibrationState> {
   const weekStart = weekRange(today).start
   const windowStart = addDays(today, -28)
   const [profile, weights, entries, targets, firstUse, existing] = await Promise.all([
-    getProfile(),
+    known.profile === undefined ? getProfile() : known.profile,
     listWeights(addDays(windowStart, -6)),
     listEntriesBetween(windowStart, addDays(today, -1)),
     listTargetsBetween(windowStart, addDays(today, -1)),
@@ -94,7 +95,7 @@ export async function runWeeklyRecalibration(today: string): Promise<Recalibrati
       ? bmr({ sex: profile.sex, weightKg, heightCm: profile.heightCm, ageYears: ageOn(profile.birthDate, today) })
       : null
   const currentMaintenanceKcal =
-    profile && currentBmrKcal !== null ? Math.round(maintenance(currentBmrKcal, profile.activityFactor)) : null
+    profile && currentBmrKcal !== null ? maintenance(currentBmrKcal, profile.activityFactor) : null
   const goalProfile: GoalProfile = {
     goal: profile?.goal ?? 'bulk',
     surplusPct: profile?.surplusPct ?? 0,
@@ -121,21 +122,24 @@ export async function runWeeklyRecalibration(today: string): Promise<Recalibrati
   })
 
   let estimate = existing.data ? toEstimate(existing.data as EstimateRow) : null
-  if (!estimate && currentMaintenanceKcal !== null) {
-    const computed = evaluation.status !== 'notEnoughData'
-    const { data, error } = await getSupabase()
-      .from('tdee_estimates')
-      .insert({
-        week_start: weekStart,
-        window_days: Math.max(1, evaluation.windowDays),
-        avg_intake_kcal: computed ? Math.round(evaluation.averageIntakeKcal) : null,
-        trend_slope_kg_week: computed ? evaluation.slopeKgWeek : null,
-        estimated_maintenance_kcal: computed ? Math.round(evaluation.estimatedMaintenanceKcal) : null,
-        proposed_maintenance_kcal: evaluation.status === 'proposal' ? evaluation.proposedMaintenanceKcal : null,
-        status: evaluation.status === 'proposal' ? 'pending' : 'none',
-      })
-      .select(COLUMNS)
-      .single()
+  const computed = evaluation.status !== 'notEnoughData'
+  const values = {
+    window_days: Math.max(1, evaluation.windowDays),
+    avg_intake_kcal: computed ? Math.round(evaluation.averageIntakeKcal) : null,
+    trend_slope_kg_week: computed ? evaluation.slopeKgWeek : null,
+    estimated_maintenance_kcal: computed ? Math.round(evaluation.estimatedMaintenanceKcal) : null,
+    proposed_maintenance_kcal: evaluation.status === 'proposal' ? evaluation.proposedMaintenanceKcal : null,
+    status: evaluation.status === 'proposal' ? 'pending' : 'none',
+  }
+  // Una sola riga (e quindi una sola proposta) a settimana: la regola è in lib/recalibration.ts, con i suoi test.
+  const action = weeklyRowAction(estimate?.status ?? null, evaluation.status)
+  if (action === 'create' && currentMaintenanceKcal !== null) {
+    const { data, error } = await getSupabase().from('tdee_estimates').insert({ week_start: weekStart, ...values }).select(COLUMNS).single()
+    throwIfError(error)
+    estimate = toEstimate(data as EstimateRow)
+  } else if (action === 'promote' && estimate) {
+    // Lunedì mancavano i dati (riga "nessuna"), ora c'è una proposta: la riga della settimana diventa quella proposta.
+    const { data, error } = await getSupabase().from('tdee_estimates').update(values).eq('id', estimate.id).select(COLUMNS).single()
     throwIfError(error)
     estimate = toEstimate(data as EstimateRow)
   }

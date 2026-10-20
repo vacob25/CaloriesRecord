@@ -7,9 +7,9 @@ import { SheetFrame } from './SheetFrame'
 import { FormMessage } from './States'
 import { primaryButtonClass } from './ui'
 import { errorMessage } from '../data/dbErrors'
-import { useSaveWeight, useWeights } from '../data/queries'
+import { useSaveWeight, useWeightsUntil } from '../data/queries'
 import { WEIGHT_JUMP_CONFIRM_KG } from '../lib/constants'
-import { addDays, formatLongDate } from '../lib/dates'
+import { formatLongDate } from '../lib/dates'
 import { formatNumber } from '../lib/numbers'
 import { validateWeight } from '../lib/profileValidation'
 import { needsJumpConfirmation } from '../lib/weight'
@@ -17,7 +17,7 @@ import { needsJumpConfirmation } from '../lib/weight'
 /** Pill del peso di oggi: un tocco apre l'inserimento (upsert: la seconda pesata sostituisce la prima). */
 export function WeightPill({ date, showTrendLink = true }: { date: string; showTrendLink?: boolean }) {
   const today = useToday()
-  const weights = useWeights(addDays(date, -1))
+  const weights = useWeightsUntil(date)
   const save = useSaveWeight()
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
@@ -50,6 +50,7 @@ export function WeightPill({ date, showTrendLink = true }: { date: string; showT
       <button
         type="button"
         onClick={openSheet}
+        aria-label={todayLog ? `${formatNumber(todayLog.kg, 1)} kg, modifica il peso` : undefined}
         className="min-h-11 rounded-full bg-surface px-4 text-[13px] font-bold text-blue shadow-[0_1px_3px_rgba(21,23,30,0.08)]"
       >
         {todayLog ? `${formatNumber(todayLog.kg, 1)} kg` : 'Registra peso'}

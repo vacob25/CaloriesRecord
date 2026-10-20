@@ -1,0 +1,7 @@
+# Configurazione minima per distribuire le Edge Function con la CLI di Supabase (npx supabase functions deploy …).
+# Niente segreti qui: i segreti (chiavi VAPID) si impostano con `supabase secrets set` e non entrano mai nel repo.
+project_id = "caloriesrecord"
+
+[functions.send-test-push]
+# Il JWT dell'utente viene controllato dalla piattaforma prima che la funzione parta (e di nuovo da withSupabase).
+verify_jwt = true

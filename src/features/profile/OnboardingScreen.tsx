@@ -21,7 +21,7 @@ import { ageOn } from '../../lib/weight'
 import { ActivityFields } from './ActivityFields'
 import { GoalFields } from './GoalFields'
 import { PersonalFields } from './PersonalFields'
-import { SportsFields } from './SportsFields'
+import { SportsFields } from '../../components/SportsFields'
 
 const STEPS = ['Dati', 'Obiettivo', 'Allenamento'] as const
 
@@ -41,7 +41,7 @@ export function OnboardingScreen() {
   const [planErrors, setPlanErrors] = useState<Partial<Record<PlanField, string>>>({})
 
   if (profile.isPending) return <LoadingScreen />
-  if (profile.isError) return <ErrorState message={errorMessage(profile.error)} onRetry={() => void profile.refetch()} />
+  if (profile.isError && profile.data === undefined) return <ErrorState message={errorMessage(profile.error)} onRetry={() => void profile.refetch()} />
   if (profile.data) return <Navigate to="/" replace />
 
   const weightKg = parseDecimal(form.weightKg ?? '')

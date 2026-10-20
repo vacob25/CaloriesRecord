@@ -5,9 +5,9 @@ import {
   canAddSlot,
   canRemoveSlot,
   dragTargetIndex,
-  cleanMealName,
   DEFAULT_MEAL_SLOTS,
   mealForHour,
+  moveAnnouncement,
   moveSlot,
   newSlotKey,
   reorderByDrag,
@@ -45,13 +45,6 @@ describe('mealForHour (pasti di partenza)', () => {
 
   it('se nessuno dei pasti di partenza esiste prende il primo dell’utente', () => {
     expect(mealForHour(13, [{ key: 'custom_1', name: 'Pasto 1' }])).toBe('custom_1')
-  })
-})
-
-describe('cleanMealName', () => {
-  it('sistema spazi e iniziale', () => {
-    expect(cleanMealName('  dopo   cena ')).toBe('Dopo cena')
-    expect(cleanMealName('   ')).toBe('')
   })
 })
 
@@ -102,6 +95,14 @@ describe('moveSlot', () => {
     expect(keys(moveSlot(DEFAULT_MEAL_SLOTS, 'breakfast', -1))).toEqual(keys([...DEFAULT_MEAL_SLOTS]))
     expect(keys(moveSlot(DEFAULT_MEAL_SLOTS, 'snack', 1))).toEqual(keys([...DEFAULT_MEAL_SLOTS]))
     expect(keys(moveSlot(DEFAULT_MEAL_SLOTS, 'nope', 1))).toEqual(keys([...DEFAULT_MEAL_SLOTS]))
+  })
+})
+
+describe('moveAnnouncement', () => {
+  it('dice nome e posizione per chi non vede lo schermo', () => {
+    const moved = moveSlot(DEFAULT_MEAL_SLOTS, 'lunch', -1)
+    expect(moveAnnouncement(moved, 'lunch')).toBe('Pranzo: posizione 2 di 5')
+    expect(moveAnnouncement(moved, 'nope')).toBe('')
   })
 })
 

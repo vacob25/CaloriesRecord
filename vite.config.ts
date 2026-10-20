@@ -18,6 +18,7 @@ export default defineConfig({
         short_name: 'Calorie',
         description: 'Registro personale di calorie e macro',
         lang: 'it',
+        id: '/',
         start_url: '/',
         scope: '/',
         display: 'standalone',
@@ -34,10 +35,12 @@ export default defineConfig({
         // Solo la shell dell'app: niente cache dei dati (nessuna modalità offline in v1).
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: '/index.html',
+        // Gestori di push e click sulla notifica (ADR-086): file a parte, caricato dal service worker generato.
+        importScripts: ['push-handler.js'],
       },
     }),
   ],
   test: {
-    include: ['src/**/*.test.{ts,tsx}', 'tests/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'tests/**/*.test.{ts,tsx}', 'supabase/functions/**/*.test.ts'],
   },
 })

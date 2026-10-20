@@ -29,8 +29,9 @@ Postgres su Supabase. Una migrazione SQL numerata per volta in `supabase/migrati
 | water_goal_ml | int | nullable, > 0; obiettivo acqua scelto dall'utente (migrazione 003, ADR-049) |
 | goal | text | default `bulk`, in (`bulk`,`maintain`,`cut`) (migrazione 006, ADR-066) |
 | cut_rate_pct | numeric(4,3) | default 0.005, `> 0` e `<= 0.05`: % del peso a settimana (solo cut) |
-| sports | jsonb | default `[]`, array di al più 4 nomi (migrazione 008, ADR-073; con la 006 erano 2); il titolare è migrato a `["Palestra","Calcio"]` |
+| sports | jsonb | default `[]`, array di al più 4 nomi (migrazione 008, ADR-073; con la 006 erano 2); la 006 aveva messo `["Palestra","Calcio"]` a tutti i profili esistenti; la 009 li azzera (ADR-077) |
 | tutorial_done_at | timestamptz | nullable; vuoto = il tutorial va ancora mostrato (ADR-069) |
+| sports_choice_pending | boolean | default false; true = sport azzerati dalla migrazione 009, l'app chiede di sceglierli (ADR-077). Torna false quando l'utente salva gli sport |
 | created_at, updated_at | timestamptz | |
 
 ### foods
@@ -110,12 +111,15 @@ Il trigger `profiles_seed_meal_slots` crea i cinque pasti di partenza alla creaz
 ### allowed_emails (migrazione 005)
 `email text` chiave primaria (`check`: minuscola, senza spazi ai lati, forma di un'email), `note text`, `created_at`. Nessun `user_id`: non è un dato di un utente ma l'elenco degli invitati. RLS attiva, `revoke all … from anon, authenticated, public`, nessuna policy per loro: dall'app non si legge né si scrive. Solo `supabase_auth_admin` ha `select` (con una policy), per la hook. Le email si aggiungono dal SQL Editor.
 
+### push_subscriptions (migrazione 011, Fase 1 notifiche, ADR-086)
+Un indirizzo tecnico per ogni dispositivo con le notifiche attive. `id uuid`, `user_id` (default `auth.uid()`, cascade), `endpoint text` (https, 20-2048), `p256dh_key text`, `auth_secret text`, `created_at`; unico `(user_id, endpoint)`. RLS: select/insert/update/delete solo delle proprie righe. Non sono dati di salute e non si esportano (`NOT_EXPORTED_TABLES`). Da sole non bastano per inviare: serve la chiave VAPID privata, solo nei segreti di Supabase.
+
 ## Funzioni
 - `save_recipe(p_recipe_id, p_name, p_cooked_weight_g, p_kcal_100g, p_protein_100g, p_carbs_100g, p_fat_100g, p_items)` (migrazione 002, ADR-029): crea o aggiorna una ricetta e sostituisce i suoi `recipe_items` in una sola transazione; almeno un ingrediente. `security invoker` (vale la RLS), `set search_path = ''`, `revoke execute … from public, anon` e `grant execute … to authenticated`. I valori per 100 g li calcola l'app.
 - `hook_before_user_created(event jsonb)` (migrazione 005, ADR-064): auth hook "Before User Created". Legge `event->'user'->>'email'`, la confronta in minuscolo con `allowed_emails`: `{}` = crea l'utente, `{"error": {"http_code": 403, "message": …}}` = rifiuta. Non security definer: execute solo a `supabase_auth_admin` (revocato a public, anon, authenticated), `set search_path = ''`.
 - `delete_my_account()` (migrazione 005, ADR-065): security definer, `set search_path = ''`; senza sessione errore 42501; cancella `recipe_items` e poi la riga di `auth.users` con `id = auth.uid()` (il resto a cascata). Execute solo ad authenticated.
 - Indice `recipe_items (user_id)` (migrazione 005): le altre tabelle avevano già un indice o una chiave che comincia con `user_id`.
-- Trigger: `set_updated_at`, `check_recipe_item`, `check_food_source_change` (vedi sopra).
+- Trigger: `set_updated_at`, `check_recipe_item`, `check_food_source_change` (vedi sopra) e `seed_meal_slots` (migrazione 007, sui `profiles`: crea i cinque pasti di partenza). Tutte hanno `revoke execute … from public, anon, authenticated` (per `seed_meal_slots` dalla migrazione 010); `rls_two_users.sql` controlla che nessuna funzione trigger sia eseguibile da anon o authenticated.
 
 ## Row Level Security (modello da applicare a TUTTE le tabelle)
 ```sql

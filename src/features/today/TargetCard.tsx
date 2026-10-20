@@ -12,7 +12,7 @@ import type { TrainingType } from '../../lib/labels'
 import { trainingBonus } from '../../lib/sportEnergy'
 import { toggleSportInType, trainingLabel, trainingSportIndexes } from '../../lib/sports'
 import { formatNumber } from '../../lib/numbers'
-import { isLowCarbs, type Nutrients } from '../../lib/nutrition'
+import { showLowCarbsWarning, type Nutrients } from '../../lib/nutrition'
 import { progress, ringStatus } from '../../lib/targets'
 
 interface TargetCardProps {
@@ -43,7 +43,9 @@ export function TargetCard({ date, eaten }: TargetCardProps) {
 
 function ReadyTarget({ target, weightKg, eaten, date }: { target: DailyTarget; weightKg: number | null; eaten: Nutrients; date: string }) {
   const ring = ringStatus(eaten.kcal, target.targetKcal)
-  const lowCarbs = weightKg !== null && isLowCarbs(target.carbs, weightKg)
+  const profile = useProfile()
+  // §3: l'avviso vale solo per chi vuole aumentare massa (con altri obiettivi scendere sotto 3 g/kg è normale).
+  const lowCarbs = weightKg !== null && profile.data ? showLowCarbsWarning(profile.data.goal, target.carbs, weightKg) : false
   const centerLabel =
     ring.over > 0 ? `Oltre di ${formatNumber(ring.over)} kcal` : `${formatNumber(ring.remaining)} kcal restanti`
 

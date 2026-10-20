@@ -1,4 +1,4 @@
-import { GAIN_RATE_WARNING_KG_WEEK, CUT_RATE_MAX_PCT_WEEK, CUT_RATE_MIN_PCT_WEEK, CUT_RATE_STEADY_PCT_WEEK, ENERGY_PER_KG, MAINTAIN_BAND_KG_WEEK, RECAL_BAND_MAX, RECAL_BAND_MIN, TARGET_RATE_MAX_KG_WEEK, TARGET_RATE_MIN_KG_WEEK, ADULT_AGE_YEARS } from './constants'
+import { GAIN_RATE_WARNING_KG_WEEK, CUT_RATE_MAX_PCT_WEEK, CUT_RATE_MIN_PCT_WEEK, CUT_RATE_STEADY_PCT_WEEK, ENERGY_PER_KG, MAINTAIN_BAND_KG_WEEK, RECAL_BAND_MAX, RECAL_BAND_MIN, TARGET_RATE_MAX_KG_WEEK, TARGET_RATE_MIN_KG_WEEK, TARGET_ROUNDING_KCAL, ADULT_AGE_YEARS } from './constants'
 import { formatFixed, formatNumber, formatSigned, round } from './numbers'
 import { dayTarget } from './nutrition'
 
@@ -34,6 +34,11 @@ export interface GoalProfile {
 /** Deficit giornaliero (kcal) per perdere `ratePct` del peso a settimana: peso · rate · 7700 / 7. */
 export function cutDeficitKcal(weightKg: number, ratePct: number): number {
   return (weightKg * ratePct * ENERGY_PER_KG) / 7
+}
+
+/** Il deficit del cut come lo si mostra: arrotondato a 10 kcal, come il target (§2). */
+export function cutDeficitDisplayKcal(weightKg: number, ratePct: number): number {
+  return round(cutDeficitKcal(weightKg, ratePct) / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
 }
 
 /**

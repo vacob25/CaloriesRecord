@@ -18,7 +18,7 @@ PWA personale per registrare calorie e macro da iPhone: dal proprietario e da po
 | `docs/TESTING.md` | Strategia di test e casi con valori attesi | Scrivi o cambi funzioni in `src/lib/` |
 | `docs/DESIGN.md` | Token, componenti, schermate, accessibilità | Scrivi UI |
 | `docs/SECURITY.md` | Repo pubblico, segreti, RLS, dati personali | Mai da saltare prima di ogni commit e step 3 |
-| `docs/ROADMAP.md` | Step 1-18 con criteri di accettazione | Inizio e fine di ogni step |
+| `docs/ROADMAP.md` | Tutti gli step con criteri di accettazione e stato | Inizio e fine di ogni step |
 | `docs/DECISIONS.md` | Registro decisioni (ADR) e punti aperti | Prima di cambiare una scelta già presa |
 
 ## Regole non negoziabili
@@ -39,5 +39,6 @@ PWA personale per registrare calorie e macro da iPhone: dal proprietario e da po
 - `npm run preview` — serve `dist/` in locale per provare la PWA
 - `npm run test` — Vitest una volta (`npm run test:watch` per la modalità watch)
 - `npm run lint` — oxlint, gli avvisi fanno fallire il comando
+- `npm run build:e2e` e `npm run test:e2e` — test end-to-end con Supabase simulato (istruzioni in `tests/e2e/README.md`); li esegue anche la CI su ogni PR
 - `npm run typecheck` — TypeScript strict, senza generare file
 - Prima di dichiarare uno step finito: `typecheck`, `lint`, `test` e `build` devono passare.

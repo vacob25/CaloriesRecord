@@ -7,7 +7,7 @@ Stato di lavoro per le funzioni che procedono "a blocchi". I documenti di riferi
 - Supabase: Auth con email e password (registrazione su invito), Postgres con RLS su ogni tabella, nessuna Edge Function, nessuna `service_role` (ADR-065).
 - Utenti: il titolare più alcuni tester invitati (step 18), ognuno con i propri dati.
 - Fuso: giorni locali Europe/Rome (`YYYY-MM-DD`), calcolati con `Intl` in `src/lib/dates.ts`.
-- Step completati: 1-23 (vedi `docs/ROADMAP.md`). Ultima migrazione: 008.
+- Step: 1-25 fatti; 4-10 e 13-23 ancora da provare sull'iPhone, l'11 in corso (stato per step in `docs/ROADMAP.md`). Ultima migrazione: 009.
 
 ## Piano HO (revisione, promemoria, allenamenti) — dal 19/10/2026
 Ordine: Fase 0 revisione → correzioni scelte da Riccardo (PR piccole) → Fase 1 prova push su iPhone → Fase 2 promemoria → Fasi 3-8 allenamenti. Una fase alla volta, STOP a fine fase. Da ora ogni fase passa da una PR (niente più pubblicazione diretta su `main`).

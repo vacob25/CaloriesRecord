@@ -10,6 +10,8 @@ Il repo è **pubblico**. Chiunque può leggere ogni file e ogni commit, anche qu
 
 `.gitignore` deve contenere almeno: `.env`, `.env.*` (con eccezione `!.env.example`), `node_modules`, `dist`, `.vercel`, `*.log`, `.DS_Store`.
 
+**Credenziali dei test (ADR-078).** In `tests/e2e/` e `.github/workflows/ci.yml` ci sono una password di Postgres, una dell'utente `authenticator` e una chiave JWT di PostgREST: valgono solo per i database usa e getta dei test (locale e CI), non sono quelle del progetto reale e non proteggono nulla. La CI non usa segreti di GitHub e non si collega mai al progetto Supabase reale.
+
 ## Cosa può stare nel frontend
 `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` (chiave publishable, `sb_publishable_…`). Sono pensate per essere esposte nel browser: la protezione dei dati sta nella RLS, non nel nascondere la chiave. Qualunque variabile `VITE_*` finisce nel bundle pubblico: mai metterci segreti.
 
@@ -38,6 +40,11 @@ Dalla migrazione 005 lo script controlla anche: email non invitata rifiutata e i
 
 Dalla migrazione 007 controlla anche `meal_slots` (B non può inserire pasti a nome di A; il trigger che crea i pasti passa dalla RLS). Provato "rompendo" la policy di insert: si ferma con FALLITO. Esito locale 11/10/2026: superato, 11 tabelle con RLS.
 
+**Da fare sul progetto reale (revisione #20, passaggio tuo):** la RLS reale è stata verificata l'ultima volta il 9/10 (migrazioni 002-005). Le migrazioni 006-010 sono provate in locale ma l'esito reale non è registrato. Dopo aver eseguito la 010: (1) SQL Editor → incolla ed esegui `supabase/checks/rls_two_users.sql`, esito atteso `RLS verificata: tutti i controlli superati`; (2) dal terminale `SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=sb_publishable_… bash supabase/checks/no_session.sh`, esito atteso `Nessun dato senza sessione`. Poi scrivi qui l'esito con la data.
+
+Dal 19/10/2026 (ADR-082) lo script controlla anche che nessuna funzione trigger sia eseguibile da anon o authenticated (era il caso di `seed_meal_slots` prima della 010). Provato: fallisce prima della 010, passa dopo.
+Dal 19/10/2026 (ADR-079) controlla anche l'inserimento idempotente dell'app (`INSERT … ON CONFLICT (id) DO NOTHING`): B che passa l'id di una voce di A non scrive niente e non vede niente. Esito locale: superato.
+
 Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. Rieseguito il 9/10/2026 dopo le migrazioni 002-005: superato (vedi Esiti).
 
 Cosa controlla (a mano sarebbe così):
@@ -63,16 +70,22 @@ Cosa controlla (a mano sarebbe così):
 - Eliminazione dell'account: funzione `delete_my_account()` (migrazione 005), solo per l'utente della sessione. Nessuna service_role, nessuna Edge Function.
 - Sessione: gestita da `supabase-js` (storage del browser). All'uscita: `signOut({ scope: 'local' })`, `queryClient.clear()` e rimozione da localStorage/sessionStorage delle chiavi `sb-…`, `off.…`, `caloriesrecord.…` (`clearUserStorage`, testato).
 
+## Notifiche push (Fase 1, ADR-086)
+- Chiave VAPID **pubblica**: variabile `VITE_VAPID_PUBLIC_KEY` (pubblica per natura). Chiave **privata** e `VAPID_SUBJECT` (`mailto:`): solo nei segreti di Supabase (`supabase secrets set`), mai nel repo né su Vercel.
+- La Edge Function `send-test-push` verifica il JWT di chi chiama (`verify_jwt` + `withSupabase({ auth: 'user' })`) e legge le subscription con il client dell'utente, quindi con la RLS: vede e usa solo le proprie. **Nessuna `service_role`** in questa fase (si valuta solo per i promemoria da cron, Fase 2).
+- Nei log solo conteggi e codici di stato, mai indirizzi, chiavi o testi. Il testo della notifica è generico perché passa dai server di Apple/Google.
+- Se la chiave privata trapela: generarne una nuova e riattivare le notifiche sui dispositivi (le subscription legate alla vecchia chiave smettono di funzionare).
+
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.
 - Open Food Facts: chiamate in sola lettura, senza inviare dati personali (solo codice a barre o testo cercato) e senza credenziali (ADR-041). Il conteggio delle richieste sta in `sessionStorage` (solo orari, nessun dato personale).
 - Dipendenze: `npm audit` a ogni step e prima di un deploy. Nessun pacchetto sconosciuto o con pochi download senza averlo detto all'utente.
-- Intestazioni di sicurezza in `vercel.json` per tutte le risposte: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()` (fotocamera solo per l'app stessa, per lo scanner).
+- Intestazioni di sicurezza in `vercel.json` per tutte le risposte: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()` (fotocamera solo per l'app stessa, per lo scanner), `X-Frame-Options: DENY` e `Content-Security-Policy: frame-ancestors 'none'` (l'app non si può incorniciare in un altro sito: clickjacking, revisione #19; un test legge `vercel.json`). Una Content-Security-Policy completa (script, connessioni, immagini) è un lavoro a parte: va provata sull'iPhone (fotocamera, service worker, installazione) prima di pubblicarla.
 - Vercel: variabili d'ambiente solo dalle impostazioni del progetto; le anteprime (preview) non devono usare credenziali di produzione se in futuro si aggiungono segreti.
 
 ## Privacy
-Peso, altezza, data di nascita e abitudini alimentari sono dati personali e, peso e alimentazione, **dati sulla salute** (art. 9 GDPR): servono consenso esplicito (casella alla registrazione, ADR-065) e un'informativa (`/privacy`, testo di base da far rivedere). Database nella regione di Francoforte. Ognuno vede solo i propri dati (RLS); l'amministratore tecnico può accedere al database dal pannello. Consenso salvato nei metadati dell'utente (`privacy_version`, `privacy_accepted_at`, `health_data_consent`): soluzione base, senza storico delle versioni. Nessuna analytics di terze parti, nessun tracker, nessuna chiamata a servizi IA con dati reali finché non è una scelta esplicita dell'utente (v2).
+Peso, altezza, data di nascita e abitudini alimentari sono dati personali e, peso e alimentazione, **dati sulla salute** (art. 9 GDPR): servono consenso esplicito (casella alla registrazione, ADR-065) e un'informativa (`/privacy`, testo di base da far rivedere). Database nella regione di Irlanda (eu-west-1, UE; verificato sul progetto il 20/10/2026). Ognuno vede solo i propri dati (RLS); l'amministratore tecnico può accedere al database dal pannello. Consenso salvato nei metadati dell'utente (`privacy_version`, `privacy_accepted_at`, `health_data_consent`): soluzione base, senza storico delle versioni. Nessuna analytics di terze parti, nessun tracker, nessuna chiamata a servizi IA con dati reali finché non è una scelta esplicita dell'utente (v2).
 
 ## Backup, pausa e limiti del piano gratuito (verificati il 9/10/2026)
 - Backup: il piano gratuito **non** ha backup automatici (i backup giornalieri sono del piano Pro, [pricing](https://supabase.com/pricing)). Backup semplice: ogni utente può fare "Esporta i miei dati"; per tutto il database, dal computer, `supabase db dump` (CLI di Supabase, con la password del database solo nel terminale, mai nel repo) una volta a settimana.

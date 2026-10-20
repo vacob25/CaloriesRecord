@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react'
 
-import { inputClass } from '../../components/ui'
-import { SPORT_NAME_MAX, SPORTS_MAX } from '../../lib/constants'
-import { addSport, RECOMMENDED_SPORT, SUGGESTED_SPORTS } from '../../lib/sports'
+import { inputClass } from './ui'
+import { SPORT_NAME_MAX, SPORTS_MAX } from '../lib/constants'
+import { addSport, RECOMMENDED_SPORT, SUGGESTED_SPORTS } from '../lib/sports'
 
 interface SportsFieldsProps {
   sports: string[]
@@ -10,8 +10,9 @@ interface SportsFieldsProps {
 }
 
 /**
- * Sport dell'utente (testo libero, al massimo 2): da qui i tipi di giorno in Oggi, come Riposo / Palestra /
- * Calcio / Palestra + calcio. Palestra è suggerita come consigliata.
+ * Sport dell'utente (testo libero, fino a SPORTS_MAX): in Oggi si toccano quelli fatti nel giorno e le loro calorie si
+ * sommano (step 21-22). Palestra è suggerita come consigliata. Usato nel Benvenuto, nel Profilo e nella scelta degli
+ * sport azzerati dalla correzione #18 (ADR-077).
  */
 export function SportsFields({ sports, onChange }: SportsFieldsProps) {
   const [text, setText] = useState('')

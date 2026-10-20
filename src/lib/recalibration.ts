@@ -70,6 +70,35 @@ export function isRegisteredDay(day: RecalDay): boolean {
 const round10 = (value: number) => round(value / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
 
 /**
+ * Mantenimento proposto: la stima limitata al ±5% e arrotondata a 10 kcal (§7). Se l'arrotondamento supera un
+ * limite si scende al multiplo di 10 più vicino DENTRO il limite (2843 → tetto 2985,15 → 2980, non 2990).
+ */
+export function proposalWithinLimits(estimatedKcal: number, lowKcal: number, highKcal: number): number {
+  const rounded = round10(Math.min(highKcal, Math.max(lowKcal, estimatedKcal)))
+  if (rounded > highKcal) return Math.floor(highKcal / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
+  if (rounded < lowKcal) return Math.ceil(lowKcal / TARGET_ROUNDING_KCAL) * TARGET_ROUNDING_KCAL
+  return rounded
+}
+
+/** Stato di una riga settimanale in `tdee_estimates`. */
+export type WeeklyRowStatus = 'none' | 'pending' | 'accepted' | 'rejected'
+
+export type WeeklyRowAction = 'create' | 'promote' | 'keep'
+
+/**
+ * Al massimo una proposta a settimana (§7): la settimana ha UNA riga.
+ * - nessuna riga → si crea (in attesa se c'è una proposta, altrimenti "nessuna");
+ * - riga "nessuna" (lunedì mancavano i dati) e ora c'è una proposta → la riga diventa "in attesa": la proposta non era
+ *   ancora stata fatta, quindi resta una sola per settimana;
+ * - ogni altro caso (già in attesa, accettata o rifiutata) → la riga non si tocca.
+ */
+export function weeklyRowAction(existing: WeeklyRowStatus | null, evaluation: RecalEvaluation['status']): WeeklyRowAction {
+  if (existing === null) return 'create'
+  if (existing === 'none' && evaluation === 'proposal') return 'promote'
+  return 'keep'
+}
+
+/**
  * Ricalibrazione adattiva (DOMAIN_RULES §7). Solo una PROPOSTA, mai automatica.
  * Finestra: i 28 giorni conclusi prima di `today`, tagliati all'inizio dell'uso (ADR-044); servono
  * almeno 21 giorni, l'80% registrati e 10 pesate.
@@ -122,7 +151,7 @@ export function evaluateRecalibration(input: RecalInput): RecalEvaluation {
   }
   const low = input.currentMaintenanceKcal * (1 - RECAL_MAX_CHANGE)
   const high = input.currentMaintenanceKcal * (1 + RECAL_MAX_CHANGE)
-  const proposedMaintenanceKcal = round10(Math.min(high, Math.max(low, estimatedMaintenanceKcal)))
+  const proposedMaintenanceKcal = proposalWithinLimits(estimatedMaintenanceKcal, low, high)
   return {
     status: 'proposal',
     ...base,

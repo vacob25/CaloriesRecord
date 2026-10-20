@@ -19,11 +19,12 @@ interface ProfileRow {
   goal: string
   cut_rate_pct: number | string
   sports: unknown
+  sports_choice_pending: boolean | null
   tutorial_done_at: string | null
 }
 
 const PROFILE_COLUMNS =
-  'sex, birth_date, height_cm, activity_factor, surplus_pct, training_bonus_kcal, goal_weight_kg, protein_g_per_kg, fat_g_per_kg, water_goal_ml, goal, cut_rate_pct, sports, tutorial_done_at'
+  'sex, birth_date, height_cm, activity_factor, surplus_pct, training_bonus_kcal, goal_weight_kg, protein_g_per_kg, fat_g_per_kg, water_goal_ml, goal, cut_rate_pct, sports, sports_choice_pending, tutorial_done_at'
 
 function toProfile(row: ProfileRow): Profile {
   return {
@@ -40,6 +41,7 @@ function toProfile(row: ProfileRow): Profile {
     goal: isGoal(row.goal) ? row.goal : 'bulk',
     cutRatePct: Number(row.cut_rate_pct),
     sports: parseSports(row.sports),
+    sportsChoicePending: row.sports_choice_pending === true,
     tutorialDoneAt: row.tutorial_done_at,
   }
 }
@@ -71,7 +73,19 @@ export async function createProfile(values: PersonalValues, plan: PlanValues, ac
 export async function updatePlan(plan: PlanValues): Promise<void> {
   const { error } = await getSupabase()
     .from('profiles')
-    .update({ goal: plan.goal, cut_rate_pct: plan.cutRatePct, sports: plan.sports })
+    .update({ goal: plan.goal, cut_rate_pct: plan.cutRatePct, sports: plan.sports, sports_choice_pending: false })
+    .not('user_id', 'is', null)
+  throwIfError(error)
+}
+
+/**
+ * Sport scelti dopo l'azzeramento della correzione #18 (ADR-077): salvarli, anche vuoti ("non faccio sport"),
+ * chiude la richiesta. Il target di oggi lo ricalcola chi chiama.
+ */
+export async function chooseSports(sports: string[]): Promise<void> {
+  const { error } = await getSupabase()
+    .from('profiles')
+    .update({ sports, sports_choice_pending: false })
     .not('user_id', 'is', null)
   throwIfError(error)
 }
@@ -85,24 +99,26 @@ export async function setTutorialDone(done: boolean): Promise<void> {
   throwIfError(error)
 }
 
-export async function updatePersonal(values: PersonalValues): Promise<void> {
-  const { error } = await getSupabase()
-    .from('profiles')
-    .update({ sex: values.sex, birth_date: values.birthDate, height_cm: values.heightCm, goal_weight_kg: values.goalWeightKg })
-    .not('user_id', 'is', null)
-  throwIfError(error)
-}
-
-export async function updateParams(values: ParamsValues): Promise<void> {
-  const { error } = await getSupabase()
-    .from('profiles')
-    .update({
-      activity_factor: values.activityFactor,
-      surplus_pct: values.surplusPct,
-      training_bonus_kcal: values.trainingBonusKcal,
-      protein_g_per_kg: values.proteinGPerKg,
-      fat_g_per_kg: values.fatGPerKg,
-    })
-    .not('user_id', 'is', null)
+/**
+ * Salva insieme i dati personali e i parametri del profilo con UN solo UPDATE (revisione #33):
+ * prima erano due richieste in fila sulla stessa riga, e se la seconda falliva la prima restava salvata da sola.
+ */
+export async function updateProfileFields({ personal, params }: { personal?: PersonalValues; params?: ParamsValues }): Promise<void> {
+  const fields = {
+    ...(personal
+      ? { sex: personal.sex, birth_date: personal.birthDate, height_cm: personal.heightCm, goal_weight_kg: personal.goalWeightKg }
+      : {}),
+    ...(params
+      ? {
+          activity_factor: params.activityFactor,
+          surplus_pct: params.surplusPct,
+          training_bonus_kcal: params.trainingBonusKcal,
+          protein_g_per_kg: params.proteinGPerKg,
+          fat_g_per_kg: params.fatGPerKg,
+        }
+      : {}),
+  }
+  if (Object.keys(fields).length === 0) return
+  const { error } = await getSupabase().from('profiles').update(fields).not('user_id', 'is', null)
   throwIfError(error)
 }

@@ -3,39 +3,46 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import { PasswordField } from '../../components/PasswordField'
+import { inputClass } from '../../components/ui'
 import { signInWithPassword } from '../../data/auth'
+import { WRONG_CREDENTIALS_MESSAGE } from '../../data/authErrors'
 import { parseEmail, parsePassword } from '../../lib/auth'
-
-const inputClass =
-  'mt-2 block min-h-12 w-full rounded-button border border-line bg-surface px-4 text-[17px] text-ink outline-none focus:border-green focus:ring-2 focus:ring-green-tint'
 
 export function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Quale campo è sbagliato (revisione #53): l'email solo se è scritta male o se le credenziali non tornano,
+  // mai per un errore di rete; la password solo se manca o le credenziali non tornano.
+  const [wrong, setWrong] = useState<{ email: boolean; password: boolean }>({ email: false, password: false })
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const parsedEmail = parseEmail(email)
     if (!parsedEmail.ok) {
       setError(parsedEmail.message)
+      setWrong({ email: true, password: false })
       return
     }
     const parsedPassword = parsePassword(password)
     if (!parsedPassword.ok) {
       setError(parsedPassword.message)
+      setWrong({ email: false, password: true })
       return
     }
     setEmail(parsedEmail.value)
     setBusy(true)
     setError(null)
+    setWrong({ email: false, password: false })
     const result = await signInWithPassword(parsedEmail.value, parsedPassword.value)
     // Accesso riuscito: la guardia di route porta all'app appena arriva la sessione.
     if (!result.ok) {
       // I campi restano compilati: si corregge senza riscrivere tutto.
       setBusy(false)
       setError(result.message)
+      const credentials = result.message === WRONG_CREDENTIALS_MESSAGE
+      setWrong({ email: credentials, password: credentials })
     }
   }
 
@@ -59,13 +66,21 @@ export function LoginScreen() {
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          aria-invalid={error !== null}
+          aria-invalid={wrong.email}
           aria-describedby={error ? 'login-error' : undefined}
           className={inputClass}
         />
 
         <div className="mt-5">
-          <PasswordField id="password" label="Password" value={password} onChange={setPassword} autoComplete="current-password" />
+          <PasswordField
+            id="password"
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            invalid={wrong.password}
+            describedBy={error ? 'login-error' : undefined}
+          />
         </div>
 
         <button

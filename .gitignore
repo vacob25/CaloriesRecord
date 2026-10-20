@@ -20,3 +20,8 @@ dev-dist
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# Test end-to-end (tests/e2e)
+dist-e2e
+test-results
+playwright-report

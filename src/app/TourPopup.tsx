@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { isLastStep, TOUR_STEPS, tourLabel } from '../lib/tutorial'
 
@@ -18,6 +18,8 @@ interface TourPopupProps {
 export function TourPopup({ index, pathname, onBack, onNext, onClose }: TourPopupProps) {
   const step = TOUR_STEPS[index]!
   const titleRef = useRef<HTMLHeadingElement>(null)
+  // Dove era il focus prima del tutorial (letto al primo render): alla chiusura ci si torna (revisione #49).
+  const [opener] = useState(() => (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement ? document.activeElement : null))
 
   // Evidenzia l'elemento del passo (appena la schermata l'ha disegnato) e lo porta in vista.
   useEffect(() => {
@@ -41,6 +43,17 @@ export function TourPopup({ index, pathname, onBack, onNext, onClose }: TourPopu
       active?.removeAttribute('data-tour-active')
     }
   }, [step, pathname])
+
+  // Alla chiusura il focus non resta sul nulla (il body): torna al pulsante di prima, o alla schermata.
+  useEffect(
+    () => () => {
+      if (opener?.isConnected && opener !== document.body) return void opener.focus({ preventScroll: true })
+      const main = document.querySelector('main')
+      main?.setAttribute('tabindex', '-1')
+      main?.focus({ preventScroll: true })
+    },
+    [opener],
+  )
 
   // Chi usa VoiceOver sente il titolo del nuovo passo.
   useEffect(() => {

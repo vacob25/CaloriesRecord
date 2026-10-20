@@ -4,6 +4,7 @@ import { ErrorState } from '../../components/States'
 import { WaterIcon } from '../../components/WaterIcon'
 import { cardClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
+import { useAttemptIds } from '../../data/ids'
 import { useAddWater, useContainers, useDeleteWater, useProfile, useWater } from '../../data/queries'
 import { countFor, DEFAULT_CONTAINERS, formatWater, freeTotal, lastFor, waterProgress, waterTotal, type Container } from '../../lib/water'
 import { WaterGoalSheet } from './WaterGoalSheet'
@@ -18,6 +19,7 @@ export function WaterCard({ date }: { date: string }) {
   const containers = useContainers()
   const profile = useProfile()
   const add = useAddWater(date)
+  const attempts = useAttemptIds()
   const remove = useDeleteWater()
   const [custom, setCustom] = useState(false)
   const [editingGoal, setEditingGoal] = useState(false)
@@ -36,7 +38,10 @@ export function WaterCard({ date }: { date: string }) {
 
   function increase(container: Container) {
     remove.reset()
-    add.mutate({ ml: container.ml, container: container.key })
+    add.mutate(
+      { id: attempts.idFor(`${date}|${container.key}|${container.ml}`), ml: container.ml, container: container.key },
+      { onSuccess: attempts.done },
+    )
   }
 
   function decrease(key: string | null) {

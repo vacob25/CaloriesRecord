@@ -25,6 +25,7 @@ iPhone (Safari, PWA) ──► Vercel (file statici)
 | zod | validazione di input e risposte API | deciso (ADR-008, installato allo step 3) |
 | @vitejs/plugin-react, @tailwindcss/vite | plugin di build per React e Tailwind v4 | deciso (step 2) |
 | oxlint | lint (comando `npm run lint`) | deciso (ADR-016) |
+| @playwright/test, axe-core | test end-to-end e controllo di accessibilità (`npm run test:e2e`) | deciso (ADR-078); **solo di sviluppo**, versioni bloccate, non entrano nel pacchetto dell'app |
 | @fontsource-variable/plus-jakarta-sans | font servito dall'app, non da Google | deciso (ADR-017) |
 
 Non aggiungere altro senza motivarlo all'utente.
@@ -41,6 +42,8 @@ src/
     dates.ts                      giorno locale Europe/Rome
     meals.ts  search.ts           pasti, recenti, quantità proposta, ricerca senza accenti
     portions.ts  water.ts         porzioni casalinghe, acqua
+    goals.ts  sports.ts  sportEnergy.ts   obiettivo e ritmo, sport personali e tipi di giorno, calorie per sport (ADR-066, 073, 075)
+    mealSlots.ts  viewDay.ts  tutorial.ts   pasti su misura, giorno mostrato in Oggi e swipe, passi del tutorial
     foodValidation.ts  recipeValidation.ts  profileValidation.ts   validazione dei moduli (§9, §10)
     openFoodFacts.ts  catalog.ts  conversione e validazione di OFF e del catalogo
     rateLimit.ts  auth.ts  numbers.ts  labels.ts   limiti OFF, login/registrazione/pulizia storage, numeri, etichette
@@ -51,7 +54,7 @@ src/
     supabase.ts  env.ts           client e variabili d'ambiente
     auth.ts  authErrors.ts  dbErrors.ts   login, registrazione, uscita ed errori in italiano
     account.ts                            esporta i miei dati, elimina account (step 18)
-    foods.ts  meals.ts  profile.ts  weights.ts  targets.ts  recalibration.ts  water.ts
+    foods.ts  meals.ts  mealSlots.ts  profile.ts  weights.ts  targets.ts  recalibration.ts  water.ts
     openFoodFacts.ts  barcode.ts  chiamate a OFF; codice a barre: prima i propri cibi, poi OFF
     queries.ts                    hook TanStack Query condivisi (useFoods, useEntries, …) e chiavi della cache
     types.ts                      tipi delle righe del database
@@ -60,13 +63,14 @@ src/
   features/       una cartella per area, con componenti e hook propri
     today/  add-meal/  foods/  weight/  stats/  profile/  auth/  privacy/
   components/     UI condivisa: SheetFrame, GramsSheet, ConfirmButton, FavoriteButton, Field, Icon,
-                  MacroBar, MealPicker, OfflineBanner, Ring, ScreenHeader, States, Toast,
-                  WaterIcon, WeightChart, WeightPill, ui.ts, useToday.ts
+                  MacroBar, MealPicker, OfflineBanner, PasswordField, Ring, ScreenHeader, SportsFields, States, Toast,
+                  CategoryIcon, WaterIcon, WeightChart, WeightPill, ui.ts, useToday.ts
   app/            router, layout, provider, guardie delle rotte, barra di navigazione, avviso di aggiornamento, tutorial a popup (`tour.tsx`, `TourPopup.tsx`)
   styles/         tailwind e token (index.css)
 supabase/
-  migrations/     SQL numerati (001, 002, 003; vedi DATA_MODEL.md)
-  checks/         rls_two_users.sql, verifica RLS con due utenti (SECURITY.md)
+  migrations/     SQL numerati (001-010; vedi DATA_MODEL.md). Le nuove iniziano con `begin;` e finiscono con `commit;`: o passano tutte o nessuna
+  checks/         rls_two_users.sql (verifica RLS con due utenti) e no_session.sh (API senza sessione), SECURITY.md
+tests/e2e/        test end-to-end con Playwright e Supabase simulato (ADR-078)
 docs/
 ```
 
@@ -80,7 +84,7 @@ docs/
 ## Flusso dati
 - Lettura: componente → hook (`useEntries(date)` in `data/queries.ts`) → `data/meals.ts` → Supabase. Cache per chiave `[tabella, data]`. Gli hook usati da più feature stanno in `data/queries.ts` (regola 3: una feature non importa da un'altra).
 - All'uscita (logout) la cache di TanStack Query si svuota: nessun dato dell'utente resta in memoria.
-- Scrittura: componente → mutation → `data/…` → invalida le chiavi toccate. Aggiornamento ottimistico solo sulla cancellazione di una voce pasto (sparisce subito, torna se il server dà errore). L'aggiunta non è ottimistica: dopo il salvataggio compare l'avviso "Aggiunto · Annulla".
+- Scrittura: componente → mutation → `data/…` → invalida le chiavi toccate. Aggiornamento ottimistico solo sulla cancellazione di una voce pasto (sparisce subito, torna se il server dà errore). L'aggiunta non è ottimistica: dopo il salvataggio compare l'avviso "Aggiunto · Annulla". Le scritture del diario (voci pasto, acqua, contenitori) hanno un id deciso dall'app (`data/ids.ts`) e si inseriscono con `data/insertOnce.ts`: ripetere lo stesso salvataggio non crea doppioni (ADR-079). Senza rete restano in attesa e partono da sole; il banner lo dice.
 - Il target del giorno si legge da `daily_targets`; se manca per quella data si crea (vedi DOMAIN_RULES.md, "Target del giorno") copiando i parametri del profilo.
 
 ## PWA e iPhone (limiti reali)
@@ -96,5 +100,9 @@ docs/
 ## Errori e stati
 Ogni schermata gestisce tre stati: caricamento (scheletro), errore (messaggio + riprova), vuoto (invito all'azione). Gli errori di rete non cancellano mai ciò che l'utente stava scrivendo.
 
+## Notifiche push (Fase 1, ADR-086)
+`lib/push.ts` (pura: chiave, subscription, stato), `data/push.ts` (browser + Supabase), `features/profile/NotificationsSection.tsx`. Il service worker generato da vite-plugin-pwa carica `public/push-handler.js` con `workbox.importScripts` (gestori `push` e `notificationclick`): resta `generateSW`, niente `injectManifest`. La Edge Function sta in `supabase/functions/send-test-push/`, la logica testabile in `supabase/functions/_shared/sendTestPush.ts`. Le funzioni si distribuiscono con la CLI di Supabase usata via `npx`, non come dipendenza.
+
 ## Variabili d'ambiente
-`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026). Facoltativa: `VITE_VAPID_PUBLIC_KEY` (notifiche). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (la chiave publishable `sb_publishable_…`; le vecchie chiavi `anon`/`service_role` sono deprecate da Supabase entro fine 2026) e `VITE_PRIVACY_CONTACT` (il contatto mostrato nella pagina Privacy, ADR-065: sta nelle variabili di Vercel, mai nel repo). Nient'altro. Elenco in `.env.example`, valori solo in `.env.local` (ignorato da git) e nelle impostazioni di Vercel.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatCount, formatQuantity, parsePortions, portionAmount, stepCount, validatePortionRows } from './portions'
+import { formatCount, formatQuantity, parsePortions, per100Label, portionAmount, stepCount, validatePortionRows } from './portions'
 
 describe('parsePortions', () => {
   it('tiene solo le porzioni valide (dato sporco dal database → ignorato)', () => {
@@ -72,5 +72,12 @@ describe('porzioni quasi zero (revisione)', () => {
       errors: { a: 'Scrivi la quantità della porzione.' },
     })
     expect(parsePortions([{ name: 'pizzico', amount: 0.04 }])).toEqual([])
+  })
+})
+
+describe('per100Label', () => {
+  it('dice l’unità del cibo', () => {
+    expect(per100Label('g')).toBe('per 100 g')
+    expect(per100Label('ml')).toBe('per 100 ml')
   })
 })
