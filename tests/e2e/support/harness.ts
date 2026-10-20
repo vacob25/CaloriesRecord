@@ -174,7 +174,7 @@ export async function login(page: Page, who = 'a'): Promise<void> {
 export function resetDatabase(): void {
   sql(`truncate public.water_entries, public.drink_containers, public.meal_entries, public.recipe_items, public.foods,
     public.daily_targets, public.weight_logs, public.tdee_estimates, public.meal_slots, public.profiles, public.allowed_emails, public.push_subscriptions,
-    public.reminder_settings, public.reminder_status, public.reminder_log`)
+    public.reminder_settings, public.reminder_status, public.reminder_log, public.user_exercises`)
   sql(`delete from auth.users where id not in ('${USERS.a!.id}', '${USERS.b!.id}')`)
   sql(`insert into auth.users (id, email, aud, role) values
     ('${USERS.a!.id}', ${lit(USERS.a!.email)}, 'authenticated', 'authenticated'),

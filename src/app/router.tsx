@@ -1,6 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import { AddMealScreen } from '../features/add-meal/AddMealScreen'
+import { ExerciseFormScreen } from '../features/gym/ExerciseFormScreen'
+import { ExerciseScreen } from '../features/gym/ExerciseScreen'
+import { ExercisesScreen } from '../features/gym/ExercisesScreen'
 import { GymScreen } from '../features/gym/GymScreen'
 import { LoginScreen } from '../features/auth/LoginScreen'
 import { SignupScreen } from '../features/auth/SignupScreen'
@@ -60,6 +63,10 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <TodayScreen /> },
       { path: 'palestra', element: <GymScreen /> },
+      { path: 'palestra/esercizi', element: <ExercisesScreen /> },
+      { path: 'palestra/esercizi/nuovo', element: <ExerciseFormScreen mode="new" /> },
+      { path: 'palestra/esercizi/:key', element: <ExerciseScreen /> },
+      { path: 'palestra/esercizi/:key/modifica', element: <ExerciseFormScreen mode="edit" /> },
       { path: 'cibi', element: <FoodsScreen /> },
       { path: 'cibi/nuovo', element: <FoodFormScreen /> },
       { path: 'cibi/ricette/nuova', element: <RecipeFormScreen /> },

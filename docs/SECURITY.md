@@ -84,6 +84,11 @@ Cosa controlla (a mano sarebbe così):
 - Il codice filtra sempre per `user_id` quando legge o cancella subscription; nei log solo conteggi e codici di stato.
 - Se il segreto del cron trapela: `vault.update_secret` con un nuovo valore e rieseguire lo script del cron.
 
+## Catalogo esercizi globale (Fase 3, ADR-089)
+- `exercise_catalog` non ha `user_id`: è l'unica tabella così, ed è un'eccezione scelta (dati uguali per tutti, nessun dato personale). Regola: `select` solo per `authenticated`; **nessun** `insert/update/delete` per `anon` e `authenticated`, né grant né policy; si cambia solo con migrazioni. `rls_two_users.sql` controlla che un utente loggato legga ma non possa scrivere, modificare o cancellare, e che senza login non legga niente.
+- Esercizi, note e modifiche personali stanno in `user_exercises` (RLS per utente, controllata nello stesso script con due utenti).
+- Fonte dati: free-exercise-db, dominio pubblico (Unlicense). `wger` (CC-BY-SA) non è copiato: solo confronto. L'importazione genera SQL con testi di una fonte pubblica: nessun dato personale, nessun segreto.
+
 ## Input e rete
 - Validare ogni input con zod prima di scrivere sul database e ogni risposta di Open Food Facts prima di usarla.
 - Non usare `dangerouslySetInnerHTML`. Il nome di un cibo preso da Open Food Facts è testo non fidato: React lo escapa, non aggirarlo.

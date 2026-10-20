@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import type { FoodValues } from '../lib/foodValidation'
@@ -20,6 +21,7 @@ import {
 } from './foods'
 import { resolveBarcode } from './barcode'
 import { searchProducts } from './openFoodFacts'
+import { createCustomExercise, deleteUserExercise, listCatalog, listUserExercises, saveExercise, type ExercisePatch } from './exercises'
 import { listReminderSettings, readReminderHistory, saveReminderSetting } from './reminders'
 import { createMealSlot, deleteMealSlot, listMealSlots, renameMealSlot, reorderMealSlots } from './mealSlots'
 import type { MealSlot } from '../lib/mealSlots'
@@ -42,6 +44,7 @@ import {
 import { DataError } from './dbErrors'
 import { QUERY_STALE_LONG_MS } from '../lib/constants'
 import type { ReminderSetting } from '../lib/reminders'
+import { buildExerciseList, type Exercise } from '../lib/exercises'
 import { deleteWeight, listWeights, recentWeightsUntil, saveWeight } from './weights'
 
 /**
@@ -65,12 +68,47 @@ export const queryKeys = {
   waterForDay: (date: string) => ['water_entries', date] as const,
   containers: ['drink_containers'] as const,
   catalog: ['catalog'] as const,
+  exerciseCatalog: ['exercise_catalog'] as const,
+  userExercises: ['user_exercises'] as const,
   reminders: ['reminder_settings'] as const,
   reminderHistory: (today: string) => ['reminder_settings', 'history', today] as const,
   /** Statistiche: dipendono da voci, target e pesate (stanno sotto meal_entries per le voci). */
   stats: ['meal_entries', 'stats'] as const,
   /** Tutte le valutazioni di ricalibrazione (prefisso). */
   tdee: ['tdee_estimates'] as const,
+}
+
+/** Libreria esercizi (Fase 3): catalogo globale + copie personali, già uniti. Il catalogo cambia solo con una migrazione: resta fresco a lungo. */
+export function useExercises(): { data: Exercise[] | undefined; isPending: boolean; isError: boolean; error: unknown; refetch: () => void } {
+  const catalog = useQuery({ queryKey: queryKeys.exerciseCatalog, queryFn: listCatalog, staleTime: QUERY_STALE_LONG_MS })
+  const personal = useQuery({ queryKey: queryKeys.userExercises, queryFn: listUserExercises, staleTime: QUERY_STALE_LONG_MS })
+  const data = useMemo(
+    () => (catalog.data && personal.data ? buildExerciseList(catalog.data, personal.data) : undefined),
+    [catalog.data, personal.data],
+  )
+  return {
+    data,
+    isPending: catalog.isPending || personal.isPending,
+    isError: catalog.isError || personal.isError,
+    error: catalog.error ?? personal.error,
+    refetch: () => {
+      void catalog.refetch()
+      void personal.refetch()
+    },
+  }
+}
+
+export function useExerciseActions() {
+  const client = useQueryClient()
+  const refresh = () => client.invalidateQueries({ queryKey: queryKeys.userExercises })
+  return {
+    save: useMutation({
+      mutationFn: ({ target, patch }: { target: { userExerciseId: string | null; catalogId: string | null }; patch: ExercisePatch }) => saveExercise(target, patch),
+      onSettled: refresh,
+    }),
+    create: useMutation({ mutationFn: createCustomExercise, onSettled: refresh }),
+    remove: useMutation({ mutationFn: (id: string) => deleteUserExercise(id), onSettled: refresh }),
+  }
 }
 
 export function useReminderSettings() {
