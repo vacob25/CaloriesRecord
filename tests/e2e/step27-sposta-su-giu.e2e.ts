@@ -31,6 +31,8 @@ test('Step 27 · riordino dei pasti con "Sposta su/giù"', async ({ browser }) =
   check(await page.evaluate(() => document.activeElement?.textContent?.includes('Sposta Colazione')), 'il focus resta sul pulsante dopo lo spostamento')
   await expect(dialog.getByRole('status')).toHaveText('Colazione: posizione 2 di 5')
 
+  // "Sposta su" si riattiva solo a salvataggio finito: premere Invio prima non fa niente (su un runner lento il test era instabile).
+  await expect(up).toBeEnabled()
   await up.focus()
   await page.keyboard.press('Enter')
   await expect.poll(order).toBe(start)
