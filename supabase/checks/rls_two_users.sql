@@ -20,6 +20,8 @@ declare
   b uuid := gen_random_uuid();
   a_ingredient uuid;
   a_recipe uuid;
+  a_entry uuid;
+  rows_touched int;
   b_food uuid;
   n int;
   t text;
@@ -73,7 +75,8 @@ begin
     values ('Ricetta di prova', 'recipe', 150, 5, 25, 3, 500) returning id into a_recipe;
   insert into public.recipe_items (recipe_food_id, ingredient_food_id, grams) values (a_recipe, a_ingredient, 100);
   insert into public.meal_entries (entry_date, meal_type, food_id, food_name, grams, kcal, protein_g, carbs_g, fat_g)
-    values (current_date, 'lunch', a_ingredient, 'Cibo di prova', 100, 350, 10, 70, 2);
+    values (current_date, 'lunch', a_ingredient, 'Cibo di prova', 100, 350, 10, 70, 2)
+    returning id into a_entry;
   insert into public.weight_logs (log_date, weight_kg) values (current_date, 75.0);
   insert into public.daily_targets (target_date, training_type, target_kcal, protein_g, carbs_g, fat_g, maintenance_kcal)
     values (current_date, 'rest', 3130, 150, 464, 75, 2848);
@@ -166,6 +169,18 @@ begin
       raise exception 'FALLITO: B ha inserito in meal_slots a nome di A';
     exception when insufficient_privilege then null;
     end;
+  end if;
+
+  -- Inserimento idempotente dell'app (ADR-079: INSERT … ON CONFLICT (id) DO NOTHING con un id deciso dal telefono).
+  -- B che passa l'id di una voce di A non scrive niente e non scopre niente: la riga di A non è sua da toccare né da vedere.
+  select count(*) into n from public.meal_entries;
+  insert into public.meal_entries (id, entry_date, meal_type, food_name, grams, kcal, protein_g, carbs_g, fat_g)
+    values (a_entry, current_date, 'snack', 'x', 1, 1, 1, 1, 1)
+    on conflict (id) do nothing;
+  get diagnostics rows_touched = row_count;
+  if rows_touched <> 0 then raise exception 'FALLITO: B ha scritto in meal_entries riusando l''id di una voce di A'; end if;
+  if (select count(*) from public.meal_entries) <> n then
+    raise exception 'FALLITO: B vede o ha creato righe in meal_entries riusando l''id di una voce di A';
   end if;
 
   -- B non può "regalare" una sua riga ad A.

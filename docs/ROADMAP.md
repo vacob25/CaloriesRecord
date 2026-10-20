@@ -223,6 +223,25 @@ Accettazione:
 - `vercel.json` ha `X-Frame-Options: DENY` e `frame-ancestors 'none'` (un test lo verifica).
 - La pagina Privacy nomina obiettivo, ritmo del cut, sport, nomi dei pasti, contenitori e tipo di giorno; aggiungere una tabella all'esportazione senza descriverla non compila.
 - `rls_two_users.sql` passa sul progetto reale dopo la 010, e `no_session.sh` risponde "Nessun dato senza sessione".
+## Step 28 · Correzioni ai calcoli (revisione #11, #12, #22, #27, #37-#43; PR e, 19/10/2026)
+Fare: le correzioni di ADR-081 (arrotondamenti, null al posto di Infinity, avviso carboidrati solo in massa, riga settimanale della ricalibrazione, costanti in un solo file) con i test mancanti.
+Accettazione:
+- La proposta di ricalibrazione non supera mai il ±5% del mantenimento attuale.
+- Se lunedì mancavano i dati e poi arriva una proposta, la scheda del Profilo la mostra (una sola riga a settimana).
+- In definizione l'avviso "carboidrati sotto 3 g/kg" non compare.
+- Restano da decidere #13 e #14 (vedi Punti aperti di DECISIONS).
+## Step 27 · Riordino dei pasti senza trascinare (revisione #10; PR d, 19/10/2026)
+Fare: pulsanti "Sposta su" e "Sposta giù" per ogni pasto, con annuncio a voce (ADR-080).
+Accettazione:
+- Con la tastiera o con VoiceOver si riordinano i pasti senza trascinare; il focus resta sul pulsante e la nuova posizione viene annunciata.
+- Ai bordi (primo e ultimo pasto) il pulsante è disattivato.
+## Step 26 · Sessione e rete (revisione #2-#5, #7, #50, #54; PR c, 19/10/2026)
+Fare: id deciso dall'app e inserimento idempotente per voci pasto, acqua e contenitori; banner "Salvataggio in attesa"; il profilo non toglie l'app se il ricaricamento fallisce; pagina d'errore italiana su tutte le rotte; token scaduto gestito; controllo aggiornamenti al ritorno nell'app (ADR-079).
+Accettazione:
+- Se la risposta di un salvataggio si perde e si preme "Riprova", la voce è una sola.
+- Senza rete il salvataggio aspetta, il banner lo dice e, tornata la rete, parte da solo una volta sola.
+- Una schermata che non si carica mostra un messaggio in italiano con "Riprova"; un ricaricamento del profilo fallito in background non toglie l'app.
+- `rls_two_users.sql` passa, anche con il caso dell'id di una voce altrui.
 
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, notifiche (promemoria peso), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.

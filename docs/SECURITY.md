@@ -43,6 +43,7 @@ Dalla migrazione 007 controlla anche `meal_slots` (B non può inserire pasti a n
 **Da fare sul progetto reale (revisione #20, passaggio tuo):** la RLS reale è stata verificata l'ultima volta il 9/10 (migrazioni 002-005). Le migrazioni 006-010 sono provate in locale ma l'esito reale non è registrato. Dopo aver eseguito la 010: (1) SQL Editor → incolla ed esegui `supabase/checks/rls_two_users.sql`, esito atteso `RLS verificata: tutti i controlli superati`; (2) dal terminale `SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=sb_publishable_… bash supabase/checks/no_session.sh`, esito atteso `Nessun dato senza sessione`. Poi scrivi qui l'esito con la data.
 
 Dal 19/10/2026 (ADR-082) lo script controlla anche che nessuna funzione trigger sia eseguibile da anon o authenticated (era il caso di `seed_meal_slots` prima della 010). Provato: fallisce prima della 010, passa dopo.
+Dal 19/10/2026 (ADR-079) controlla anche l'inserimento idempotente dell'app (`INSERT … ON CONFLICT (id) DO NOTHING`): B che passa l'id di una voce di A non scrive niente e non vede niente. Esito locale: superato.
 
 Lo script ora controlla anche che `authenticated` non abbia permessi in più oltre a select/insert/update/delete (niente TRUNCATE, REFERENCES, TRIGGER, ADR-021) e controlla anche le tabelle della migrazione 003 (`water_entries`, `drink_containers`) e `save_recipe` (002), se presenti. Rieseguito il 9/10/2026 dopo le migrazioni 002-005: superato (vedi Esiti).
 

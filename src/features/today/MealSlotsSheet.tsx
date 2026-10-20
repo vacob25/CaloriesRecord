@@ -10,6 +10,7 @@ import {
   canAddSlot,
   canRemoveSlot,
   dragTargetIndex,
+  moveAnnouncement,
   moveSlot,
   newSlotKey,
   reorderByDrag,
@@ -76,6 +77,7 @@ export function MealSlotsSheet({ slots: savedSlots, onClose }: MealSlotsSheetPro
   const [confirming, setConfirming] = useState<string | null>(null)
   const [newName, setNewName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [announcement, setAnnouncement] = useState('')
 
   const busy = actions.create.isPending || actions.rename.isPending || actions.reorder.isPending || actions.remove.isPending
   const serverError = [actions.create, actions.rename, actions.reorder, actions.remove].find((mutation) => mutation.isError)
@@ -115,11 +117,19 @@ export function MealSlotsSheet({ slots: savedSlots, onClose }: MealSlotsSheetPro
     actions.reorder.mutate(keys, { onSettled: () => setPendingOrder(null) })
   }
 
-  /** Alternativa senza trascinare (tastiera e VoiceOver): freccia su / giù sulle due linee del pasto. */
+  /** Sposta di un posto e lo annuncia a voce. Usato dai pulsanti "Sposta su/giù" e dalle frecce sulle due linee. */
+  function moveBy(slot: MealSlot, direction: 1 | -1) {
+    if (busy) return
+    const next = moveSlot(slots, slot.key, direction)
+    saveOrder(next.map((item) => item.key))
+    setAnnouncement(moveAnnouncement(next, slot.key))
+  }
+
+  /** Alternativa senza trascinare (tastiera): freccia su / giù sulle due linee del pasto. */
   function onHandleKeyDown(event: KeyboardEvent<HTMLButtonElement>, slot: MealSlot) {
-    if (busy || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
     event.preventDefault()
-    saveOrder(moveSlot(slots, slot.key, event.key === 'ArrowUp' ? -1 : 1).map((item) => item.key))
+    moveBy(slot, event.key === 'ArrowUp' ? -1 : 1)
   }
 
   // Mentre si trascina la pagina non deve scorrere. Il listener non passivo è registrato una volta sola, all'apertura
@@ -281,7 +291,8 @@ export function MealSlotsSheet({ slots: savedSlots, onClose }: MealSlotsSheetPro
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center">
+                  <>
+                    <div className="flex items-center">
                     <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{slot.name}</span>
                     <button type="button" onClick={() => startRename(slot)} aria-label={`Rinomina ${slot.name}`} className={iconButton}>
                       <Icon path="M4 20h4L19 9l-4-4L4 16zM13 7l4 4" />
@@ -311,7 +322,30 @@ export function MealSlotsSheet({ slots: savedSlots, onClose }: MealSlotsSheetPro
                         <path d="M6 9.5h12M6 14.5h12" />
                       </svg>
                     </button>
-                  </div>
+                    </div>
+                    {/*
+                      Alternativa al trascinamento per VoiceOver, Switch Control e tastiera (revisione #10): due pulsanti veri.
+                      Restano fuori vista finché non hanno il focus, così la riga non si affolla sul telefono.
+                    */}
+                    <div className="sr-only flex gap-2 pt-1 focus-within:not-sr-only">
+                      <button
+                        type="button"
+                        disabled={busy || index === 0}
+                        onClick={() => moveBy(slot, -1)}
+                        className="min-h-11 rounded-button border border-line px-4 text-[15px] font-semibold disabled:opacity-40"
+                      >
+                        <span className="sr-only">Sposta {slot.name} </span>su
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy || index === slots.length - 1}
+                        onClick={() => moveBy(slot, 1)}
+                        className="min-h-11 rounded-button border border-line px-4 text-[15px] font-semibold disabled:opacity-40"
+                      >
+                        <span className="sr-only">Sposta {slot.name} </span>giù
+                      </button>
+                    </div>
+                  </>
                 )}
               </li>
               )
@@ -342,6 +376,9 @@ export function MealSlotsSheet({ slots: savedSlots, onClose }: MealSlotsSheetPro
             </button>
           </form>
 
+          <p role="status" aria-live="polite" className="sr-only">
+            {announcement}
+          </p>
           {error && <FormMessage kind="error">{error}</FormMessage>}
           {serverError && <FormMessage kind="error">{errorMessage(serverError.error)}</FormMessage>}
           <p className="mt-3 text-[13px] text-muted">

@@ -1,9 +1,9 @@
 # Strategia di test
 
 ## Principio
-Le funzioni di `src/lib/` sono pure e si testano con Vitest, file `*.test.ts` accanto al sorgente. Ogni funzione di dominio ha test prima di essere usata da un componente. Ci sono test unitari anche fuori da `lib/`: in `src/data/` (`env`, `authErrors`, `dbErrors` e i dati del catalogo `catalog/ingredienti.test.ts`) e in `src/app/` (`navItems`). La UI non ha test di componenti: si prova sull'iPhone a ogni step.
+Le funzioni di `src/lib/` sono pure e si testano con Vitest, file `*.test.ts` accanto al sorgente. Ogni funzione di dominio ha test prima di essere usata da un componente. Ci sono test unitari anche fuori da `lib/`: in `src/data/` (`env`, `authErrors`, `dbErrors`, `ids` e i dati del catalogo `catalog/ingredienti.test.ts`) e in `src/app/` (`navItems`). La UI non ha test di componenti: si prova sull'iPhone a ogni step.
 
-Prove end-to-end: si fanno a mano con Playwright contro Postgres + PostgREST locali; gli script non sono nel repo.
+Prove end-to-end: Playwright in `tests/e2e/` contro Postgres + PostgREST (vedi la sezione "Test end-to-end e CI").
 
 Comandi: `npm run test` (una volta), `npm run test:watch` mentre sviluppi. Uno step non è finito se `typecheck`, `lint`, `test` e `build` non passano tutti.
 
@@ -172,6 +172,9 @@ Voci fittizie, mai valori veri del catalogo.
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
 - Privacy e sicurezza (ADR-082): `lib/privacyData.test.ts` (la pagina descrive tutte le tabelle esportate) e `app/securityHeaders.test.ts` (`vercel.json` ha gli header anti-clickjacking). `rls_two_users.sql` controlla le funzioni dei trigger.
+- `tests/e2e/step10-ricalibrazione.e2e.ts`: anche la riga "nessuna" di inizio settimana che diventa proposta (ADR-081, #11); l'attesa del +5% è "multiplo di 10 sotto il tetto".
+- `tests/e2e/step27-sposta-su-giu.e2e.ts` (ADR-080): riordino dei pasti con i pulsanti "Sposta su/giù" da tastiera, focus che resta, annuncio a voce, pulsante ≥ 44 px con il focus.
+- `tests/e2e/step26-salvataggi-rete.e2e.ts` (ADR-079): risposta persa + "Riprova" = una sola voce; salvataggio senza rete (banner, poi parte da solo); "Esci" con il logout che fallisce; schermata che non si carica; ricaricamento del profilo fallito in background (orologio simulato). Ogni test fallisce sul codice precedente alla PR, tranne "Esci", che resta come protezione.
 - CI (`.github/workflows/ci.yml`) su ogni PR e su `main`: typecheck, lint, test unitari, build e test end-to-end. Nessun segreto e nessun accesso al progetto reale.
 - Ogni nuova funzione che si vede nell'app porta il suo test end-to-end nella stessa PR; ogni nuova migrazione entra da sola nel database dei test.
 
