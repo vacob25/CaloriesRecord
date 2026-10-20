@@ -1,4 +1,5 @@
 import { throwIfError } from './dbErrors'
+import { insertOnce } from './insertOnce'
 import { getSupabase } from './supabase'
 
 /** Acqua (step 15, ADR-049): tabella a sé, niente calorie, non entra nel diario dei pasti. */
@@ -43,9 +44,8 @@ export async function listWater(date: string): Promise<WaterEntry[]> {
   }))
 }
 
-export async function addWater(date: string, ml: number, container: string | null): Promise<void> {
-  const { error } = await getSupabase().from('water_entries').insert({ entry_date: date, ml, container })
-  throwIfError(error)
+export async function addWater(id: string, date: string, ml: number, container: string | null): Promise<void> {
+  await insertOnce('water_entries', { id, entry_date: date, ml, container })
 }
 
 export async function deleteWater(id: string): Promise<void> {
@@ -60,9 +60,8 @@ export async function listContainers(): Promise<DrinkContainer[]> {
   return data as DrinkContainer[]
 }
 
-export async function createContainer(name: string, ml: number): Promise<void> {
-  const { error } = await getSupabase().from('drink_containers').insert({ name, ml })
-  throwIfError(error)
+export async function createContainer(id: string, name: string, ml: number): Promise<void> {
+  await insertOnce('drink_containers', { id, name, ml })
 }
 
 export async function deleteContainer(id: string): Promise<void> {

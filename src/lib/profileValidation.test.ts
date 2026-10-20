@@ -12,6 +12,12 @@ describe('validateWeight (TESTING.md)', () => {
   it('75,25 → 75,3', () => {
     expect(validateWeight('75,25')).toEqual({ ok: true, value: 75.3 })
   })
+  it('si arrotonda prima di controllare i limiti (come per i grammi): 250,04 → 250, 29,96 → 30', () => {
+    expect(validateWeight('250,04')).toEqual({ ok: true, value: 250 })
+    expect(validateWeight('29,96')).toEqual({ ok: true, value: 30 })
+    expect(validateWeight('250,06').ok).toBe(false)
+    expect(validateWeight('29,94').ok).toBe(false)
+  })
 })
 
 describe('validatePersonal (§10)', () => {

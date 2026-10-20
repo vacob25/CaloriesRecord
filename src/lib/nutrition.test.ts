@@ -3,22 +3,17 @@ import { describe, expect, it } from 'vitest'
 import {
   bmr,
   dayTarget,
+  isLowCarbs,
   kcalFromMacros,
   macros,
   maintenance,
-  kcalOf,
   nutrientsFor,
   per100gFromServing,
   recipePer100g,
+  showLowCarbsWarning,
   sumNutrients,
   totalGrams,
 } from './nutrition'
-
-describe('kcalOf', () => {
-  it('110 kcal/100 g, 200 g → 220 (TESTING.md)', () => {
-    expect(kcalOf({ kcal: 110 }, 200)).toBeCloseTo(220, 2)
-  })
-})
 
 describe('nutrientsFor', () => {
   it('scala tutti i valori sui grammi', () => {
@@ -51,10 +46,17 @@ describe('kcalFromMacros', () => {
 describe('per100gFromServing', () => {
   it('porzione da 30 g con 120 kcal → 400 kcal/100 g', () => {
     const result = per100gFromServing({ kcal: 120, protein: 3, carbs: 21, fat: 2.4 }, 30)
-    expect(result.kcal).toBeCloseTo(400, 2)
-    expect(result.protein).toBeCloseTo(10, 2)
-    expect(result.carbs).toBeCloseTo(70, 2)
-    expect(result.fat).toBeCloseTo(8, 2)
+    expect(result?.kcal).toBeCloseTo(400, 2)
+    expect(result?.protein).toBeCloseTo(10, 2)
+    expect(result?.carbs).toBeCloseTo(70, 2)
+    expect(result?.fat).toBeCloseTo(8, 2)
+  })
+
+  it('porzione 0, negativa o non finita: nessun risultato (niente Infinity né NaN)', () => {
+    const values = { kcal: 120, protein: 3, carbs: 21, fat: 2.4 }
+    expect(per100gFromServing(values, 0)).toBeNull()
+    expect(per100gFromServing(values, -5)).toBeNull()
+    expect(per100gFromServing(values, Number.NaN)).toBeNull()
   })
 })
 
@@ -77,7 +79,13 @@ describe('recipePer100g', () => {
 
   it('peso cotto uguale al crudo: i valori sono la media pesata', () => {
     const result = recipePer100g(pastaAlRagu, totalGrams(pastaAlRagu))
-    expect(result.kcal).toBeCloseTo((1088.4 / 460) * 100, 1)
+    expect(result?.kcal).toBeCloseTo((1088.4 / 460) * 100, 1)
+  })
+
+  it('peso cotto 0, negativo o non finito: nessun risultato (niente Infinity né NaN)', () => {
+    expect(recipePer100g(pastaAlRagu, 0)).toBeNull()
+    expect(recipePer100g(pastaAlRagu, -100)).toBeNull()
+    expect(recipePer100g(pastaAlRagu, Number.POSITIVE_INFINITY)).toBeNull()
   })
 
   it('totalGrams somma i grammi crudi', () => {
@@ -98,7 +106,12 @@ describe('bmr (TESTING.md)', () => {
 
 describe('maintenance', () => {
   it('1780 · 1,6 → 2848', () => {
-    expect(maintenance(1780, 1.6)).toBeCloseTo(2848, 2)
+    expect(maintenance(1780, 1.6)).toBe(2848)
+  })
+
+  it('è un intero (§2, ADR-052): 1783,4 · 1,375 = 2452,175 → 2452', () => {
+    expect(maintenance(1783.4, 1.375)).toBe(2452)
+    expect(maintenance(1780.5, 1.6)).toBe(2849)
   })
 })
 
@@ -114,13 +127,30 @@ describe('dayTarget (TESTING.md)', () => {
 
 describe('macros (TESTING.md)', () => {
   it.each([
-    [3130, { protein: 150, fat: 75, carbs: 464, lowCarbs: false }],
-    [3330, { protein: 150, fat: 75, carbs: 514, lowCarbs: false }],
-    [2000, { protein: 150, fat: 75, carbs: 181, lowCarbs: true }],
+    [3130, { protein: 150, fat: 75, carbs: 464 }],
+    [3330, { protein: 150, fat: 75, carbs: 514 }],
+    [2000, { protein: 150, fat: 75, carbs: 181 }],
   ])('%s kcal, 75 kg, 2,0/1,0 g/kg → %o', (target, expected) => {
     const result = macros(target, 75, 2, 1)
     expect(result).toEqual(expected)
     // Coerenza: le kcal dei macro tornano al target entro ±5 kcal.
     expect(Math.abs(4 * result.protein + 4 * result.carbs + 9 * result.fat - target)).toBeLessThanOrEqual(5)
+  })
+})
+
+describe('isLowCarbs e showLowCarbsWarning (§3)', () => {
+  it('la soglia è 3 g per kg: 225 g a 75 kg è il limite, sotto è basso', () => {
+    expect(isLowCarbs(225, 75)).toBe(false)
+    expect(isLowCarbs(224, 75)).toBe(true)
+  })
+
+  it('l’avviso vale solo per chi vuole aumentare massa', () => {
+    expect(showLowCarbsWarning('bulk', 181, 75)).toBe(true)
+    expect(showLowCarbsWarning('cut', 181, 75)).toBe(false)
+    expect(showLowCarbsWarning('maintain', 181, 75)).toBe(false)
+  })
+
+  it('con carboidrati sufficienti non avvisa nemmeno in massa', () => {
+    expect(showLowCarbsWarning('bulk', 464, 75)).toBe(false)
   })
 })

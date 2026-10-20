@@ -24,7 +24,7 @@ Riferimento visivo: canvas "App Calorie – Design v1" (schermate Oggi, Aggiungi
 | `--green-tint` | #DCF3E8 | badge verdi |
 | `--blue` | #2F62D9 | proteine, peso, traguardo |
 | `--orange` | #E9861F | carboidrati, giorni sotto target |
-| `--orange-text` | #C4680C | testo arancio (contrasto) |
+| `--orange-text` | #A35200 | testo arancio (contrasto 5,6:1 su bianco; il vecchio #C4680C faceva 3,9:1) |
 | `--magenta` | #B83E95 | grassi |
 
 Regole sul colore: verde = calorie e azioni; blu = proteine e peso; arancio = carboidrati e "sotto target"; magenta = grassi. Non riusare questi colori con altri significati. Il testo arancio chiaro (#E9861F) non va su fondo bianco per testi piccoli: usare `--orange-text`.
@@ -41,13 +41,17 @@ Raggi: card 20-24, pulsanti 16, pill 999, sheet 28 in alto. Margini laterali 20 
 - Elementi cliccabili sono `<button>` o `<a>`, mai `<div onClick>`. Pulsanti con sola icona hanno `aria-label`.
 - Ogni campo ha `<label>`. Campi numerici con `inputmode="decimal"` o `"numeric"`.
 - Rispettare `prefers-reduced-motion`. Safe area iOS gestite (notch e barra in basso).
-- I grafici hanno un testo alternativo che dice il risultato (es. "Peso in salita di 0,6 kg in 4 settimane").
+- I grafici hanno un testo alternativo che dice il risultato (es. "Peso in salita di 0,6 kg in 4 settimane"). I loro colori sono variabili CSS dei token (`var(--color-…)`), mai copie scritte a mano.
+- **Pannelli** (`SheetFrame`, ADR-084): all'apertura il focus va al titolo; Tab e Maiusc+Tab restano nel pannello; Esc o la X chiudono e il focus torna al pulsante che l'ha aperto; la pagina sotto non scorre. Altezza massima = schermo meno barra e zone sicure (`100dvh`): l'intestazione con la X resta ferma e scorre solo il contenuto.
+- **Focus da tastiera:** i campi hanno bordo e anello verdi; le scelte a carte e a segmenti (radio nascosti) hanno un anello verde sull'etichetta (`choiceFocusClass`, visibile solo con `:focus-visible`).
+- **Avvisi temporanei** (Toast, "Aggiunto · Annulla"): il timer si ferma finché hanno il focus o il puntatore sopra. L'avviso di aggiornamento sta sopra il tutorial.
+- Il testo arancio usa `--orange-text` (#A35200, 5,6:1 su bianco). La barra arancione dei carboidrati (2,7:1) non è testo: il valore è sempre scritto accanto.
 
 ## Schermate
 
 ### Oggi (home)
 - Intestazione: data per esteso, titolo "Oggi", pill con peso del giorno (tocco → registra/modifica il peso).
-- Card riepilogo: anello con "kcal restanti" al centro; a lato obiettivo, mangiate e badge del tipo di giorno ("Giorno calcio +200"); sotto tre barre macro (proteine, carboidrati, grassi) con "mangiati / obiettivo".
+- Card riepilogo: anello con "kcal restanti" al centro; a lato obiettivo, mangiate e badge del tipo di giorno ("Giorno: Palestra + calcio", e sotto "Bonus di oggi: +731 kcal (Palestra 281 + Calcio 450)"); sotto tre barre macro (proteine, carboidrati, grassi) con "mangiati / obiettivo".
 - Se le kcal superano il target: l'anello mostra "oltre di N kcal", non numeri negativi, senza colore di allarme (in un bulk non è un errore grave).
 - Promemoria del peso (step 17) in cima, sotto l'intestazione, finché il peso di oggi non è registrato: testo a sinistra, pulsante "Registra peso" a destra.
 - Cinque card pasto (Colazione, Snack, Pranzo, Cena, Spuntino) con totale kcal e voci; un pasto vuoto è una card tratteggiata "+ Aggiungi". Tocco su una voce → modifica grammi o elimina.
@@ -81,7 +85,7 @@ Inserimento del peso mattutino, grafico con punti grezzi e media mobile, distanz
 Selettore Settimana/Mese con intervallo date. Tre numeri chiave (media giornaliera, giorni rispettati, peso in kg/settimana), grafico a barre calorie contro linea del target (verde = rispettato, arancio = sotto), grafico peso 4 settimane con traguardo, distribuzione calorie per pasto, cibi più frequenti. Periodo senza dati: stato vuoto, non grafici a zero.
 
 ### Oggi · I tuoi pasti (step 20)
-Sheet con una riga per pasto: nome, matita (rinomina), X (elimina in due tocchi) e a destra due linee chiare (`text-muted`) che dicono "trascinami". Tenendo premuto (350 ms) la riga si solleva in primo piano come in iOS (scala 1,03, ombra, bordi arrotondati), segue il dito e le altre si spostano; al rilascio scivola al suo posto e l'ordine si salva. Dalle due linee il trascinamento parte subito. Frecce su/giù sulle due linee per tastiera e VoiceOver.
+Sheet con una riga per pasto: nome, matita (rinomina), X (elimina in due tocchi) e a destra due linee chiare (`text-muted`) che dicono "trascinami". Tenendo premuto (350 ms) la riga si solleva in primo piano come in iOS (scala 1,03, ombra, bordi arrotondati), segue il dito e le altre si spostano; al rilascio scivola al suo posto e l'ordine si salva. Dalle due linee il trascinamento parte subito. Alternativa senza trascinare (revisione #10): in ogni riga due pulsanti veri, "Sposta [pasto] su" e "Sposta [pasto] giù" (44 px, disattivati ai bordi), fuori vista finché non hanno il focus (`sr-only` + `focus-within:not-sr-only`) così la riga non si affolla sul telefono; raggiungibili con VoiceOver, Switch Control e Tab. Dopo lo spostamento una frase a voce dice "Colazione: posizione 2 di 5". Restano anche le frecce su/giù sulle due linee.
 
 ### Oggi · voci trascinabili e sport del giorno (step 21, 22)
 Sotto i pulsanti degli sport, una riga dice il bonus del giorno: "Bonus di oggi: +731 kcal (Palestra 281 + Calcio 450)". Il selettore del giorno ha "Riposo" e un pulsante per sport (fino a 4), a toggle: si toccano gli sport fatti oggi, l'etichetta diventa "Palestra + calcio + nuoto". Una voce si sposta in un altro pasto tenendola premuta (350 ms): si solleva come nel riordino dei pasti, il pasto sotto il dito si evidenzia (anello verde / riquadro tratteggiato verde chiaro), la pagina scorre da sola vicino ai bordi; al rilascio sul pasto la voce passa lì, altrove torna indietro.

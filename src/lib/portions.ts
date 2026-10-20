@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { GRAMS_MAX } from './constants'
+import { GRAMS_MAX, PORTION_COUNT_STEP, PORTION_NAME_MAX } from './constants'
 import { formatNumber, parseDecimal, round } from './numbers'
 
 /** Unità di un cibo: g, oppure ml per i liquidi (valori per 100 ml, ADR-048). */
@@ -12,9 +12,6 @@ export interface Portion {
   amount: number
 }
 
-export const PORTION_NAME_MAX = 40
-/** Passo del numero di porzioni: si può dire anche "mezzo" (es. ½ banana). */
-export const PORTION_COUNT_STEP = 0.5
 
 const portionSchema = z.object({
   name: z.string().trim().min(1).max(PORTION_NAME_MAX),

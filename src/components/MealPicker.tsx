@@ -1,5 +1,6 @@
 import type { MealType } from '../lib/labels'
 import type { MealSlot } from '../lib/mealSlots'
+import { choiceFocusClass } from './ui'
 
 /** Scelta del pasto (radio: accessibile con VoiceOver). Va a capo se i pasti sono molti (fino a 8). */
 export function MealPicker({
@@ -20,7 +21,7 @@ export function MealPicker({
         {slots.map((slot) => (
           <label
             key={slot.key}
-            className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-[12px] px-2.5 text-[13px] font-semibold whitespace-nowrap ${
+            className={`${choiceFocusClass} flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-[12px] px-2.5 text-[13px] font-semibold whitespace-nowrap ${
               value === slot.key ? 'bg-surface text-ink shadow-sm' : 'text-muted'
             }`}
           >
