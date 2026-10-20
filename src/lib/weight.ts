@@ -6,6 +6,7 @@ import {
   SLOPE_MIN_LOGS,
   SLOPE_WINDOW_DAYS,
   WEIGHT_JUMP_CONFIRM_KG,
+  WEIGHT_STABLE_KG,
 } from './constants'
 import { addDays } from './dates'
 
@@ -112,7 +113,7 @@ export function averageChange(points: readonly WeightPoint[]): { kg: number; day
 /** Distanza dal peso obiettivo: quanti kg mancano e in che direzione. */
 export function distanceToGoal(currentKg: number, goalKg: number): { kg: number; direction: 'up' | 'down' | 'reached' } {
   const diff = goalKg - currentKg
-  if (Math.abs(diff) < 0.05) return { kg: 0, direction: 'reached' }
+  if (Math.abs(diff) < WEIGHT_STABLE_KG) return { kg: 0, direction: 'reached' }
   return { kg: Math.abs(diff), direction: diff > 0 ? 'up' : 'down' }
 }
 

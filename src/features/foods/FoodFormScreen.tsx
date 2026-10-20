@@ -10,7 +10,8 @@ import { errorMessage } from '../../data/dbErrors'
 import { useDeleteFood, useFood, useSaveFood } from '../../data/queries'
 import type { Food } from '../../data/types'
 import { validateFood, type FoodField, type FoodFormInput } from '../../lib/foodValidation'
-import { PORTION_NAME_MAX, per100Label, validatePortionRows, type FoodUnit, type Portion, type PortionRowInput } from '../../lib/portions'
+import { PORTION_NAME_MAX } from '../../lib/constants'
+import { per100Label, validatePortionRows, type FoodUnit, type Portion, type PortionRowInput } from '../../lib/portions'
 import { sanitizeNumberInput } from '../../lib/numbers'
 
 const EMPTY_FORM: FoodFormInput = {

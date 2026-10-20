@@ -7,6 +7,7 @@ import {
   TARGET_ROUNDING_KCAL,
 } from './constants'
 import { round } from './numbers'
+import type { Goal } from './goals'
 
 /** Valori nutrizionali per 100 g (come in `foods`). */
 export interface Per100g {
@@ -48,8 +49,9 @@ export function kcalFromMacros(values: Omit<Per100g, 'kcal'>): number {
   return values.protein * KCAL_PER_G_PROTEIN + values.carbs * KCAL_PER_G_CARBS + values.fat * KCAL_PER_G_FAT
 }
 
-/** Converte valori riferiti a una porzione di `servingG` grammi in valori per 100 g. */
-export function per100gFromServing(perServing: Per100g, servingG: number): Per100g {
+/** Converte valori riferiti a una porzione di `servingG` grammi in valori per 100 g (null se la porzione non è > 0). */
+export function per100gFromServing(perServing: Per100g, servingG: number): Per100g | null {
+  if (!(servingG > 0) || !Number.isFinite(servingG)) return null
   const factor = 100 / servingG
   return {
     kcal: perServing.kcal * factor,
@@ -67,9 +69,10 @@ export interface RecipeIngredient {
 /**
  * Valori per 100 g di una ricetta (DATA_MODEL.md, recipe_items):
  * somma degli ingredienti (crudi) diviso il peso totale cotto, per 100.
- * Arrotondati a 2 decimali come la colonna numeric(8,2).
+ * Arrotondati a 2 decimali come la colonna numeric(8,2). Con un peso cotto non > 0 non c'è un risultato (null).
  */
-export function recipePer100g(ingredients: readonly RecipeIngredient[], cookedWeightG: number): Per100g {
+export function recipePer100g(ingredients: readonly RecipeIngredient[], cookedWeightG: number): Per100g | null {
+  if (!(cookedWeightG > 0) || !Number.isFinite(cookedWeightG)) return null
   const total = sumNutrients(ingredients.map((item) => nutrientsFor(item.per100g, item.grams)))
   const factor = 100 / cookedWeightG
   return {
@@ -99,9 +102,9 @@ export function bmr({ sex, weightKg, heightCm, ageYears }: BmrInput): number {
   return 10 * weightKg + 6.25 * heightCm - 5 * ageYears + BMR_SEX_OFFSET[sex]
 }
 
-/** Mantenimento = BMR · fattore di attività. */
+/** Mantenimento = round(BMR · fattore di attività): intero, come `daily_targets.maintenance_kcal` (§2, ADR-052). */
 export function maintenance(bmrKcal: number, activityFactor: number): number {
-  return bmrKcal * activityFactor
+  return round(bmrKcal * activityFactor)
 }
 
 /**
@@ -117,8 +120,6 @@ export interface Macros {
   protein: number
   fat: number
   carbs: number
-  /** Carboidrati sotto 3 g/kg: target troppo basso per un bulk (§3). */
-  lowCarbs: boolean
 }
 
 /** Macro del giorno: prima proteine e grassi arrotondati, poi i carboidrati da quei valori (§3). */
@@ -126,10 +127,18 @@ export function macros(targetKcal: number, weightKg: number, proteinGPerKg: numb
   const protein = round(proteinGPerKg * weightKg)
   const fat = round(fatGPerKg * weightKg)
   const carbs = round((targetKcal - KCAL_PER_G_PROTEIN * protein - KCAL_PER_G_FAT * fat) / KCAL_PER_G_CARBS)
-  return { protein, fat, carbs, lowCarbs: isLowCarbs(carbs, weightKg) }
+  return { protein, fat, carbs }
 }
 
-/** §3: carboidrati sotto la soglia minima per kg di peso (avviso). */
+/** §3: carboidrati sotto la soglia minima per kg di peso. */
 export function isLowCarbs(carbsG: number, weightKg: number): boolean {
   return carbsG < MIN_CARBS_G_PER_KG * weightKg
+}
+
+/**
+ * §3: l'avviso "carboidrati troppo bassi" vale solo per chi vuole aumentare massa. In definizione o mantenimento
+ * scendere sotto 3 g/kg è normale e il consiglio ("basso per aumentare massa") sarebbe sbagliato.
+ */
+export function showLowCarbsWarning(goal: Goal, carbsG: number, weightKg: number): boolean {
+  return goal === 'bulk' && isLowCarbs(carbsG, weightKg)
 }

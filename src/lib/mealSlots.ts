@@ -58,6 +58,12 @@ export function moveSlot(slots: readonly MealSlot[], key: MealType, direction: 1
   return next
 }
 
+/** Frase per chi non vede lo schermo, letta dopo uno spostamento: "Colazione: posizione 2 di 5". */
+export function moveAnnouncement(slots: readonly MealSlot[], key: MealType): string {
+  const index = slots.findIndex((slot) => slot.key === key)
+  return index < 0 ? '' : `${slots[index]!.name}: posizione ${index + 1} di ${slots.length}`
+}
+
 /** Nome di un pasto dalla sua chiave ("Pasto" se la chiave non è più nell'elenco, che con la FK non succede). */
 export function slotName(slots: readonly MealSlot[], key: MealType): string {
   return slots.find((slot) => slot.key === key)?.name ?? 'Pasto'

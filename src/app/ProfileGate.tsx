@@ -10,7 +10,8 @@ import { LoadingScreen } from './LoadingScreen'
 export function ProfileGate({ children }: { children: ReactNode }) {
   const profile = useProfile()
   if (profile.isPending) return <LoadingScreen />
-  if (profile.isError) {
+  // Solo se non c'è nessun dato: un ricaricamento in background fallito non deve togliere l'app da sotto i piedi.
+  if (profile.isError && profile.data === undefined) {
     return (
       <main className="mx-auto max-w-[480px] pt-[calc(env(safe-area-inset-top)+32px)]">
         <ErrorState message={errorMessage(profile.error)} onRetry={() => void profile.refetch()} />

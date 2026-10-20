@@ -15,7 +15,8 @@ mantenimento = round(BMR · activity_factor)     (default 1,60; intero, ADR-052)
 target_base  = mantenimento · (1 + surplus_pct) (default +10%)
 target_giorno = target_base + Σ calorie degli allenamenti del giorno      (step 22, §2b)
 ```
-- Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052).
+- Arrotondare il mantenimento all'intero (kcal) prima di calcolare il target: `daily_targets.maintenance_kcal` è intero e il target deve potersi ricalcolare dal mantenimento salvato (ADR-052). L'arrotondamento è dentro `maintenance()` (revisione #37): i chiamanti non arrotondano.
+- **Limite noto (revisione #41):** il peso usato per un giorno si ricava dalle pesate di quel giorno; se sono state cancellate, dalle proteine salvate nel target divise per i g/kg proteine **attuali**. Se nel frattempo i g/kg sono cambiati, il bonus sport e i macro ricalcolati per quel giorno usano un peso leggermente sbagliato. Succede solo dopo aver cancellato le pesate e cambiato i g/kg; non si salva il peso nel target per non cambiare lo schema per un caso così raro.
 - Arrotondare il target al multiplo di 10 kcal più vicino.
 - `activity_factor` 1,60 è il valore del **profilo di esempio** (usato in tutti i test) e il default del database: circa 6 sedute di allenamento a settimana. Chi si registra sceglie un livello: Poco attivo 1,2 · Leggero 1,375 · Medio 1,55 · Alto 1,725 (ADR-067); la ricalibrazione lo corregge. Le calorie degli sport si sommano al target (§2b) e il livello di attività può già includere gli allenamenti abituali: possibile doppio conteggio, **punto aperto** in DECISIONS (ADR-075).
 - `training_type`: `rest` oppure gli sport del giorno, `sport_1`, `sport_1+sport_3`… (step 21, ADR-073; i nomi vengono dagli sport del profilo, fino a 4).
@@ -34,7 +35,7 @@ proteine_g = protein_g_per_kg · peso_kg            (default 2,0)
 grassi_g   = fat_g_per_kg · peso_kg                (default 1,0)
 carboidrati_g = (target_kcal − 4·proteine_g − 9·grassi_g) / 4
 ```
-Ordine di calcolo: arrotonda prima proteine e grassi all'intero (`Math.round`), poi calcola i carboidrati da quei valori già arrotondati e arrotondali. Così le kcal dei macro tornano al target. Fattori 4/4/9 kcal per g. Se i carboidrati risultano < 3 g/kg, mostrare un avviso (target troppo basso per un bulk).
+Ordine di calcolo: arrotonda prima proteine e grassi all'intero (`Math.round`), poi calcola i carboidrati da quei valori già arrotondati e arrotondali. Così le kcal dei macro tornano al target. Fattori 4/4/9 kcal per g. Se i carboidrati risultano < 3 g/kg **e l'obiettivo è Massa**, mostrare un avviso (target troppo basso per aumentare massa): in definizione o mantenimento scendere sotto 3 g/kg è normale e l'avviso non compare (revisione #12). *Da decidere (revisione #13):* con un target molto basso e g/kg alti i carboidrati possono risultare negativi; la regola per quel caso non è ancora stabilita.
 
 **Esempio a 3130 kcal, 75 kg:** proteine 150 g (600 kcal), grassi 75 g (675 kcal), carboidrati (3130 − 600 − 675)/4 = 463,75 → **464 g**. A 3330 kcal: (3330 − 1275)/4 = 513,75 → **514 g**.
 
@@ -69,7 +70,7 @@ mantenimento_stimato = I − surplus_reale
 ```
 Decisione:
 - Se la pendenza in kg/settimana è dentro la **banda dell'obiettivo**: nessuna proposta. Massa **+0,20/+0,40**; mantenimento **±0,10**; cut da **−1,0% a −0,5% del peso** (peso di oggi, 3 decimali). Sotto −1% in cut si avvisa che si rischia di perdere muscolo.
-- Altrimenti: `mantenimento_proposto = clamp(mantenimento_stimato, attuale · 0,95, attuale · 1,05)`, arrotondato a 10 kcal. Il target nuovo si ricava come sempre dall'obiettivo (massa: `· (1 + surplus_pct)`; cut: meno il deficit) (+ bonus allenamento nei giorni di allenamento). Al massimo una proposta a settimana.
+- Altrimenti: `mantenimento_proposto = clamp(mantenimento_stimato, attuale · 0,95, attuale · 1,05)`, arrotondato a 10 kcal **senza uscire dai limiti**: se l'arrotondamento supererebbe il tetto o il pavimento si prende il multiplo di 10 più vicino dentro il limite (attuale 2843: tetto 2985,15 → **2980**, non 2990; pavimento 2700,85 → **2710**). Il target nuovo si ricava come sempre dall'obiettivo (massa: `· (1 + surplus_pct)`; cut: meno il deficit) (+ bonus allenamento nei giorni di allenamento). Al massimo una proposta a settimana: la settimana ha una sola riga in `tdee_estimates`; se lunedì mancavano i dati (riga "nessuna") e più avanti nella stessa settimana c'è una proposta, quella riga diventa la proposta (resta una sola); una riga già in attesa, accettata o rifiutata non si riscrive (`weeklyRowAction`, revisione #11).
 - Se il peso scende o resta fermo con target e registrazione costanti, la proposta alza il mantenimento (entro il +5%). Se la pendenza supera +0,50 kg/settimana, lo abbassa e avvisa che l'eccesso è soprattutto grasso.
 - **Accettare** una proposta imposta `activity_factor = mantenimento_proposto / BMR_attuale` (3 decimali), così il BMR continua a seguire il peso che sale. **Rifiutare** non cambia nulla. Le righe di `daily_targets` già create non si toccano; vale dal giorno successivo.
 
@@ -91,7 +92,7 @@ Limiti da dichiarare all'utente: 7700 kcal/kg è una semplificazione (l'aumento 
 ## 9. Input e validazione
 - Grammi: > 0 e ≤ 5000. Kcal/100 g: 0-900 (olio puro ~ 884). Macro/100 g: 0-100 e la somma proteine + carboidrati + grassi ≤ 100 g (tolleranza 1%).
 - Se kcal dichiarate e kcal ricalcolate dai macro differiscono di oltre il 20%, avviso "valori incoerenti, controlla l'etichetta" (non blocco).
-- Peso: 30-250 kg. Un salto di oltre 2 kg dal giorno prima chiede conferma.
+- Peso: 30-250 kg, controllati **dopo** l'arrotondamento a 1 decimale ("250,04" vale 250,0 ed è valido, come per i grammi). Un salto di oltre 2 kg dal giorno prima chiede conferma.
 
 ## 10. Dati personali (decisi con l'utente l'8/10/2026, ADR-038)
 - Altezza: 100-250 cm.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeDayTarget, progress, rescaledMaintenanceKcal, ringStatus, withTrainingType } from './targets'
+import { computeDayTarget, progress, ringStatus, withTrainingType } from './targets'
 
 // Profilo di esempio FITTIZIO (DOMAIN_RULES.md): uomo, 75 kg, 180 cm, 20 anni il giorno considerato.
 const profile = {
@@ -23,7 +23,7 @@ describe('computeDayTarget — ACCETTAZIONE step 6', () => {
       trainingType: 'rest',
       maintenanceKcal: 2848,
       targetKcal: 3130,
-      macros: { protein: 150, fat: 75, carbs: 464, lowCarbs: false },
+      macros: { protein: 150, fat: 75, carbs: 464 },
     })
   })
 
@@ -61,13 +61,6 @@ describe('progress', () => {
     expect(progress(75, 150)).toBe(0.5)
     expect(progress(200, 150)).toBe(1)
     expect(progress(10, 0)).toBe(0)
-  })
-})
-
-describe('mantenimento riscalato sul fattore di attività (Parametri)', () => {
-  it('stesso BMR, nuovo moltiplicatore: 2848 / 1,6 · 1,8 = 3204', () => {
-    expect(rescaledMaintenanceKcal(2848, 1.6, 1.8)).toBeCloseTo(3204, 6)
-    expect(rescaledMaintenanceKcal(2848, 1.6, 1.6)).toBe(2848)
   })
 })
 

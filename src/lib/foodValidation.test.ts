@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { validateFood, validateGrams, type FoodFormInput } from './foodValidation'
+import { hasKcalMismatch, validateFood, validateGrams, type FoodFormInput } from './foodValidation'
 
 const base: FoodFormInput = {
   name: 'Riso',
@@ -147,5 +147,19 @@ describe('arrotondamento prima del controllo (revisione)', () => {
     expect(validateGrams('0,04')).toEqual({ ok: false, message: 'I grammi devono essere più di 0.' })
     expect(validateGrams('0,05')).toEqual({ ok: true, value: 0.1 })
     expect(validateGrams('5000,04')).toEqual({ ok: true, value: 5000 })
+  })
+})
+
+describe('hasKcalMismatch (avviso se kcal e macro non tornano, soglia 20%)', () => {
+  it('esattamente 20% di differenza non avvisa, appena oltre sì', () => {
+    expect(hasKcalMismatch({ kcal: 100, protein: 30, carbs: 0, fat: 0 })).toBe(false) // macro = 120
+    expect(hasKcalMismatch({ kcal: 100, protein: 30.25, carbs: 0, fat: 0 })).toBe(true) // macro = 121
+  })
+  it('valori coerenti non avvisano', () => {
+    expect(hasKcalMismatch({ kcal: 165, protein: 10, carbs: 20, fat: 5 })).toBe(false)
+  })
+  it('0 kcal con macro presenti avvisa, tutto a zero no', () => {
+    expect(hasKcalMismatch({ kcal: 0, protein: 1, carbs: 0, fat: 0 })).toBe(true)
+    expect(hasKcalMismatch({ kcal: 0, protein: 0, carbs: 0, fat: 0 })).toBe(false)
   })
 })

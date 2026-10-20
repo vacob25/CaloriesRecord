@@ -1,6 +1,7 @@
 import type { MealType } from '../lib/labels'
 import { entrySnapshot, rescaleEntry } from '../lib/meals'
 import { throwIfError } from './dbErrors'
+import { insertOnce } from './insertOnce'
 import { getSupabase } from './supabase'
 import type { Food, MealEntry } from './types'
 
@@ -63,6 +64,8 @@ export async function listEntriesBetween(start: string, end: string): Promise<Me
 }
 
 export interface NewEntry {
+  /** Deciso dall'app (`newId`): ripetere lo stesso salvataggio non crea una seconda voce. */
+  id: string
   date: string
   mealType: MealType
   food: Food
@@ -72,22 +75,21 @@ export interface NewEntry {
 /** Registra un cibo: copia nome e valori (snapshot) e aggiorna "usato di recente". */
 export async function addEntry(input: NewEntry): Promise<MealEntry> {
   const values = entrySnapshot(input.food.per100g, input.grams)
-  const { data, error } = await getSupabase()
-    .from('meal_entries')
-    .insert({
-      entry_date: input.date,
-      meal_type: input.mealType,
-      food_id: input.food.id,
-      food_name: input.food.name,
-      grams: input.grams,
-      unit: input.food.unit,
-      kcal: values.kcal,
-      protein_g: values.protein,
-      carbs_g: values.carbs,
-      fat_g: values.fat,
-    })
-    .select(ENTRY_COLUMNS)
-    .single()
+  await insertOnce('meal_entries', {
+    id: input.id,
+    entry_date: input.date,
+    meal_type: input.mealType,
+    food_id: input.food.id,
+    food_name: input.food.name,
+    grams: input.grams,
+    unit: input.food.unit,
+    kcal: values.kcal,
+    protein_g: values.protein,
+    carbs_g: values.carbs,
+    fat_g: values.fat,
+  })
+  // Si rilegge per id: vale sia per la voce appena creata sia per una già salvata da un tentativo precedente.
+  const { data, error } = await getSupabase().from('meal_entries').select(ENTRY_COLUMNS).eq('id', input.id).single()
   throwIfError(error)
   // Secondario: se fallisce, la voce è salvata lo stesso; solo l'ordine dei "Recenti" resta indietro.
   await getSupabase().from('foods').update({ last_used_at: new Date().toISOString() }).eq('id', input.food.id)

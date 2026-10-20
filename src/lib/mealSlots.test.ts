@@ -7,6 +7,7 @@ import {
   dragTargetIndex,
   DEFAULT_MEAL_SLOTS,
   mealForHour,
+  moveAnnouncement,
   moveSlot,
   newSlotKey,
   reorderByDrag,
@@ -94,6 +95,14 @@ describe('moveSlot', () => {
     expect(keys(moveSlot(DEFAULT_MEAL_SLOTS, 'breakfast', -1))).toEqual(keys([...DEFAULT_MEAL_SLOTS]))
     expect(keys(moveSlot(DEFAULT_MEAL_SLOTS, 'snack', 1))).toEqual(keys([...DEFAULT_MEAL_SLOTS]))
     expect(keys(moveSlot(DEFAULT_MEAL_SLOTS, 'nope', 1))).toEqual(keys([...DEFAULT_MEAL_SLOTS]))
+  })
+})
+
+describe('moveAnnouncement', () => {
+  it('dice nome e posizione per chi non vede lo schermo', () => {
+    const moved = moveSlot(DEFAULT_MEAL_SLOTS, 'lunch', -1)
+    expect(moveAnnouncement(moved, 'lunch')).toBe('Pranzo: posizione 2 di 5')
+    expect(moveAnnouncement(moved, 'nope')).toBe('')
   })
 })
 

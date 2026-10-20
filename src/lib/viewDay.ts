@@ -1,4 +1,4 @@
-import { BACKFILL_MAX_DAYS } from './constants'
+import { BACKFILL_MAX_DAYS, SWIPE_DOMINANCE, SWIPE_MIN_PX } from './constants'
 import { addDays, daysBetween } from './dates'
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
@@ -46,9 +46,6 @@ export function dayQuery(day: string, today: string): string {
   return day === today ? '' : `data=${day}`
 }
 
-/** Distanza minima (px) per contare come swipe, e quanto deve prevalere l'orizzontale sul verticale. */
-export const SWIPE_MIN_PX = 60
-export const SWIPE_DOMINANCE = 1.5
 
 /**
  * Gesto di scorrimento orizzontale in Oggi: verso destra (dx > 0) = giorno precedente, verso sinistra = giorno dopo.
