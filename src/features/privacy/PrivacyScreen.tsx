@@ -49,7 +49,7 @@ export function PrivacyScreen() {
 
       <h2 className={h2}>Dove stanno</h2>
       <ul className={`${p} list-disc space-y-1 pl-5`}>
-        <li>Database e account: Supabase, server nella regione di Francoforte (Germania, UE).</li>
+        <li>Database e account: Supabase, server nella regione di Irlanda (eu-west-1, UE).</li>
         <li>Il sito dell’app: Vercel (serve solo i file dell’app, non i tuoi dati).</li>
         <li>Email: l’app non ne invia. Se in futuro servirà, passeranno da Resend.</li>
         <li>
