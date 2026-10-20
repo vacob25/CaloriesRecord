@@ -30,7 +30,7 @@ declare
   invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
-  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions'];
+  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
@@ -88,6 +88,10 @@ begin
   if 'push_subscriptions' = any (tables) then
     insert into public.push_subscriptions (endpoint, p256dh_key, auth_secret)
       values ('https://push.example.invalid/a-' || a, 'chiave-p256dh-di-prova-aaaaaaaaaa', 'segreto-di-prova');
+  end if;
+  if 'reminder_settings' = any (tables) then
+    insert into public.reminder_settings (slot, enabled) values ('meal:lunch', true);
+    insert into public.reminder_status (slot, day) values ('meal:lunch', current_date) on conflict do nothing;
   end if;
 
   foreach t in array tables loop
@@ -171,6 +175,25 @@ begin
     begin
       execute format('insert into public.push_subscriptions (user_id, endpoint, p256dh_key, auth_secret) values (%L, %L, %L, %L)', a, 'https://push.example.invalid/rubata', 'chiave-p256dh-di-prova-bbbbbbbbbb', 'segreto-di-prova');
       raise exception 'FALLITO: B ha inserito in push_subscriptions a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
+
+  -- Migrazione 012: impostazioni e "pasto fatto" sono personali; il registro dei promemoria lo scrive solo il server.
+  if 'reminder_settings' = any (tables) then
+    begin
+      execute format('insert into public.reminder_settings (user_id, slot, enabled) values (%L, %L, true)', a, 'meal:dinner');
+      raise exception 'FALLITO: B ha inserito in reminder_settings a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      execute format('insert into public.reminder_status (user_id, slot, day) values (%L, %L, current_date)', a, 'meal:dinner');
+      raise exception 'FALLITO: B ha inserito in reminder_status a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      insert into public.reminder_log (user_id, slot, day) values (b, 'meal:dinner', current_date);
+      raise exception 'FALLITO: un utente ha scritto in reminder_log';
     exception when insufficient_privilege then null;
     end;
   end if;
@@ -335,6 +358,10 @@ begin
     if 'push_subscriptions' = any (tables) then
       insert into public.push_subscriptions (endpoint, p256dh_key, auth_secret)
         values ('https://push.example.invalid/b-' || b, 'chiave-p256dh-di-prova-cccccccccc', 'segreto-di-prova');
+    end if;
+    if 'reminder_settings' = any (tables) then
+      insert into public.reminder_settings (slot, enabled) values ('meal:lunch', true);
+      insert into public.reminder_status (slot, day) values ('meal:lunch', current_date) on conflict do nothing;
     end if;
     reset role;
     foreach t in array tables loop

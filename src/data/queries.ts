@@ -20,6 +20,7 @@ import {
 } from './foods'
 import { resolveBarcode } from './barcode'
 import { searchProducts } from './openFoodFacts'
+import { listReminderSettings, readReminderHistory, saveReminderSetting } from './reminders'
 import { createMealSlot, deleteMealSlot, listMealSlots, renameMealSlot, reorderMealSlots } from './mealSlots'
 import type { MealSlot } from '../lib/mealSlots'
 import { listEntriesBetween } from './meals'
@@ -40,6 +41,7 @@ import {
 } from './water'
 import { DataError } from './dbErrors'
 import { QUERY_STALE_LONG_MS } from '../lib/constants'
+import type { ReminderSetting } from '../lib/reminders'
 import { deleteWeight, listWeights, recentWeightsUntil, saveWeight } from './weights'
 
 /**
@@ -63,10 +65,39 @@ export const queryKeys = {
   waterForDay: (date: string) => ['water_entries', date] as const,
   containers: ['drink_containers'] as const,
   catalog: ['catalog'] as const,
+  reminders: ['reminder_settings'] as const,
+  reminderHistory: (today: string) => ['reminder_settings', 'history', today] as const,
   /** Statistiche: dipendono da voci, target e pesate (stanno sotto meal_entries per le voci). */
   stats: ['meal_entries', 'stats'] as const,
   /** Tutte le valutazioni di ricalibrazione (prefisso). */
   tdee: ['tdee_estimates'] as const,
+}
+
+export function useReminderSettings() {
+  return useQuery({ queryKey: queryKeys.reminders, queryFn: listReminderSettings, staleTime: QUERY_STALE_LONG_MS })
+}
+
+/** Promemoria partiti e pasti registrati negli ultimi giorni, per la proposta di sospendere. Sempre fresco: si guarda aprendo il Profilo. */
+export function useReminderHistory(today: string) {
+  return useQuery({ queryKey: queryKeys.reminderHistory(today), queryFn: () => readReminderHistory(today), staleTime: 0 })
+}
+
+/** Salva un'impostazione. Il Profilo la mostra subito (ottimistico) e torna indietro se il salvataggio fallisce. */
+export function useSaveReminderSetting() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: (setting: ReminderSetting) => saveReminderSetting(setting),
+    onMutate: async (setting) => {
+      await client.cancelQueries({ queryKey: queryKeys.reminders })
+      const previous = client.getQueryData<ReminderSetting[]>(queryKeys.reminders)
+      client.setQueryData<ReminderSetting[]>(queryKeys.reminders, (old = []) => [...old.filter((item) => item.slot !== setting.slot), setting])
+      return { previous }
+    },
+    onError: (_error, _setting, context) => {
+      if (context?.previous) client.setQueryData(queryKeys.reminders, context.previous)
+    },
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.reminders }),
+  })
 }
 
 export function useMealSlots() {

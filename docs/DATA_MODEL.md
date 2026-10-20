@@ -114,6 +114,12 @@ Il trigger `profiles_seed_meal_slots` crea i cinque pasti di partenza alla creaz
 ### push_subscriptions (migrazione 011, Fase 1 notifiche, ADR-086)
 Un indirizzo tecnico per ogni dispositivo con le notifiche attive. `id uuid`, `user_id` (default `auth.uid()`, cascade), `endpoint text` (https, 20-2048), `p256dh_key text`, `auth_secret text`, `created_at`; unico `(user_id, endpoint)`. RLS: select/insert/update/delete solo delle proprie righe. Non sono dati di salute e non si esportano (`NOT_EXPORTED_TABLES`). Da sole non bastano per inviare: serve la chiave VAPID privata, solo nei segreti di Supabase.
 
+### reminder_settings, reminder_status, reminder_log (migrazione 012, Fase 2 notifiche, ADR-087)
+- `reminder_settings`: `user_id`, `slot` (`meal:<chiave del pasto>`, in Fase 8 anche `workout`), `enabled`, `time_weekday time`, `time_weekend time` (null = lo stesso), `timezone` (solo `Europe/Rome`), `proposal_dismissed_day date`, `updated_at`; chiave primaria `(user_id, slot)`; minuti multipli di 5, senza secondi. RLS: tutto sulle proprie righe. Si esporta (`EXPORT_TABLES`).
+- `reminder_status`: `(user_id, slot, day)`, `done_at`. Lo scrive il trigger `mark_meal_reminder_done` quando una voce entra o viene spostata in un pasto. RLS sulle proprie righe. Non si esporta.
+- `reminder_log`: `(user_id, slot, day)`, `sent_at`, `accepted` (dispositivi che hanno risposto 2xx). L'utente può solo leggerlo; lo scrive la funzione con la chiave di servizio. Non si esporta.
+- Funzioni: `due_reminders(p_now timestamptz default now())` e `verify_cron_secret(p_secret text)`: `security definer`, `set search_path = ''`, execute solo a `service_role`. `mark_meal_reminder_done()`: funzione trigger, execute revocato a tutti.
+
 ## Funzioni
 - `save_recipe(p_recipe_id, p_name, p_cooked_weight_g, p_kcal_100g, p_protein_100g, p_carbs_100g, p_fat_100g, p_items)` (migrazione 002, ADR-029): crea o aggiorna una ricetta e sostituisce i suoi `recipe_items` in una sola transazione; almeno un ingrediente. `security invoker` (vale la RLS), `set search_path = ''`, `revoke execute … from public, anon` e `grant execute … to authenticated`. I valori per 100 g li calcola l'app.
 - `hook_before_user_created(event jsonb)` (migrazione 005, ADR-064): auth hook "Before User Created". Legge `event->'user'->>'email'`, la confronta in minuscolo con `allowed_emails`: `{}` = crea l'utente, `{"error": {"http_code": 403, "message": …}}` = rifiuta. Non security definer: execute solo a `supabase_auth_admin` (revocato a public, anon, authenticated), `set search_path = ''`.
