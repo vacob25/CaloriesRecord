@@ -167,7 +167,8 @@ export function useAddEntry() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: (input: NewEntry) => addEntry(input),
-    onSuccess: () => {
+    // onSettled e non onSuccess: se la risposta si perde (errore) la voce potrebbe comunque essere salvata, quindi si rilegge.
+    onSettled: () => {
       void client.invalidateQueries({ queryKey: queryKeys.entries })
       void client.invalidateQueries({ queryKey: queryKeys.foods })
     },
@@ -352,8 +353,9 @@ export function useWater(date: string) {
 export function useAddWater(date: string) {
   const invalidate = useInvalidate()
   return useMutation({
-    mutationFn: ({ ml, container }: { ml: number; container: string | null }) => addWater(date, ml, container),
-    onSuccess: () => invalidate(queryKeys.water),
+    mutationFn: ({ id, ml, container }: { id: string; ml: number; container: string | null }) =>
+      addWater(id, date, ml, container),
+    onSettled: () => invalidate(queryKeys.water),
   })
 }
 
@@ -369,8 +371,8 @@ export function useContainers() {
 export function useCreateContainer() {
   const invalidate = useInvalidate()
   return useMutation({
-    mutationFn: ({ name, ml }: { name: string; ml: number }) => createContainer(name, ml),
-    onSuccess: () => invalidate(queryKeys.containers),
+    mutationFn: ({ id, name, ml }: { id: string; name: string; ml: number }) => createContainer(id, name, ml),
+    onSettled: () => invalidate(queryKeys.containers),
   })
 }
 

@@ -81,7 +81,7 @@ docs/
 ## Flusso dati
 - Lettura: componente → hook (`useEntries(date)` in `data/queries.ts`) → `data/meals.ts` → Supabase. Cache per chiave `[tabella, data]`. Gli hook usati da più feature stanno in `data/queries.ts` (regola 3: una feature non importa da un'altra).
 - All'uscita (logout) la cache di TanStack Query si svuota: nessun dato dell'utente resta in memoria.
-- Scrittura: componente → mutation → `data/…` → invalida le chiavi toccate. Aggiornamento ottimistico solo sulla cancellazione di una voce pasto (sparisce subito, torna se il server dà errore). L'aggiunta non è ottimistica: dopo il salvataggio compare l'avviso "Aggiunto · Annulla".
+- Scrittura: componente → mutation → `data/…` → invalida le chiavi toccate. Aggiornamento ottimistico solo sulla cancellazione di una voce pasto (sparisce subito, torna se il server dà errore). L'aggiunta non è ottimistica: dopo il salvataggio compare l'avviso "Aggiunto · Annulla". Le scritture del diario (voci pasto, acqua, contenitori) hanno un id deciso dall'app (`data/ids.ts`) e si inseriscono con `data/insertOnce.ts`: ripetere lo stesso salvataggio non crea doppioni (ADR-079). Senza rete restano in attesa e partono da sole; il banner lo dice.
 - Il target del giorno si legge da `daily_targets`; se manca per quella data si crea (vedi DOMAIN_RULES.md, "Target del giorno") copiando i parametri del profilo.
 
 ## PWA e iPhone (limiti reali)
