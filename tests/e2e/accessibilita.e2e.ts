@@ -43,7 +43,7 @@ test('Accessibilità · axe su tutte le schermate', async () => {
   await p.getByRole('button', { name: 'Gestisci i pasti' }).click(); await audit('oggi: pasti su misura'); await p.getByRole('button', { name: 'Chiudi' }).click();
   await p.getByRole('button', { name: 'Giorno precedente' }).click(); await audit('ieri'); await p.getByRole('button', { name: 'Torna a oggi' }).click();
   await p.getByRole('button', { name: /^Pasta/ }).click(); await audit('oggi: modifica voce'); await p.getByRole('button', { name: 'Chiudi' }).click();
-  for (const [path, name] of [['/aggiungi', 'aggiungi'], ['/cibi', 'cibi'], ['/cibi/nuovo', 'nuovo cibo'], ['/cibi/ricette/nuova', 'nuova ricetta'], ['/statistiche', 'statistiche'], ['/peso', 'peso'], ['/profilo', 'profilo'], ['/aggiungi/scanner', 'scanner']]) {
+  for (const [path, name] of [['/aggiungi', 'aggiungi'], ['/cibi', 'cibi'], ['/cibi/nuovo', 'nuovo cibo'], ['/cibi/ricette/nuova', 'nuova ricetta'], ['/palestra', 'palestra'], ['/palestra/esercizi', 'esercizi'], ['/palestra/esercizi/nuovo', 'nuovo esercizio'], ['/statistiche', 'statistiche'], ['/peso', 'peso'], ['/profilo', 'profilo'], ['/aggiungi/scanner', 'scanner']]) {
     await p.goto('http://localhost:4180' + path); await audit(name);
   }
   sql("update public.profiles set goal = 'cut', goal_weight_kg = 70");

@@ -24,7 +24,7 @@ PWA personale per registrare calorie e macro da iPhone: dal proprietario e da po
 ## Regole non negoziabili
 1. Il repo è PUBBLICO: mai committare `.env`, chiavi, token, dati personali (peso, pasti).
 2. Nel frontend solo la chiave publishable di Supabase (`sb_publishable_…`). Mai la secret key (`sb_secret_…`) né la `service_role`.
-3. Ogni tabella ha `user_id` e Row Level Security attiva.
+3. Ogni tabella ha `user_id` e Row Level Security attiva. Unica eccezione: `exercise_catalog` (catalogo esercizi uguale per tutti, sola lettura per `authenticated`, nessuna scrittura da client; ADR-089).
 4. I calcoli stanno in funzioni pure in `src/lib/`, con test Vitest. Mai formule dentro i componenti.
 5. Nessun recupero delle calorie non assunte: l'obiettivo è solo giornaliero.
 6. Le date sono giorni locali Europe/Rome (stringa `YYYY-MM-DD`), mai timestamp UTC per i giorni.

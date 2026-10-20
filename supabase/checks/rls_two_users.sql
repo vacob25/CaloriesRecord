@@ -30,7 +30,7 @@ declare
   invited text := 'rls-invitato-' || gen_random_uuid() || '@example.invalid';
   tables text[] := array['profiles', 'foods', 'recipe_items', 'meal_entries', 'weight_logs', 'daily_targets', 'tdee_estimates'];
   -- Tabelle della migrazione 003 (step 14-15), controllate solo se esistono.
-  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status'];
+  extra text[] := array['water_entries', 'drink_containers', 'meal_slots', 'push_subscriptions', 'reminder_settings', 'reminder_status', 'user_exercises'];
 begin
   -- ─── 0. Struttura ────────────────────────────────────────────────────────
   select count(*) into n from pg_tables where schemaname = 'public' and tablename = any (tables);
@@ -92,6 +92,10 @@ begin
   if 'reminder_settings' = any (tables) then
     insert into public.reminder_settings (slot, enabled) values ('meal:lunch', true);
     insert into public.reminder_status (slot, day) values ('meal:lunch', current_date) on conflict do nothing;
+  end if;
+  if 'user_exercises' = any (tables) then
+    insert into public.user_exercises (name, equipment, primary_muscles) values ('Esercizio di A', 'cable', array['lats']);
+    insert into public.user_exercises (catalog_id, notes) select id, 'Nota di A' from public.exercise_catalog limit 1;
   end if;
 
   foreach t in array tables loop
@@ -198,6 +202,33 @@ begin
     end;
   end if;
 
+  -- Migrazione 013: gli esercizi personali sono privati; il catalogo si legge ma non si scrive.
+  if 'user_exercises' = any (tables) then
+    begin
+      execute format('insert into public.user_exercises (user_id, name, equipment, primary_muscles) values (%L, %L, %L, array[%L])', a, 'Rubato', 'cable', 'lats');
+      raise exception 'FALLITO: B ha inserito in user_exercises a nome di A';
+    exception when insufficient_privilege then null;
+    end;
+    select count(*) into n from public.exercise_catalog;
+    if n = 0 then raise exception 'FALLITO: un utente loggato non legge il catalogo esercizi'; end if;
+    begin
+      insert into public.exercise_catalog (source_id, name_en, name_it, equipment, primary_muscles, category, level)
+        values ('rls-test', 'x', 'x', 'other', array['chest'], 'strength', 'beginner');
+      raise exception 'FALLITO: un utente ha scritto nel catalogo esercizi';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      update public.exercise_catalog set name_it = 'hackerato';
+      raise exception 'FALLITO: un utente ha modificato il catalogo esercizi';
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      delete from public.exercise_catalog;
+      raise exception 'FALLITO: un utente ha cancellato dal catalogo esercizi';
+    exception when insufficient_privilege then null;
+    end;
+  end if;
+
   -- Migrazione 007: i pasti dell'utente (creati dal trigger alla creazione del profilo) sono protetti come il resto.
   if 'meal_slots' = any (tables) then
     begin
@@ -270,6 +301,11 @@ begin
     exception when insufficient_privilege then null; -- atteso: anon non ha permessi
     end;
   end loop;
+  begin
+    perform count(*) from public.exercise_catalog;
+    raise exception 'FALLITO: senza login si legge il catalogo esercizi';
+  exception when insufficient_privilege then null;
+  end;
   begin
     insert into public.foods (name, kcal_100g, protein_100g, carbs_100g, fat_100g) values ('x', 1, 1, 1, 1);
     raise exception 'FALLITO: senza login si scrive in foods';
@@ -362,6 +398,9 @@ begin
     if 'reminder_settings' = any (tables) then
       insert into public.reminder_settings (slot, enabled) values ('meal:lunch', true);
       insert into public.reminder_status (slot, day) values ('meal:lunch', current_date) on conflict do nothing;
+    end if;
+    if 'user_exercises' = any (tables) then
+      insert into public.user_exercises (name, equipment, primary_muscles) values ('Esercizio di B', 'machine', array['chest']);
     end if;
     reset role;
     foreach t in array tables loop
