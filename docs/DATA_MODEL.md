@@ -119,7 +119,7 @@ Un indirizzo tecnico per ogni dispositivo con le notifiche attive. `id uuid`, `u
 - `hook_before_user_created(event jsonb)` (migrazione 005, ADR-064): auth hook "Before User Created". Legge `event->'user'->>'email'`, la confronta in minuscolo con `allowed_emails`: `{}` = crea l'utente, `{"error": {"http_code": 403, "message": …}}` = rifiuta. Non security definer: execute solo a `supabase_auth_admin` (revocato a public, anon, authenticated), `set search_path = ''`.
 - `delete_my_account()` (migrazione 005, ADR-065): security definer, `set search_path = ''`; senza sessione errore 42501; cancella `recipe_items` e poi la riga di `auth.users` con `id = auth.uid()` (il resto a cascata). Execute solo ad authenticated.
 - Indice `recipe_items (user_id)` (migrazione 005): le altre tabelle avevano già un indice o una chiave che comincia con `user_id`.
-- Trigger: `set_updated_at`, `check_recipe_item`, `check_food_source_change` (vedi sopra).
+- Trigger: `set_updated_at`, `check_recipe_item`, `check_food_source_change` (vedi sopra) e `seed_meal_slots` (migrazione 007, sui `profiles`: crea i cinque pasti di partenza). Tutte hanno `revoke execute … from public, anon, authenticated` (per `seed_meal_slots` dalla migrazione 010); `rls_two_users.sql` controlla che nessuna funzione trigger sia eseguibile da anon o authenticated.
 
 ## Row Level Security (modello da applicare a TUTTE le tabelle)
 ```sql

@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-import { GRAMS_MAX, KCAL_100G_MAX, MACRO_100G_MAX, MACRO_SUM_TOLERANCE } from './constants'
+import { GRAMS_MAX, KCAL_100G_MAX, MACRO_100G_MAX, MACRO_SUM_TOLERANCE, PORTION_NAME_MAX } from './constants'
 import { hasKcalMismatch, type FoodValues } from './foodValidation'
 import type { Per100g } from './nutrition'
-import { PORTION_NAME_MAX, type FoodUnit, type Portion } from './portions'
+import type { FoodUnit, Portion } from './portions'
 
 /** Categorie fisse del catalogo (docs/prompts/catalogo-ingredienti.md). */
 export const CATALOG_CATEGORIES = [

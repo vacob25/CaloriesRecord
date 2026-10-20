@@ -1,11 +1,11 @@
 import type { TrainingType } from '../lib/labels'
 import { coerceTrainingType } from '../lib/sports'
 import { computeDayTarget, withTrainingType, type DayTargetValues } from '../lib/targets'
-import { weightForDay } from '../lib/weight'
+import { weightForDay, type WeightLog } from '../lib/weight'
 import { throwIfError } from './dbErrors'
 import { getProfile } from './profile'
 import { getSupabase } from './supabase'
-import type { DailyTarget } from './types'
+import type { DailyTarget, Profile } from './types'
 import { recentWeightsUntil } from './weights'
 
 interface TargetRow {
@@ -52,11 +52,24 @@ export type TargetState =
   | { status: 'needsWeight' }
 
 /**
+ * Dati che chi chiama ha già in cache (profilo e ultime pesate fino al giorno): si riusano al posto di riscaricarli
+ * (revisione #17). Se mancano, la funzione li legge da sé.
+ */
+export interface KnownData {
+  profile?: Profile | null
+  weights?: WeightLog[]
+}
+
+/**
  * Target del giorno: si legge da `daily_targets`; se manca si crea copiando il profilo di adesso
  * (DOMAIN_RULES "Target del giorno"). I giorni passati non si ricalcolano mai.
  */
-export async function getOrCreateTarget(date: string): Promise<TargetState> {
-  const [profile, weights, existing] = await Promise.all([getProfile(), recentWeightsUntil(date), readTarget(date)])
+export async function getOrCreateTarget(date: string, known: KnownData = {}): Promise<TargetState> {
+  const [profile, weights, existing] = await Promise.all([
+    known.profile === undefined ? getProfile() : known.profile,
+    known.weights ?? recentWeightsUntil(date),
+    readTarget(date),
+  ])
   if (!profile) return { status: 'needsProfile' }
   const weightKg = weightForDay(weights, date)
   if (existing) return { status: 'ready', target: existing, weightKg }
@@ -74,10 +87,10 @@ export async function getOrCreateTarget(date: string): Promise<TargetState> {
 }
 
 /** Cambia il tipo di giorno: aggiorna solo quella riga, partendo dal suo mantenimento. */
-export async function setTrainingType(date: string, trainingType: TrainingType): Promise<void> {
-  const state = await getOrCreateTarget(date)
+export async function setTrainingType(date: string, trainingType: TrainingType, known: KnownData = {}): Promise<void> {
+  const state = await getOrCreateTarget(date, known)
   if (state.status !== 'ready') return
-  const profile = await getProfile()
+  const profile = known.profile === undefined ? await getProfile() : known.profile
   if (!profile) return
   // Senza pesate (cancellate dopo la creazione) il peso si ricava dalle proteine salvate quel giorno.
   const weightKg =

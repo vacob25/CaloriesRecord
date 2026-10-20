@@ -1,4 +1,4 @@
-import { chromium, test } from '@playwright/test'
+import { chromium, expect, test } from '@playwright/test'
 
 import { check, login, resetDatabase, seedProfile, sql, wire } from './support/harness'
 // Step 19: obiettivo (cut), sport → tipi di giorno, tutorial a popup.
@@ -84,7 +84,8 @@ test('Step 19 · obiettivo, sport, tutorial', async () => {
   await p.screenshot({ path: test.info().outputPath('step19-tutorial-8.png') });
   await dlg.getByRole('button', { name: 'Fine' }).click();
   await dlg.waitFor({ state: 'detached' });
-  check(sql("select tutorial_done_at is not null from public.profiles") === 't', 'tutorial: "Fine" lo segna come visto');
+  // Il pannello si chiude subito, il salvataggio arriva un attimo dopo: si aspetta.
+  await expect.poll(() => sql("select tutorial_done_at is not null from public.profiles"), { message: 'tutorial: "Fine" lo segna come visto' }).toBe('t');
   await p.reload();
   await p.getByRole('heading', { name: 'Profilo', exact: true, level: 1 }).waitFor();
   check(await dlg.count() === 0, 'tutorial: non si riapre da solo');

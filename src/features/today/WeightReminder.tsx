@@ -1,6 +1,5 @@
 import { WeightPill } from '../../components/WeightPill'
-import { useDayTarget, useWeights } from '../../data/queries'
-import { addDays } from '../../lib/dates'
+import { useDayTarget, useWeightsUntil } from '../../data/queries'
 import { daysSinceLastWeight, needsWeightReminder } from '../../lib/weight'
 
 /**
@@ -8,7 +7,7 @@ import { daysSinceLastWeight, needsWeightReminder } from '../../lib/weight'
  * Più pesate = media mobile e ricalibrazione più affidabili (§4, §7).
  */
 export function WeightReminder({ today }: { today: string }) {
-  const weights = useWeights(addDays(today, -60))
+  const weights = useWeightsUntil(today)
   const target = useDayTarget(today)
   if (!weights.data || !needsWeightReminder(weights.data, today)) return null
   // La card del target sta già chiedendo il peso: non serve un secondo invito.

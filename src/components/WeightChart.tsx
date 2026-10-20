@@ -4,11 +4,11 @@ import { formatShortDate } from '../lib/dates'
 import { formatNumber } from '../lib/numbers'
 import type { WeightPoint } from '../lib/weight'
 
-// Colori del design: blu = peso e traguardo (DESIGN.md). Testi e assi nei colori del testo.
-const BLUE = '#2F62D9'
-const MUTED = '#5B6170'
-const LINE = '#E4E8EE'
-const SURFACE = '#FFFFFF'
+// Colori del design (variabili CSS dei token): blu = peso e traguardo (DESIGN.md). Testi e assi nei colori del testo.
+const BLUE = 'var(--color-blue)'
+const MUTED = 'var(--color-muted)'
+const LINE = 'var(--color-line)'
+const SURFACE = 'var(--color-surface)'
 
 interface WeightChartProps {
   points: WeightPoint[]

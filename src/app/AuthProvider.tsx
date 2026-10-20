@@ -16,14 +16,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Stato iniziale, riletto a ogni "Riprova".
   useEffect(() => {
     let cancelled = false
-    void loadInitialSession().then((result) => {
-      if (cancelled) return
-      setState((current) => {
-        // Se nel frattempo è arrivato un evento (es. accesso), vince quello.
-        if (current.status !== 'loading' && current.status !== 'offline') return current
-        return result.status === 'offline' ? { status: 'offline' } : toSessionState(result.session)
+    loadInitialSession()
+      .then((result) => {
+        if (cancelled) return
+        setState((current) => {
+          // Se nel frattempo è arrivato un evento (es. accesso), vince quello.
+          if (current.status !== 'loading' && current.status !== 'offline') return current
+          return result.status === 'offline' ? { status: 'offline' } : toSessionState(result.session)
+        })
       })
-    })
+      .catch(() => {
+        // Errore non previsto nella lettura della sessione: niente caricamento infinito, si offre "Riprova".
+        if (!cancelled) setState((current) => (current.status === 'loading' ? { status: 'offline' } : current))
+      })
     // Con il token scaduto supabase-js ritenta il rinnovo fino a ~30 s: se il telefono
     // è offline è inutile aspettare, lo diciamo subito.
     const offlineTimer = window.setTimeout(() => {

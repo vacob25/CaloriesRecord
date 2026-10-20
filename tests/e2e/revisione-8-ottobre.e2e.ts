@@ -1,4 +1,4 @@
-import { chromium, test } from '@playwright/test'
+import { chromium, expect, test } from '@playwright/test'
 
 import { check, login, resetDatabase, sql, wire } from './support/harness'
 const A = '00000000-0000-0000-0000-00000000000a';
@@ -43,7 +43,8 @@ test('Revisione dell’8/10 · correzioni dell’app', async () => {
   sql("delete from public.meal_entries; delete from public.foods");
   await p.goto('http://localhost:4180/aggiungi?pasto=lunch');
   await p.getByRole('tab', { name: 'Catalogo' }).waitFor();
-  check(await p.getByRole('tab', { name: 'Catalogo' }).getAttribute('aria-selected') === 'true', 'senza cibi propri si apre il Catalogo');
+  // Si aspetta: finché i cibi caricano l'app mostra "I miei cibi", poi passa al Catalogo.
+  await expect(p.getByRole('tab', { name: 'Catalogo' }), 'senza cibi propri si apre il Catalogo').toHaveAttribute('aria-selected', 'true');
   await p.getByLabel('Cerca un cibo').fill('riso');
   await p.getByRole('heading', { name: 'Dal catalogo' }).waitFor();
   check(!(await p.getByText('Non hai ancora nessun cibo').isVisible()), 'cercando: niente messaggio "nessun cibo" fuorviante');

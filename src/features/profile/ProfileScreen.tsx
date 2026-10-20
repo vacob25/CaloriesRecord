@@ -23,7 +23,8 @@ import {
 } from '../../lib/profileValidation'
 import { planWarnings } from '../../lib/goals'
 import { fractionToPercent } from '../../lib/numbers'
-import { rescaledMaintenanceKcal } from '../../lib/targets'
+import { bmr, maintenance } from '../../lib/nutrition'
+import { ageOn } from '../../lib/weight'
 import { AccountSection } from './AccountSection'
 import { NotificationsSection } from './NotificationsSection'
 import { PersonalFields } from './PersonalFields'
@@ -191,13 +192,20 @@ function ParamsSection({ profile }: { profile: Profile }) {
     const extra: string[] = []
     // §2: avvisi sul piano (ritmo troppo alto per l'obiettivo, target sotto il BMR): serve il mantenimento di oggi.
     if (target.data?.status === 'ready' && target.data.weightKg !== null) {
-      const maintenance = rescaledMaintenanceKcal(target.data.target.maintenanceKcal, profile.activityFactor, result.value.activityFactor)
+      // Il BMR si calcola con le formule di lib/ (come fa la ricalibrazione), non si ricava dal mantenimento salvato:
+      // nel giorno in cui si accetta una ricalibrazione il mantenimento salvato e il fattore attuale non corrispondono.
+      const bmrKcal = bmr({
+        sex: profile.sex,
+        weightKg: target.data.weightKg,
+        heightCm: profile.heightCm,
+        ageYears: ageOn(profile.birthDate, today),
+      })
       extra.push(
         ...planWarnings(
           { goal: profile.goal, surplusPct: result.value.surplusPct, cutRatePct: profile.cutRatePct },
-          maintenance,
+          maintenance(bmrKcal, result.value.activityFactor),
           target.data.weightKg,
-          target.data.target.maintenanceKcal / profile.activityFactor,
+          bmrKcal,
         ),
       )
     }

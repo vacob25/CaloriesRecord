@@ -18,6 +18,7 @@ export default defineConfig({
         short_name: 'Calorie',
         description: 'Registro personale di calorie e macro',
         lang: 'it',
+        id: '/',
         start_url: '/',
         scope: '/',
         display: 'standalone',

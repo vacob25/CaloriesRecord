@@ -5,6 +5,7 @@ import { SheetFrame } from '../../components/SheetFrame'
 import { FormMessage } from '../../components/States'
 import { primaryButtonClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
+import { useAttemptIds } from '../../data/ids'
 import { useAddWater, useCreateContainer } from '../../data/queries'
 import { CONTAINER_NAME_MAX } from '../../lib/constants'
 import { validateContainerName, validateWaterMl } from '../../lib/water'
@@ -22,6 +23,7 @@ interface WaterSheetProps {
 export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
   const add = useAddWater(date)
   const create = useCreateContainer()
+  const attempts = useAttemptIds()
   const [mlText, setMlText] = useState('')
   const [asContainer, setAsContainer] = useState(false)
   const [name, setName] = useState('')
@@ -36,8 +38,17 @@ export function WaterSheet({ date, existingNames, onClose }: WaterSheetProps) {
       name: containerName && !containerName.ok ? containerName.message : undefined,
     })
     if (!ml.ok || (containerName && !containerName.ok)) return
-    if (containerName) create.mutate({ name: containerName.value, ml: ml.value }, { onSuccess: onClose })
-    else add.mutate({ ml: ml.value, container: null }, { onSuccess: onClose })
+    // Stesso gesto ripetuto (doppio tocco, "Riprova") = stesso id = nessun doppione.
+    const onSuccess = () => {
+      attempts.done()
+      onClose()
+    }
+    if (containerName) {
+      const id = attempts.idFor(`container|${containerName.value}|${ml.value}`)
+      create.mutate({ id, name: containerName.value, ml: ml.value }, { onSuccess })
+    } else {
+      add.mutate({ id: attempts.idFor(`free|${date}|${ml.value}`), ml: ml.value, container: null }, { onSuccess })
+    }
   }
 
   const mutation = asContainer ? create : add

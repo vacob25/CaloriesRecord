@@ -37,7 +37,7 @@ export const PASSWORD_MIN_LENGTH = 8
 export const PASSWORD_MAX_BYTES = 72
 
 /** Versione dell'informativa privacy accettata alla registrazione (data dell'ultima modifica del testo). */
-export const PRIVACY_VERSION = '2026-10-09'
+export const PRIVACY_VERSION = '2026-10-19'
 
 export function parseNewPassword(input: string): ParseResult {
   if (input.length < PASSWORD_MIN_LENGTH) {

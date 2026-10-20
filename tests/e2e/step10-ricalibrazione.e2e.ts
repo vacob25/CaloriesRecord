@@ -34,7 +34,7 @@ test('Step 10 · ricalibrazione', async () => {
   const current = Number(text.match(/Attuale: ([\d.]+) kcal/)[1].replace('.', ''));
   const proposed = Number(text.match(/Proposta: mantenimento ([\d.]+) kcal/)[1].replace('.', ''));
   check(/in media 3\.200 kcal/.test(text) && /\+0,1\d? kg\/settimana/.test(text), 'la scheda spiega i numeri: media 3.200 kcal e pendenza ≈ +0,10 kg/sett.');
-  check(proposed === Math.round((current * 1.05) / 10) * 10, `ACCETTAZIONE: stimato ≈ 3090 > tetto +5% → proposto ${proposed} = arrotondato(${current} · 1,05)`);
+  check(proposed === Math.floor((current * 1.05) / 10) * 10 && proposed <= current * 1.05, `ACCETTAZIONE: stimato ≈ 3090 > tetto +5% → proposto ${proposed} = multiplo di 10 sotto il tetto (${current} · 1,05, mai oltre)`);
   await card.getByRole('button', { name: 'Accetta' }).click();
   await card.getByText(/accettata: vale da domani/).waitFor();
   const factor = Number(sql("select activity_factor from public.profiles"));
@@ -73,5 +73,27 @@ test('Step 10 · ricalibrazione', async () => {
   check(!(await p.getByRole('link', { name: 'Nuova proposta di ricalibrazione' }).isVisible()), 'senza proposta nessun avviso in Oggi');
 
   check(errs.length === 0, 'nessun errore JS: ' + JSON.stringify(errs));
+  await b.close();
+});
+
+// Revisione #11: lunedì mancavano i dati (riga "nessuna"), giovedì la pendenza è fuori banda → la proposta compare.
+test('Step 10 · riga "nessuna" di inizio settimana e poi una proposta', async () => {
+  resetDatabase();
+  const b = await chromium.launch();
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: 'block' });
+  await wire(ctx);
+  const p = await ctx.newPage();
+  seed({ slopeWeek: 0.6 });
+  sql(`insert into public.tdee_estimates (user_id, week_start, window_days, status) values ('${A}', date_trunc('week', ${T})::date, 21, 'none')`);
+  await login(p);
+  await p.goto('http://localhost:4180/profilo');
+  const card = p.getByRole('region', { name: 'Ricalibrazione' });
+  await card.getByText(/Proposta: mantenimento/).waitFor({ timeout: 10000 });
+  check(!(await card.getByText(/Sei nel ritmo voluto/).isVisible()), 'con pendenza fuori banda la scheda non dice "Sei nel ritmo voluto"');
+  check(sql("select count(*)||' '||status from public.tdee_estimates group by status") === '1 pending', 'la riga della settimana è diventata la proposta (una sola riga, in attesa)');
+  check(sql("select proposed_maintenance_kcal is not null from public.tdee_estimates") === 't', 'la proposta ha il mantenimento proposto');
+  await p.reload();
+  await card.getByText(/Proposta: mantenimento/).waitFor();
+  check(sql("select count(*) from public.tdee_estimates") === '1', 'riaprendo non nascono altre righe');
   await b.close();
 });

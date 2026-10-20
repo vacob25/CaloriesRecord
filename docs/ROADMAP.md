@@ -24,8 +24,15 @@ Regola: uno step alla volta. Alla fine di ogni step Claude Code si ferma, elenca
 | 16 | Catalogo di ingredienti mediterranei | in prova (195 voci CREA importate e validate; manca: prova sull'iPhone e le voci non trovate: uva, vitello, zucchero, tè, più quelle assenti dal CREA come bulgur, edamame, semi, patata dolce) |
 | 17 | Snack, acqua a contatori, peso giornaliero, Cibi con preferiti | in prova (fatto e provato contro Postgres + PostgREST locali; manca: migrazione 004 su Supabase e prova sull'iPhone) |
 | 18 | Tester invitati: registrazione, privacy, esporta, elimina account | in prova (fatto e provato contro Postgres + PostgREST locali con la hook vera; manca: migrazione 005 e impostazioni in Supabase, prova sull'iPhone) |
+| 19 | Obiettivo (massa, mantenimento, definizione), sport personali, tutorial | in prova (fatto e provato in locale; richiede la migrazione 006; manca: prova sull'iPhone) |
+| 20 | Giorni passati, pasti su misura, piatti comuni nel catalogo | in prova (fatto e provato in locale; richiede la migrazione 007; manca: prova sull'iPhone) |
+| 21 | Fino a 4 sport, giorni con più sport, voci trascinabili tra i pasti | in prova (fatto e provato in locale; richiede la migrazione 008; manca: prova sull'iPhone) |
+| 22 | Calorie per sport (MET) sommate nel target | in prova (fatto e provato in locale; manca: prova sull'iPhone) |
+| 23 | Pop-up dell'obiettivo acqua e campi numerici solo cifre | in prova (fatto e provato in locale; manca: prova sull'iPhone) |
+| 24 | Sport da scegliere (correzione #18 della revisione) | fatto (migrazione 009 eseguita e PR unita il 19/10/2026; manca: prova sull'iPhone) |
+| 25 | Test end-to-end nel repo e CI | fatto (PR unita il 19/10/2026, CI verde) |
 
-Gli step 1-7 portano a un primo uso reale quotidiano. Gli step 8-10 e 13-16 sono fatti e in prova, l'11 è in corso (vedi tabella); lo step 12 (OTP) resta da fare e si può anticipare in qualunque momento.
+Gli step 1-7 portano a un primo uso reale quotidiano. Gli step 8-10 e 13-23 sono fatti e in prova sull'iPhone, l'11 è in corso (vedi tabella); lo step 12 (OTP) non si fa più (ADR-064).
 
 ---
 
@@ -105,15 +112,8 @@ Accettazione:
 Fare: icona e schermata di avvio definitive, prestazioni, stati vuoti/errore/offline ovunque, accessibilità (contrasto, aree toccabili, label), 2 settimane di uso reale con elenco dei problemi.
 Accettazione: lista di problemi incontrati dall'utente corretta o classificata come v2; `npm audit` senza vulnerabilità alte.
 
-## Step 12 · Login con codice OTP (rinviato dallo step 3)
-Si può anticipare in qualunque momento dopo lo step 3: non dipende dagli altri step.
-Prima di scrivere: decidere con l'utente se l'OTP **sostituisce** la password o si **aggiunge** (es. "Accedi con un codice" come alternativa). Riprendere il codice dalla storia di git (commit `3a69c12`: schermata a due passaggi, timer di reinvio, login in attesa salvato, errori) invece di riscriverlo.
-Fare: invio email funzionante (Resend con API key dello stesso account del destinatario e mittente `onboarding@resend.dev`, oppure dominio verificato su Resend); template "Magic Link" di Supabase con `{{ .Token }}` e senza link; schermata codice con `inputmode="numeric"` e `autocomplete="one-time-code"`; "Invia un nuovo codice" dopo 60 s.
-Accettazione:
-- La mail con il codice arriva in Posta in arrivo (non solo in Spam) in meno di un minuto.
-- Login con codice funzionante **dentro la PWA installata**: si chiede il codice, lo si inserisce nell'app, si resta collegati.
-- `signInWithOtp` con `shouldCreateUser: false`; `verifyOtp` con `type: 'email'`; un'email non registrata non viene rivelata.
-- Codice sbagliato/scaduto, troppi tentativi e rete assente hanno messaggi chiari; la sessione resiste come allo step 3.
+## Step 12 · Login con codice OTP — superato da ADR-064
+Non si fa più: il login resta con email e password, definitivo (ADR-028, ADR-064). Un login con codice via email servirebbe solo se un giorno si comprasse un dominio per poter inviare email ai tester; in quel caso il codice del vecchio tentativo è nella storia di git (commit `3a69c12`) e le decisioni da riprendere sono in ADR-014 (codice invece del link magico, per la PWA installata su iOS).
 
 ## Step 13 · Peso più visibile e promemoria (richiesta dell'utente, 8/10/2026)
 Le regole di calcolo del peso (§4) NON cambiano: pesarsi spesso resta il modo per avere media, pendenza e ricalibrazione.
@@ -224,6 +224,44 @@ Accettazione:
 - Dal browser (non installata) la sezione spiega che serve installare l'app; con permesso negato indica dove cambiarlo.
 - "Esci" toglie solo la subscription di quel dispositivo; un altro utente non vede né riceve nulla dei dispositivi altrui (controllo RLS a due utenti).
 - Dopo un aggiornamento che cambia solo `push-handler.js` compare "Nuova versione disponibile".
+## Step 31 · Prestazioni (revisione #15, #16, #17, #31, #33-#36; PR i, 19/10/2026)
+Fare: meno richieste uguali e dati che restano freschi (ADR-085). Non fatti: #29, #30, #32.
+Accettazione:
+- Aprire Oggi: il profilo si scarica una volta, le pesate al massimo 3 volte, in tutto al massimo 16 richieste (prima 20).
+- Tornare nell'app subito dopo non riscarica profilo, pasti, contenitori e cibi.
+- Toccare un tipo di giorno non riscarica profilo e pesate; una nuova pesata non riesegue la ricalibrazione.
+- Spostare una voce in un altro pasto è immediato; se il salvataggio di un profilo fallisce a metà la schermata mostra comunque il dato salvato.
+## Step 30 · Accessibilità e PWA (revisione #8, #9, #45, #46, #48, #49, #51-#53; PR h, 19/10/2026)
+Fare: pannelli con focus e altezza massima, anelli di focus, avvisi che aspettano, etichette, zone sicure, manifest, login (ADR-084). Restano da decidere #47 e le schermate di avvio.
+Accettazione:
+- Con la tastiera o VoiceOver un pannello porta il focus al titolo, lo trattiene, lo restituisce alla chiusura; la pagina sotto non scorre.
+- Su uno schermo basso il pannello sta dentro lo schermo e la X si raggiunge.
+- Controllo axe: 0 violazioni; aree ≥ 44 px.
+## Step 29 · Sicurezza e privacy (revisione #19, #20, #21, #28; PR f, 19/10/2026)
+Fare: header anti-clickjacking, pagina Privacy legata alle tabelle, migrazione 010 (ADR-082). Passaggio tuo: eseguire la 010 e i controlli RLS sul progetto reale.
+Accettazione:
+- `vercel.json` ha `X-Frame-Options: DENY` e `frame-ancestors 'none'` (un test lo verifica).
+- La pagina Privacy nomina obiettivo, ritmo del cut, sport, nomi dei pasti, contenitori e tipo di giorno; aggiungere una tabella all'esportazione senza descriverla non compila.
+- `rls_two_users.sql` passa sul progetto reale dopo la 010, e `no_session.sh` risponde "Nessun dato senza sessione".
+## Step 28 · Correzioni ai calcoli (revisione #11, #12, #22, #27, #37-#43; PR e, 19/10/2026)
+Fare: le correzioni di ADR-081 (arrotondamenti, null al posto di Infinity, avviso carboidrati solo in massa, riga settimanale della ricalibrazione, costanti in un solo file) con i test mancanti.
+Accettazione:
+- La proposta di ricalibrazione non supera mai il ±5% del mantenimento attuale.
+- Se lunedì mancavano i dati e poi arriva una proposta, la scheda del Profilo la mostra (una sola riga a settimana).
+- In definizione l'avviso "carboidrati sotto 3 g/kg" non compare.
+- Restano da decidere #13 e #14 (vedi Punti aperti di DECISIONS).
+## Step 27 · Riordino dei pasti senza trascinare (revisione #10; PR d, 19/10/2026)
+Fare: pulsanti "Sposta su" e "Sposta giù" per ogni pasto, con annuncio a voce (ADR-080).
+Accettazione:
+- Con la tastiera o con VoiceOver si riordinano i pasti senza trascinare; il focus resta sul pulsante e la nuova posizione viene annunciata.
+- Ai bordi (primo e ultimo pasto) il pulsante è disattivato.
+## Step 26 · Sessione e rete (revisione #2-#5, #7, #50, #54; PR c, 19/10/2026)
+Fare: id deciso dall'app e inserimento idempotente per voci pasto, acqua e contenitori; banner "Salvataggio in attesa"; il profilo non toglie l'app se il ricaricamento fallisce; pagina d'errore italiana su tutte le rotte; token scaduto gestito; controllo aggiornamenti al ritorno nell'app (ADR-079).
+Accettazione:
+- Se la risposta di un salvataggio si perde e si preme "Riprova", la voce è una sola.
+- Senza rete il salvataggio aspetta, il banner lo dice e, tornata la rete, parte da solo una volta sola.
+- Una schermata che non si carica mostra un messaggio in italiano con "Riprova"; un ricaricamento del profilo fallito in background non toglie l'app.
+- `rls_two_users.sql` passa, anche con il caso dell'id di una voce altrui.
 
 ## Fuori scope in v1 (v2+)
 Foto del piatto con stima IA, stima IA per piatti composti, promemoria automatici (Fase 2), esportazione CSV e backup, target per giorno della settimana, misure corporee e foto progresso, modalità offline vera.
