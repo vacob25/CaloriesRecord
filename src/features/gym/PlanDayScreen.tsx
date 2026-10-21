@@ -45,7 +45,7 @@ export function PlanDayScreen() {
   function addExercise(exercise: Exercise) {
     if (items.length >= MAX_EXERCISES_PER_DAY) return
     // Un esercizio del catalogo si salva col suo id di catalogo (anche se rinominato: la scheda lo segue); uno tuo col suo id.
-    const values = { dayId: day!.id, catalogId: exercise.catalogId, userExerciseId: exercise.catalogId ? null : exercise.userExerciseId, position: items.length, sets: DEFAULT_SETS, repsMin: DEFAULT_REPS }
+    const values = { dayId: day!.id, catalogId: exercise.catalogId, userExerciseId: exercise.catalogId ? null : exercise.userExerciseId, position: items.length, sets: DEFAULT_SETS, repsMin: DEFAULT_REPS, repsPerSet: Array<number>(DEFAULT_SETS).fill(DEFAULT_REPS) }
     actions.addExercise.mutate(values, { onSuccess: () => setLastAdded(exercise.name) })
   }
 

@@ -6,6 +6,7 @@ import { EmptyState, ErrorState, ListSkeleton } from '../../components/States'
 import { cardClass, inputClass } from '../../components/ui'
 import { errorMessage } from '../../data/dbErrors'
 import { useExercises } from '../../data/queries'
+import { useExerciseFilters, type ExerciseFilters } from './useExerciseFilters'
 import {
   EQUIPMENT_KEYS,
   EQUIPMENT_LABEL,
@@ -23,10 +24,7 @@ const PAGE = 60
 /** /palestra/esercizi — ricerca, filtri per gruppo muscolare e attrezzo, esercizi nascosti a richiesta. */
 export function ExercisesScreen() {
   const exercises = useExercises()
-  const [query, setQuery] = useState('')
-  const [muscle, setMuscle] = useState<MuscleKey | ''>('')
-  const [equipment, setEquipment] = useState<EquipmentKey | ''>('')
-  const [showHidden, setShowHidden] = useState(false)
+  const [{ query, muscle, equipment, showHidden }, setFilters] = useExerciseFilters()
   const [visible, setVisible] = useState(PAGE)
 
   const filtered = useMemo(
@@ -34,8 +32,8 @@ export function ExercisesScreen() {
     [exercises.data, query, muscle, equipment, showHidden],
   )
   // Cambiando ricerca o filtri si riparte dai primi risultati.
-  const change = <T,>(set: (value: T) => void) => (value: T) => {
-    set(value)
+  const change = (patch: Partial<ExerciseFilters>) => {
+    setFilters(patch)
     setVisible(PAGE)
   }
 
@@ -59,7 +57,7 @@ export function ExercisesScreen() {
             id="exercise-search"
             type="search"
             value={query}
-            onChange={(event) => change(setQuery)(event.target.value)}
+            onChange={(event) => change({ query: event.target.value })}
             placeholder="Es. panca, curl, pulldown"
             autoComplete="off"
             className={inputClass}
@@ -70,7 +68,7 @@ export function ExercisesScreen() {
             <label htmlFor="exercise-muscle" className="block text-[13px] font-semibold text-ink-2">
               Gruppo muscolare
             </label>
-            <select id="exercise-muscle" value={muscle} onChange={(event) => change(setMuscle)(event.target.value as MuscleKey | '')} className={inputClass}>
+            <select id="exercise-muscle" value={muscle} onChange={(event) => change({ muscle: event.target.value as MuscleKey | '' })} className={inputClass}>
               <option value="">Tutti</option>
               {MUSCLE_KEYS.map((key) => (
                 <option key={key} value={key}>
@@ -83,7 +81,7 @@ export function ExercisesScreen() {
             <label htmlFor="exercise-equipment" className="block text-[13px] font-semibold text-ink-2">
               Attrezzo
             </label>
-            <select id="exercise-equipment" value={equipment} onChange={(event) => change(setEquipment)(event.target.value as EquipmentKey | '')} className={inputClass}>
+            <select id="exercise-equipment" value={equipment} onChange={(event) => change({ equipment: event.target.value as EquipmentKey | '' })} className={inputClass}>
               <option value="">Tutti</option>
               {EQUIPMENT_KEYS.map((key) => (
                 <option key={key} value={key}>
@@ -94,7 +92,7 @@ export function ExercisesScreen() {
           </div>
         </div>
         <label className="flex min-h-11 items-center gap-3 text-[15px] text-ink">
-          <input type="checkbox" checked={showHidden} onChange={(event) => change(setShowHidden)(event.target.checked)} className="size-5 accent-green" />
+          <input type="checkbox" checked={showHidden} onChange={(event) => change({ showHidden: event.target.checked })} className="size-5 accent-green" />
           Mostra anche i nascosti
         </label>
 

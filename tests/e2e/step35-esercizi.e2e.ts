@@ -42,6 +42,17 @@ test('Step 35 · libreria esercizi: cerca, filtra, note, modifica, nascondi, cre
   const dbChest = Number(sql("select count(*) from public.exercise_catalog where equipment = 'dumbbell' and ('chest' = any (primary_muscles) or 'chest' = any (secondary_muscles))"))
   await expect(p.getByRole('status')).toHaveText(dbChest === 1 ? '1 esercizio' : `${dbChest} esercizi`)
 
+  // Aprire un esercizio e tornare indietro: ricerca e filtri restano com'erano.
+  await p.getByRole('link', { name: /^Panca piana con manubri/ }).first().click()
+  await p.getByRole('heading', { name: 'Panca piana con manubri', level: 1 }).waitFor()
+  await p.getByRole('link', { name: 'Indietro' }).click()
+  await expect(p.getByLabel('Gruppo muscolare')).toHaveValue('chest')
+  await expect(p.getByLabel('Attrezzo')).toHaveValue('dumbbell')
+  await expect(p.getByRole('status')).toHaveText(dbChest === 1 ? '1 esercizio' : `${dbChest} esercizi`)
+
+  await p.getByLabel('Gruppo muscolare').selectOption({ label: 'Tutti' })
+  await p.getByLabel('Attrezzo').selectOption({ label: 'Tutti' })
+
   // Scheda: nota → nasce la copia personale.
   await p.getByLabel('Cerca un esercizio').fill('Panca piana con manubri')
   await p.getByRole('link', { name: /^Panca piana con manubri/ }).first().click()

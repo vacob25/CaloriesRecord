@@ -8,15 +8,18 @@ import {
   EXERCISE_NOTE_MAX,
   MAX_SETS,
   MIN_SETS,
+  addSet,
   describeSets,
-  formatReps,
+  effectiveReps,
   formatRest,
+  parseRepsCount,
   parseRest,
-  parseReps,
   parseWeight,
+  removeSet,
+  setRepsAt,
   setWeightAt,
-  withSets,
   type PlanExercise,
+  type SetsPatch,
 } from '../../lib/workoutPlans'
 import type { PlanExercisePatch } from '../../data/workoutPlans'
 
@@ -33,24 +36,32 @@ interface Props {
 
 const iconButton = 'flex size-11 items-center justify-center rounded-full border border-line bg-surface text-[20px] font-bold disabled:opacity-40'
 const smallLabel = 'block text-[13px] font-semibold text-ink-2'
+const weightText = (weight: number | null) => (weight === null ? '' : formatNumber(weight, 1))
 
 /**
- * Un esercizio nel giorno di una scheda: serie con − e +, ripetizioni (un numero o 8-12), peso per serie, recupero, nota,
- * riordino e rimozione. I campi di testo si salvano quando si esce dal campo; un valore non valido resta scritto, con il motivo.
+ * Un esercizio nel giorno di una scheda: una riga per serie con ripetizioni (a sinistra) e peso (a destra), "Aggiungi serie"
+ * (copia l'ultima), recupero, nota, riordino e rimozione. I campi di testo si salvano quando si esce dal campo; un valore non valido resta scritto, con il motivo.
  */
 export function PlanExerciseCard({ item, view, index, count, busy, onUpdate, onMove, onRemove }: Props) {
-  const [reps, setReps] = useState(formatReps(item.repsMin, item.repsMax))
+  const [reps, setReps] = useState(() => effectiveReps(item).map(String))
   const [rest, setRest] = useState(formatRest(item.restSeconds))
   const [note, setNote] = useState(item.note)
-  const [weights, setWeights] = useState(() => item.weightsKg.map((weight) => (weight === null ? '' : formatNumber(weight, 1))))
-  const [errors, setErrors] = useState<{ reps?: string; rest?: string; weights: Record<number, string> }>({ weights: {} })
-  const [showWeights, setShowWeights] = useState(item.weightsKg.some((weight) => weight !== null))
+  const [weights, setWeights] = useState(() => Array.from({ length: item.sets }, (_, serie) => weightText(item.weightsKg[serie] ?? null)))
+  const [errors, setErrors] = useState<{ rest?: string; reps: Record<number, string>; weights: Record<number, string> }>({ reps: {}, weights: {} })
   const [confirmRemove, setConfirmRemove] = useState(false)
 
-  const commitReps = () => {
-    const result = parseReps(reps)
-    setErrors((current) => ({ ...current, reps: result.ok ? undefined : result.message }))
-    if (result.ok && (result.min !== item.repsMin || result.max !== item.repsMax)) onUpdate({ repsMin: result.min, repsMax: result.max })
+  /** Dopo aggiungi/togli serie le bozze dei campi si riallineano alla scheda. */
+  const applySets = (patch: SetsPatch) => {
+    setReps(patch.repsPerSet.map(String))
+    setWeights(Array.from({ length: patch.sets }, (_, serie) => weightText(patch.weightsKg[serie] ?? null)))
+    setErrors((current) => ({ ...current, reps: {}, weights: {} }))
+    onUpdate(patch)
+  }
+  const commitReps = (serie: number) => {
+    const result = parseRepsCount(reps[serie] ?? '')
+    setErrors((current) => ({ ...current, reps: { ...current.reps, [serie]: result.ok ? '' : result.message } }))
+    if (!result.ok) return
+    if (result.value !== effectiveReps(item)[serie]) onUpdate(setRepsAt(item, serie, result.value))
   }
   const commitRest = () => {
     const result = parseRest(rest)
@@ -64,10 +75,6 @@ export function PlanExerciseCard({ item, view, index, count, busy, onUpdate, onM
     const next = setWeightAt(item.weightsKg, serie, result.value, item.sets)
     if (JSON.stringify(next) !== JSON.stringify(item.weightsKg)) onUpdate({ weightsKg: next })
   }
-  const changeSets = (delta: number) => {
-    const next = withSets(item, item.sets + delta)
-    if (next.sets !== item.sets) onUpdate(next)
-  }
   const id = `item-${item.id}`
 
   return (
@@ -80,81 +87,67 @@ export function PlanExerciseCard({ item, view, index, count, busy, onUpdate, onM
         <p className="mt-0.5 text-[13px] font-semibold text-green-dark">{describeSets(item)}</p>
       </div>
 
-      <div className="flex items-center justify-between">
-        <span id={`${id}-sets`} className="text-[15px] font-bold">
-          Serie
-        </span>
-        <span className="flex items-center gap-2" role="group" aria-labelledby={`${id}-sets`}>
-          <button type="button" aria-label={`Una serie in meno per ${view.name}`} disabled={busy || item.sets <= MIN_SETS} onClick={() => changeSets(-1)} className={iconButton}>
-            −
-          </button>
-          <span aria-live="polite" className="w-8 text-center text-[18px] font-extrabold tabular-nums">
-            {item.sets}
-          </span>
-          <button type="button" aria-label={`Una serie in più per ${view.name}`} disabled={busy || item.sets >= MAX_SETS} onClick={() => changeSets(1)} className={iconButton}>
-            +
-          </button>
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label htmlFor={`${id}-reps`} className={smallLabel}>
-            Ripetizioni
-          </label>
-          <input id={`${id}-reps`} inputMode="text" value={reps} onChange={(event) => setReps(event.target.value)} onBlur={commitReps} aria-invalid={errors.reps ? true : undefined} aria-describedby={errors.reps ? `${id}-reps-err` : undefined} placeholder="10 o 8-12" autoComplete="off" className={inputClass} />
+      <div role="group" aria-label={`Serie di ${view.name}`} className="space-y-2">
+        <div className="grid grid-cols-[3.5rem_1fr_1fr_2.75rem] items-end gap-2 text-[13px] font-semibold text-ink-2" aria-hidden="true">
+          <span>Serie</span>
+          <span>Ripetizioni</span>
+          <span>Chili</span>
+          <span />
         </div>
-        <div>
-          <label htmlFor={`${id}-rest`} className={smallLabel}>
-            Recupero
-          </label>
-          <input id={`${id}-rest`} inputMode="text" value={rest} onChange={(event) => setRest(event.target.value)} onBlur={commitRest} aria-invalid={errors.rest ? true : undefined} aria-describedby={errors.rest ? `${id}-rest-err` : undefined} placeholder="1:30" autoComplete="off" className={inputClass} />
-        </div>
-      </div>
-      {errors.reps && (
-        <p id={`${id}-reps-err`} role="alert" className="text-[13px] font-semibold text-ink">
-          <span aria-hidden="true">⚠︎ </span>
-          {errors.reps}
-        </p>
-      )}
-      {errors.rest && (
-        <p id={`${id}-rest-err`} role="alert" className="text-[13px] font-semibold text-ink">
-          <span aria-hidden="true">⚠︎ </span>
-          {errors.rest}
-        </p>
-      )}
-
-      <button type="button" aria-expanded={showWeights} onClick={() => setShowWeights((value) => !value)} className="flex min-h-11 w-full items-center justify-between text-left text-[15px] font-bold">
-        <span>Peso per serie (facoltativo)</span>
-        <span aria-hidden="true" className="text-[18px] text-muted">
-          {showWeights ? '▾' : '▸'}
-        </span>
-      </button>
-      {showWeights && (
-        <div className="grid grid-cols-2 gap-3">
-          {Array.from({ length: item.sets }, (_, serie) => (
-            <div key={serie}>
-              <label htmlFor={`${id}-w${serie}`} className={smallLabel}>
-                Serie {serie + 1}
-              </label>
-              <div className="relative">
-                <input
-                  id={`${id}-w${serie}`}
-                  inputMode="decimal"
-                  value={weights[serie] ?? ''}
-                  onChange={(event) => setWeights((current) => Object.assign([...current], { [serie]: event.target.value }))}
-                  onBlur={() => commitWeight(serie)}
-                  aria-invalid={errors.weights[serie] ? true : undefined}
-                  autoComplete="off"
-                  className={`${inputClass} pr-12`}
-                />
-                <span className="pointer-events-none absolute inset-y-0 right-4 mt-2 flex items-center text-[15px] text-muted">kg</span>
-              </div>
-              {errors.weights[serie] && <p role="alert" className="mt-1 text-[13px] font-semibold text-ink">{errors.weights[serie]}</p>}
+        {Array.from({ length: item.sets }, (_, serie) => (
+          <div key={serie}>
+            <div className="grid grid-cols-[3.5rem_1fr_1fr_2.75rem] items-center gap-2">
+              <span className="text-[15px] font-bold">{serie + 1}</span>
+              <input
+                aria-label={`Ripetizioni serie ${serie + 1}`}
+                inputMode="numeric"
+                value={reps[serie] ?? ''}
+                onChange={(event) => setReps((current) => Object.assign([...current], { [serie]: event.target.value }))}
+                onBlur={() => commitReps(serie)}
+                aria-invalid={errors.reps[serie] ? true : undefined}
+                autoComplete="off"
+                className={`${inputClass} text-center`}
+              />
+              <input
+                aria-label={`Chili serie ${serie + 1}`}
+                inputMode="decimal"
+                value={weights[serie] ?? ''}
+                onChange={(event) => setWeights((current) => Object.assign([...current], { [serie]: event.target.value }))}
+                onBlur={() => commitWeight(serie)}
+                aria-invalid={errors.weights[serie] ? true : undefined}
+                placeholder="kg"
+                autoComplete="off"
+                className={`${inputClass} text-center`}
+              />
+              <button type="button" aria-label={`Togli serie ${serie + 1} di ${view.name}`} disabled={busy || item.sets <= MIN_SETS} onClick={() => applySets(removeSet(item, serie))} className={`${iconButton} size-11 text-[18px]`}>
+                ×
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+            {(errors.reps[serie] || errors.weights[serie]) && (
+              <p role="alert" className="mt-1 text-[13px] font-semibold text-ink">
+                <span aria-hidden="true">⚠︎ </span>
+                {errors.reps[serie] || errors.weights[serie]}
+              </p>
+            )}
+          </div>
+        ))}
+        <button type="button" disabled={busy || item.sets >= MAX_SETS} onClick={() => applySets(addSet(item))} className="min-h-11 w-full rounded-button border-2 border-green px-4 text-[15px] font-bold text-green-dark disabled:opacity-50">
+          + Aggiungi serie
+        </button>
+      </div>
+
+      <div>
+        <label htmlFor={`${id}-rest`} className={smallLabel}>
+          Recupero
+        </label>
+        <input id={`${id}-rest`} inputMode="text" value={rest} onChange={(event) => setRest(event.target.value)} onBlur={commitRest} aria-invalid={errors.rest ? true : undefined} aria-describedby={errors.rest ? `${id}-rest-err` : undefined} placeholder="1:30" autoComplete="off" className={inputClass} />
+        {errors.rest && (
+          <p id={`${id}-rest-err`} role="alert" className="mt-1 text-[13px] font-semibold text-ink">
+            <span aria-hidden="true">⚠︎ </span>
+            {errors.rest}
+          </p>
+        )}
+      </div>
 
       <div>
         <label htmlFor={`${id}-note`} className={smallLabel}>

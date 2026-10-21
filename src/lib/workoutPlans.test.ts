@@ -16,7 +16,11 @@ import {
   validateDayName,
   validatePlanName,
   weekdayLabel,
-  withSets,
+  addSet,
+  effectiveReps,
+  parseRepsCount,
+  removeSet,
+  setRepsAt,
 } from './workoutPlans'
 
 describe('nomi', () => {
@@ -77,12 +81,30 @@ describe('recupero', () => {
 })
 
 describe('serie e pesi', () => {
-  it('withSets tiene il numero dentro 1-20 e toglie i pesi delle serie tolte', () => {
-    expect(withSets({ weightsKg: [60, 62.5, 65] }, 2)).toEqual({ sets: 2, weightsKg: [60, 62.5] })
-    expect(withSets({ weightsKg: [] }, 0).sets).toBe(1)
-    expect(withSets({ weightsKg: [] }, 99).sets).toBe(20)
-    expect(withSets({ weightsKg: [60] }, 5)).toEqual({ sets: 5, weightsKg: [60] })
-    expect(withSets({ weightsKg: [60, null, 62] }, 2)).toEqual({ sets: 2, weightsKg: [60] }) // niente null in coda
+  it('effectiveReps: una per serie, dove manca vale repsMin', () => {
+    expect(effectiveReps({ sets: 3, repsMin: 10, repsPerSet: [] })).toEqual([10, 10, 10])
+    expect(effectiveReps({ sets: 3, repsMin: 8, repsPerSet: [12, null] })).toEqual([12, 8, 8])
+    expect(effectiveReps({ sets: 2, repsMin: 8, repsPerSet: [12, 10, 9] })).toEqual([12, 10])
+  })
+  it('parseRepsCount: solo interi da 1 a 100', () => {
+    expect(parseRepsCount(' 12 ')).toEqual({ ok: true, value: 12 })
+    for (const bad of ['', '0', '101', '8-12', '1,5', 'abc']) expect(parseRepsCount(bad).ok).toBe(false)
+  })
+  it('setRepsAt tiene repsMin/repsMax allineati al minimo e al massimo', () => {
+    const base = { sets: 3, repsMin: 10, repsPerSet: [10, 10, 10], weightsKg: [60] }
+    expect(setRepsAt(base, 0, 12)).toEqual({ sets: 3, repsPerSet: [12, 10, 10], repsMin: 10, repsMax: 12, weightsKg: [60] })
+    expect(setRepsAt({ ...base, repsPerSet: [12, 10, 10] }, 0, 10)).toMatchObject({ repsMin: 10, repsMax: null })
+    expect(setRepsAt(base, 7, 5).repsPerSet).toEqual([10, 10, 10]) // serie che non esiste
+  })
+  it('addSet copia ripetizioni e peso dell’ultima serie, fino a 20', () => {
+    expect(addSet({ sets: 2, repsMin: 8, repsPerSet: [10, 8], weightsKg: [60, 62.5] })).toEqual({ sets: 3, repsPerSet: [10, 8, 8], repsMin: 8, repsMax: 10, weightsKg: [60, 62.5, 62.5] })
+    expect(addSet({ sets: 1, repsMin: 10, repsPerSet: [], weightsKg: [] })).toMatchObject({ sets: 2, repsPerSet: [10, 10], weightsKg: [] })
+    expect(addSet({ sets: 20, repsMin: 10, repsPerSet: [], weightsKg: [] }).sets).toBe(20)
+  })
+  it('removeSet toglie proprio quella serie (ripetizioni e peso) e ne lascia almeno una', () => {
+    expect(removeSet({ sets: 3, repsMin: 8, repsPerSet: [12, 10, 8], weightsKg: [60, 62.5, 65] }, 1)).toEqual({ sets: 2, repsPerSet: [12, 8], repsMin: 8, repsMax: 12, weightsKg: [60, 65] })
+    expect(removeSet({ sets: 3, repsMin: 8, repsPerSet: [8, 8, 8], weightsKg: [60, null, null] }, 0).weightsKg).toEqual([])
+    expect(removeSet({ sets: 1, repsMin: 8, repsPerSet: [8], weightsKg: [60] }, 0).sets).toBe(1)
   })
   it('setWeightAt riempie con null e accorcia in coda', () => {
     expect(setWeightAt([], 1, 60, 3)).toEqual([null, 60])
@@ -90,10 +112,10 @@ describe('serie e pesi', () => {
     expect(setWeightAt([60, 60], 0, 65, 3)).toEqual([65, 60])
     expect(setWeightAt([60], 5, 70, 3)).toEqual([60]) // serie 6 di 3: non esiste
   })
-  it('describeSets: solo serie×ripetizioni, o con il peso (uguale o a intervallo)', () => {
-    expect(describeSets({ sets: 3, repsMin: 10, repsMax: null, weightsKg: [] })).toBe('3×10')
-    expect(describeSets({ sets: 3, repsMin: 8, repsMax: 12, weightsKg: [60, 60, 60] })).toBe('3×8–12 · 60 kg')
-    expect(describeSets({ sets: 3, repsMin: 8, repsMax: null, weightsKg: [60, null, 62.5] })).toBe('3×8 · 60–62,5 kg')
+  it('describeSets: 3×10 se uguali, elenco se cambiano; con il peso (uguale o a intervallo)', () => {
+    expect(describeSets({ sets: 3, repsMin: 10, repsPerSet: [], weightsKg: [] })).toBe('3×10')
+    expect(describeSets({ sets: 3, repsMin: 8, repsPerSet: [8, 8, 8], weightsKg: [60, 60, 60] })).toBe('3×8 · 60 kg')
+    expect(describeSets({ sets: 3, repsMin: 8, repsPerSet: [12, 10, 8], weightsKg: [60, null, 62.5] })).toBe('12/10/8 · 60–62,5 kg')
   })
 })
 

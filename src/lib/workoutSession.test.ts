@@ -31,7 +31,7 @@ import type { PlanDay, PlanExercise } from './workoutPlans'
 let counter = 0
 const newId = () => `id${++counter}`
 const catalog = (id: string, nameIt: string): CatalogExercise => ({ id, nameIt, nameEn: nameIt, nameNeedsReview: false, equipment: 'dumbbell', primaryMuscles: ['chest'], secondaryMuscles: ['triceps'], category: 'strength', level: 'beginner' })
-const item = (over: Partial<PlanExercise> = {}): PlanExercise => ({ id: 'pe1', dayId: 'd1', catalogId: 'c1', userExerciseId: null, position: 0, sets: 3, repsMin: 8, repsMax: 12, weightsKg: [], restSeconds: 90, note: '', ...over })
+const item = (over: Partial<PlanExercise> = {}): PlanExercise => ({ id: 'pe1', dayId: 'd1', catalogId: 'c1', userExerciseId: null, position: 0, sets: 3, repsMin: 8, repsMax: 12, repsPerSet: [], weightsKg: [], restSeconds: 90, note: '', ...over })
 const day = (id: string, weekday: number | null, position: number): PlanDay => ({ id, planId: 'p', name: id, weekday, position })
 const last = (sets: LastTime['sets']): LastTime => ({ date: '2026-10-19', sets })
 
@@ -56,16 +56,16 @@ describe('suggestDay / isoWeekday', () => {
 })
 
 describe('prefillSets', () => {
-  it('senza ultima volta: pesi della scheda e ripetizioni minime', () => {
-    const sets = prefillSets({ sets: 3, repsMin: 8, weightsKg: [60, null] }, undefined, newId)
-    expect(sets.map((s) => [s.number, s.weightKg, s.reps, s.kind, s.done])).toEqual([[1, 60, 8, 'normal', false], [2, null, 8, 'normal', false], [3, null, 8, 'normal', false]])
+  it('senza ultima volta: pesi e ripetizioni della scheda (dove manca, le minime)', () => {
+    const sets = prefillSets({ sets: 3, repsMin: 8, repsPerSet: [12], weightsKg: [60, null] }, undefined, newId)
+    expect(sets.map((s) => [s.number, s.weightKg, s.reps, s.kind, s.done])).toEqual([[1, 60, 12, 'normal', false], [2, null, 8, 'normal', false], [3, null, 8, 'normal', false]])
   })
   it('con l’ultima volta: stessa serie, o l’ultima se ora sono di più; riscaldamenti esclusi', () => {
-    const sets = prefillSets({ sets: 4, repsMin: 8, weightsKg: [50] }, last([{ number: 1, kind: 'warmup', weightKg: 20, reps: 12 }, { number: 2, kind: 'normal', weightKg: 60, reps: 8 }, { number: 3, kind: 'normal', weightKg: 62.5, reps: 6 }]), newId)
+    const sets = prefillSets({ sets: 4, repsMin: 8, repsPerSet: [], weightsKg: [50] }, last([{ number: 1, kind: 'warmup', weightKg: 20, reps: 12 }, { number: 2, kind: 'normal', weightKg: 60, reps: 8 }, { number: 3, kind: 'normal', weightKg: 62.5, reps: 6 }]), newId)
     expect(sets.map((s) => [s.weightKg, s.reps])).toEqual([[60, 8], [62.5, 6], [62.5, 6], [62.5, 6]])
   })
   it('gli id sono diversi tra loro', () => {
-    const ids = prefillSets({ sets: 3, repsMin: 8, weightsKg: [] }, undefined, newId).map((s) => s.id)
+    const ids = prefillSets({ sets: 3, repsMin: 8, repsPerSet: [], weightsKg: [] }, undefined, newId).map((s) => s.id)
     expect(new Set(ids).size).toBe(3)
   })
 })

@@ -182,6 +182,9 @@ Voci fittizie, mai valori veri del catalogo.
 ### workoutSession.ts (Fase 5a)
 `suggestDay` (giorno della settimana di oggi, altrimenti il successivo all'ultimo fatto), `prefillSets` (dall'ultima volta, altrimenti segnaposto vuoti), `buildSession` (copia nome/attrezzo/muscoli), le funzioni che modificano serie ed esercizi (toggle, aggiungi, togli, stato, nota, termina), `restElapsedSeconds`/`sessionElapsedSeconds` da timestamp, `formatClock`, `summarizeSession` (serie di lavoro: il riscaldamento non conta), `parseDoneReps`. Test end-to-end `step37-allenamento.e2e.ts` e controllo SQL `supabase/checks/workout_sessions.sql` (vincoli, trigger, `last_sets`, snapshot, RLS).
 
+### workoutPlans.ts — ripetizioni per serie (ADR-092)
+`effectiveReps` (una per serie, dove manca vale `repsMin`, tagliate a `sets`), `parseRepsCount` (solo interi 1-100: vuoto, 0, 101, "8-12", "1,5", testo → errore), `setRepsAt`/`addSet`/`removeSet` (`repsMin`/`repsMax` allineati a minimo e massimo; la nuova serie copia l'ultima; toglie ripetizioni e peso di quella serie; almeno una serie), `describeSets` ("3×10" o "12/10/8").
+
 ## Test end-to-end e CI (step 25, ADR-078)
 - `tests/e2e/*.e2e.ts` (Playwright): un file per step o correzione, con l'app vera (build di produzione) contro un Supabase simulato (Postgres con tutte le migrazioni, PostgREST, autenticazione finta in `tests/e2e/support/harness.ts`). Ogni test parte da un database pulito. Istruzioni in `tests/e2e/README.md`.
 - `tests/e2e/accessibilita.e2e.ts`: axe-core (WCAG 2.1 A/AA) e aree toccabili ≥ 44 px su tutte le schermate; fallisce se trova violazioni.
