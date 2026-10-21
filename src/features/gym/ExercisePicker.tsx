@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { SheetFrame } from '../../components/SheetFrame'
 import { inputClass } from '../../components/ui'
-import { EQUIPMENT_LABEL, MUSCLE_LABEL, filterExercises, type Exercise, type MuscleKey } from '../../lib/exercises'
+import { EQUIPMENT_KEYS, EQUIPMENT_LABEL, MUSCLE_LABEL, filterExercises, type EquipmentKey, type Exercise, type MuscleKey } from '../../lib/exercises'
 import { groupByMuscle } from '../../lib/workoutPlans'
 
 const SEARCH_LIMIT = 100
@@ -20,10 +20,12 @@ interface ExercisePickerProps {
 /** Scelta degli esercizi per una scheda: divisi per gruppo muscolare (gruppi apribili), con ricerca; un tocco aggiunge. */
 export function ExercisePicker({ exercises, usageOf, onAdd, onClose, lastAdded }: ExercisePickerProps) {
   const [query, setQuery] = useState('')
-  const [open, setOpen] = useState<ReadonlySet<MuscleKey>>(new Set())
+  const [equipment, setEquipment] = useState<EquipmentKey | ''>('')
+  // Gruppi che l'utente ha girato rispetto al predefinito: chiusi senza filtro attrezzo, aperti con il filtro (così si vede subito il risultato).
+  const [toggled, setToggled] = useState<ReadonlySet<MuscleKey>>(new Set())
   const searching = query.trim() !== ''
 
-  const visible = useMemo(() => filterExercises(exercises, { query, muscle: null, equipment: null, showHidden: false }), [exercises, query])
+  const visible = useMemo(() => filterExercises(exercises, { query, muscle: null, equipment: equipment || null, showHidden: false }), [exercises, query, equipment])
   const groups = useMemo(() => groupByMuscle(visible), [visible])
   const shown = searching ? visible.slice(0, SEARCH_LIMIT) : null
 
@@ -50,28 +52,47 @@ export function ExercisePicker({ exercises, usageOf, onAdd, onClose, lastAdded }
             Cerca
           </label>
           <input id="picker-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Es. panca, curl, pulldown" autoComplete="off" className={inputClass} />
+          <label htmlFor="picker-equipment" className="mt-3 block text-[13px] font-semibold text-ink-2">
+            Attrezzo
+          </label>
+          <select
+            id="picker-equipment"
+            value={equipment}
+            onChange={(event) => {
+              setEquipment(event.target.value as EquipmentKey | '')
+              setToggled(new Set())
+            }}
+            className={inputClass}
+          >
+            <option value="">Tutti</option>
+            {EQUIPMENT_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {EQUIPMENT_LABEL[key]}
+              </option>
+            ))}
+          </select>
           <p role="status" className="mt-2 min-h-5 text-[13px] font-semibold text-green-dark">
             {lastAdded ? `Aggiunto: ${lastAdded}` : ''}
           </p>
           {shown ? (
             <>
-              {shown.length === 0 && <p className="py-4 text-[15px] text-ink-2">Nessun esercizio con questa ricerca.</p>}
+              {shown.length === 0 && <p className="py-4 text-[15px] text-ink-2">Nessun esercizio con questa ricerca o questo attrezzo.</p>}
               <ul className="divide-y divide-line">{shown.map(row)}</ul>
               {visible.length > SEARCH_LIMIT && <p className="py-2 text-[13px] text-muted">Mostrati i primi {SEARCH_LIMIT} di {visible.length}: scrivi di più per restringere.</p>}
             </>
           ) : (
             <ul className="space-y-1">
               {groups.map((group) => {
-                const isOpen = open.has(group.muscle)
+                const isOpen = (equipment !== '') !== toggled.has(group.muscle)
                 return (
                   <li key={group.muscle} className="border-b border-line">
                     <button
                       type="button"
                       aria-expanded={isOpen}
                       onClick={() =>
-                        setOpen((current) => {
+                        setToggled((current) => {
                           const next = new Set(current)
-                          if (isOpen) next.delete(group.muscle)
+                          if (next.has(group.muscle)) next.delete(group.muscle)
                           else next.add(group.muscle)
                           return next
                         })

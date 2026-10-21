@@ -23,6 +23,7 @@ begin
   insert into public.workout_days (plan_id, name, position) values (plan, 'Gambe', 1);
   insert into public.workout_day_exercises (day_id, user_exercise_id, position, sets, reps_min, reps_max, weights_kg, rest_seconds, note)
     values (day, custom, 0, 3, 8, 12, array[60.0, null, 62.5], 90, 'nota');
+  update public.workout_day_exercises set reps_per_set = array[12, 10, 8] where user_exercise_id = custom;
   insert into public.workout_day_exercises (day_id, catalog_id, position) select day, id, 1 from public.exercise_catalog limit 1;
 
   -- Vincoli
@@ -33,6 +34,14 @@ begin
   begin
     insert into public.workout_day_exercises (day_id, catalog_id, weights_kg) select day, id, array[-5] from public.exercise_catalog limit 1;
     raise exception 'FALLITO: peso negativo accettato';
+  exception when check_violation then null; end;
+  begin
+    insert into public.workout_day_exercises (day_id, catalog_id, sets, reps_per_set) select day, id, 2, array[10, 10, 10] from public.exercise_catalog limit 1;
+    raise exception 'FALLITO: più ripetizioni che serie accettate';
+  exception when check_violation then null; end;
+  begin
+    insert into public.workout_day_exercises (day_id, catalog_id, reps_per_set) select day, id, array[0] from public.exercise_catalog limit 1;
+    raise exception 'FALLITO: zero ripetizioni accettate';
   exception when check_violation then null; end;
   begin
     insert into public.workout_day_exercises (day_id, catalog_id, reps_min, reps_max) select day, id, 12, 8 from public.exercise_catalog limit 1;
@@ -70,8 +79,8 @@ begin
   select count(*) into n from public.workout_plans where id = copy_plan and name = 'Scheda prova (copia)';
   if n <> 1 then raise exception 'FALLITO: nome della copia sbagliato'; end if;
   select count(*) into n from public.workout_day_exercises e join public.workout_days d on d.id = e.day_id
-    where d.plan_id = copy_plan and weights_kg = array[60.0, null, 62.5]::numeric(6,1)[] and rest_seconds = 90 and note = 'nota';
-  if n <> 1 then raise exception 'FALLITO: la copia non porta pesi, recupero e nota'; end if;
+    where d.plan_id = copy_plan and weights_kg = array[60.0, null, 62.5]::numeric(6,1)[] and rest_seconds = 90 and note = 'nota' and reps_per_set = array[12, 10, 8]::smallint[];
+  if n <> 1 then raise exception 'FALLITO: la copia non porta pesi, ripetizioni per serie, recupero e nota'; end if;
   select count(*) into n from public.workout_days where plan_id = plan;
   if n <> 2 then raise exception 'FALLITO: la scheda originale è cambiata'; end if;
 

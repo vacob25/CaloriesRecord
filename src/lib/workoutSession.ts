@@ -93,11 +93,11 @@ export function isoWeekday(day: string): number {
 
 /**
  * Serie di partenza di un esercizio della scheda. Per ogni serie prevista: peso e ripetizioni dell'ultima volta (stessa serie,
- * o l'ultima fatta se ora ce ne sono di più); se non c'è un'ultima volta, il peso scritto in scheda e le ripetizioni minime.
+ * o l'ultima fatta se ora ce ne sono di più); se non c'è un'ultima volta, il peso scritto in scheda e le ripetizioni previste per quella serie.
  * I riscaldamenti dell'ultima volta non si ripropongono.
  */
 export function prefillSets(
-  planned: Pick<PlanExercise, 'sets' | 'repsMin' | 'weightsKg'>,
+  planned: Pick<PlanExercise, 'sets' | 'repsMin' | 'repsPerSet' | 'weightsKg'>,
   last: LastTime | undefined,
   newId: () => string,
 ): SessionSet[] {
@@ -109,7 +109,7 @@ export function prefillSets(
       number: index + 1,
       kind: 'normal' as const,
       weightKg: reference?.weightKg ?? planned.weightsKg[index] ?? null,
-      reps: reference?.reps ?? planned.repsMin,
+      reps: reference?.reps ?? planned.repsPerSet[index] ?? planned.repsMin,
       done: false,
       completedAt: null,
     }

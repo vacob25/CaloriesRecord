@@ -142,6 +142,7 @@ function applyPatch(item: PlanExercise, patch: PlanExercisePatch): PlanExercise 
     ...(patch.sets !== undefined && { sets: patch.sets }),
     ...(patch.repsMin !== undefined && { repsMin: patch.repsMin }),
     ...(patch.repsMax !== undefined && { repsMax: patch.repsMax }),
+    ...(patch.repsPerSet !== undefined && { repsPerSet: patch.repsPerSet }),
     ...(patch.weightsKg !== undefined && { weightsKg: patch.weightsKg }),
     ...(patch.restSeconds !== undefined && { restSeconds: patch.restSeconds }),
     ...(patch.note !== undefined && { note: patch.note.trim() === '' ? '' : patch.note }),

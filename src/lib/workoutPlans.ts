@@ -45,6 +45,8 @@ export interface PlanExercise {
   sets: number
   repsMin: number
   repsMax: number | null
+  /** Ripetizioni per serie (al massimo `sets` valori); dove manca vale `repsMin`. */
+  repsPerSet: (number | null)[]
   /** Un valore per serie (null = non impostato), al massimo `sets`. */
   weightsKg: (number | null)[]
   restSeconds: number | null
@@ -113,12 +115,63 @@ export function formatRest(seconds: number | null): string {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 }
 
-/** Nuovo numero di serie: dentro i limiti, e i pesi in più spariscono (le serie tolte non lasciano pesi orfani). */
-export function withSets(item: Pick<PlanExercise, 'weightsKg'>, sets: number): { sets: number; weightsKg: (number | null)[] } {
-  const clamped = Math.min(MAX_SETS, Math.max(MIN_SETS, Math.round(sets)))
-  const weightsKg = item.weightsKg.slice(0, clamped)
+/** Ripetizioni di ogni serie prevista (`sets` valori): quelle scritte, e `repsMin` dove manca il valore. */
+export const effectiveReps = (item: Pick<PlanExercise, 'sets' | 'repsMin' | 'repsPerSet'>): number[] =>
+  Array.from({ length: item.sets }, (_, index) => item.repsPerSet[index] ?? item.repsMin)
+
+export type RepsCountResult = { ok: true; value: number } | { ok: false; message: string }
+
+/** Ripetizioni di una serie: un numero intero da 1 a 100. */
+export function parseRepsCount(input: string): RepsCountResult {
+  const text = input.trim()
+  if (!/^\d{1,3}$/.test(text) || Number(text) < 1 || Number(text) > MAX_REPS) return { ok: false, message: `Le ripetizioni vanno da 1 a ${MAX_REPS}.` }
+  return { ok: true, value: Number(text) }
+}
+
+/** Colonne da salvare dopo aver cambiato le serie: `repsMin`/`repsMax` seguono il minimo e il massimo delle serie. */
+export interface SetsPatch {
+  sets: number
+  repsPerSet: number[]
+  repsMin: number
+  repsMax: number | null
+  weightsKg: (number | null)[]
+}
+
+function toPatch(repsPerSet: number[], weights: readonly (number | null)[]): SetsPatch {
+  const min = Math.min(...repsPerSet)
+  const max = Math.max(...repsPerSet)
+  const weightsKg = [...weights].slice(0, repsPerSet.length)
   while (weightsKg.length > 0 && weightsKg[weightsKg.length - 1] === null) weightsKg.pop()
-  return { sets: clamped, weightsKg }
+  return { sets: repsPerSet.length, repsPerSet, repsMin: min, repsMax: max === min ? null : max, weightsKg }
+}
+
+type SetsItem = Pick<PlanExercise, 'sets' | 'repsMin' | 'repsPerSet' | 'weightsKg'>
+
+/** Cambia le ripetizioni di una serie (0 = prima). */
+export function setRepsAt(item: SetsItem, index: number, reps: number): SetsPatch {
+  const next = effectiveReps(item)
+  if (index >= 0 && index < next.length) next[index] = reps
+  return toPatch(next, item.weightsKg)
+}
+
+/** Aggiunge una serie uguale all'ultima (ripetizioni e peso), fino a `MAX_SETS`. */
+export function addSet(item: SetsItem): SetsPatch {
+  const reps = effectiveReps(item)
+  if (reps.length >= MAX_SETS) return toPatch(reps, item.weightsKg)
+  const weights = Array.from({ length: reps.length }, (_, i) => item.weightsKg[i] ?? null)
+  reps.push(reps[reps.length - 1] ?? DEFAULT_REPS)
+  weights.push(weights[weights.length - 1] ?? null)
+  return toPatch(reps, weights)
+}
+
+/** Toglie la serie `index` (0 = prima): le successive scalano e non restano ripetizioni o pesi orfani. Almeno una serie resta. */
+export function removeSet(item: SetsItem, index: number): SetsPatch {
+  const reps = effectiveReps(item)
+  if (reps.length <= MIN_SETS || index < 0 || index >= reps.length) return toPatch(reps, item.weightsKg)
+  const weights = Array.from({ length: reps.length }, (_, i) => item.weightsKg[i] ?? null)
+  reps.splice(index, 1)
+  weights.splice(index, 1)
+  return toPatch(reps, weights)
 }
 
 /** Peso della serie `index` (0 = prima), null se non impostato. */
@@ -135,9 +188,10 @@ export function setWeightAt(weights: readonly (number | null)[], index: number, 
   return next
 }
 
-/** "3×8–12", con "· 60 kg" se tutte le serie hanno lo stesso peso, o "· 60–65 kg" se cambiano. */
-export function describeSets(item: Pick<PlanExercise, 'sets' | 'repsMin' | 'repsMax' | 'weightsKg'>): string {
-  const base = `${item.sets}×${formatReps(item.repsMin, item.repsMax)}`
+/** "3×10" se le ripetizioni sono uguali, "12/10/8" se cambiano; poi "· 60 kg" (o "· 60–65 kg" se i pesi cambiano). */
+export function describeSets(item: Pick<PlanExercise, 'sets' | 'repsMin' | 'repsPerSet' | 'weightsKg'>): string {
+  const reps = effectiveReps(item)
+  const base = reps.every((value) => value === reps[0]) ? `${item.sets}×${reps[0]}` : reps.join('/')
   const weights = item.weightsKg.filter((weight): weight is number => weight !== null)
   if (weights.length === 0) return base
   const low = Math.min(...weights)

@@ -217,6 +217,13 @@ Accettazione:
 - `npm run test:e2e` passa da zero seguendo `tests/e2e/README.md`; ogni test parte da un database pulito e non dipende dall'ordine.
 - La CI gira su ogni PR senza segreti e senza toccare il progetto reale; se fallisce, il report è scaricabile.
 
+## Ritocco alla Fase 4 · Ripetizioni per serie e filtri (richiesta dell'utente del 21/10/2026, ADR-092)
+Fare: migrazione 018; nelle schede una riga per serie (ripetizioni a sinistra, chili a destra) con "+ Aggiungi serie"; filtro per attrezzo nel selettore degli esercizi; la libreria ricorda ricerca e filtri tornando indietro. Passaggi tuoi: nessuno (la 018 la applico io).
+Accettazione:
+- Un esercizio nuovo ha 3 righe da 10 ripetizioni; "+ Aggiungi serie" crea una riga uguale all'ultima; "×" toglie proprio quella riga con le sue ripetizioni e il suo peso.
+- Nel selettore, scegliendo un attrezzo restano solo gli esercizi di quell'attrezzo, divisi per gruppo.
+- In Esercizi: filtro gruppo + attrezzo, apri un esercizio, torna indietro: i filtri sono rimasti.
+- Avviando un allenamento le ripetizioni previste di ogni serie sono quelle della scheda.
 ## Step 37 · Sessione di allenamento (Fase 5a, ADR-091)
 Fare: migrazione 017 (sessioni, esercizi, serie, `last_sets`); Palestra → Inizia/Riprendi allenamento, Allenamenti (storico); serie con kg, ripetizioni, tipo e spunta; stato esercizio; cronometri; "ultima volta"; schermo acceso; riepilogo. Passaggi tuoi: nessuno (la 017 la applico io). Resta alla 5b: salvataggio offline.
 Accettazione:
@@ -225,7 +232,7 @@ Accettazione:
 - Termina riassume i saltati; lo storico non cambia se poi rinomini l'esercizio.
 - Con una sessione aperta non se ne avvia un'altra.
 ## Step 36 · Schede di allenamento (Fase 4, ADR-090)
-Fare: migrazione 016; Palestra → Schede: crea (nome, giorni, giorno della settimana facoltativo), esercizi per giorno scelti per gruppo muscolare, serie con − e +, ripetizioni (10 o 8-12), peso per serie, recupero, nota, riordino, duplica giorno e scheda, archivia, elimina. Passaggi tuoi: nessuno (la 016 la applico io). Non c'è nessun tempo di recupero di partenza: serve una fonte (Fase 7).
+Fare: migrazione 016; Palestra → Schede: crea (nome, giorni, giorno della settimana facoltativo), esercizi per giorno scelti per gruppo muscolare, serie con − e +, ripetizioni e peso per serie (dal ritocco ADR-092), recupero, nota, riordino, duplica giorno e scheda, archivia, elimina. Passaggi tuoi: nessuno (la 016 la applico io). Non c'è nessun tempo di recupero di partenza: serve una fonte (Fase 7).
 Accettazione:
 - Crei una scheda con 3 giorni e in ognuno aggiungi esercizi dal selettore (gruppi apribili); cercando "pulldown" lo trovi.
 - Serie, ripetizioni (anche 8-12), pesi per serie, recupero e nota si salvano; togliendo una serie sparisce il suo peso.

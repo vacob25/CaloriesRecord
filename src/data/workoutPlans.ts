@@ -25,12 +25,13 @@ interface ItemRow {
   sets: number
   reps_min: number
   reps_max: number | null
+  reps_per_set: (number | null)[] | null
   weights_kg: (number | string | null)[] | null
   rest_seconds: number | null
   note: string | null
 }
 
-const ITEM_COLUMNS = 'id, day_id, catalog_id, user_exercise_id, position, sets, reps_min, reps_max, weights_kg, rest_seconds, note'
+const ITEM_COLUMNS = 'id, day_id, catalog_id, user_exercise_id, position, sets, reps_min, reps_max, reps_per_set, weights_kg, rest_seconds, note'
 
 const toDay = (row: DayRow): PlanDay => ({ id: row.id, planId: row.plan_id, name: row.name, weekday: row.weekday, position: row.position })
 const toItem = (row: ItemRow): PlanExercise => ({
@@ -42,6 +43,7 @@ const toItem = (row: ItemRow): PlanExercise => ({
   sets: row.sets,
   repsMin: row.reps_min,
   repsMax: row.reps_max,
+  repsPerSet: row.reps_per_set ?? [],
   weightsKg: (row.weights_kg ?? []).map((weight) => (weight === null ? null : Number(weight))),
   restSeconds: row.rest_seconds,
   note: row.note ?? '',
@@ -158,6 +160,7 @@ export interface NewPlanExercise {
   position: number
   sets: number
   repsMin: number
+  repsPerSet: number[]
 }
 
 export async function addPlanExercise(values: NewPlanExercise): Promise<void> {
@@ -168,6 +171,7 @@ export async function addPlanExercise(values: NewPlanExercise): Promise<void> {
     position: values.position,
     sets: values.sets,
     reps_min: values.repsMin,
+    reps_per_set: values.repsPerSet,
   })
   throwIfError(error)
 }
@@ -176,6 +180,7 @@ export interface PlanExercisePatch {
   sets?: number
   repsMin?: number
   repsMax?: number | null
+  repsPerSet?: (number | null)[]
   weightsKg?: (number | null)[]
   restSeconds?: number | null
   note?: string
@@ -186,6 +191,7 @@ export async function updatePlanExercise(id: string, patch: PlanExercisePatch): 
   if (patch.sets !== undefined) columns.sets = patch.sets
   if (patch.repsMin !== undefined) columns.reps_min = patch.repsMin
   if (patch.repsMax !== undefined) columns.reps_max = patch.repsMax
+  if (patch.repsPerSet !== undefined) columns.reps_per_set = patch.repsPerSet
   if (patch.weightsKg !== undefined) columns.weights_kg = patch.weightsKg
   if (patch.restSeconds !== undefined) columns.rest_seconds = patch.restSeconds
   if (patch.note !== undefined) columns.note = patch.note.trim() === '' ? null : patch.note

@@ -128,6 +128,7 @@ Un indirizzo tecnico per ogni dispositivo con le notifiche attive. `id uuid`, `u
 - `workout_plans`: `id`, `user_id`, `name` (1-80), `is_archived`, `created_at`, `updated_at`; unico `(id, user_id)`.
 - `workout_days`: `plan_id` (chiave composta con `user_id`, cascade), `name` (1-40), `weekday` (1-7 ISO, nullo), `position`.
 - `workout_day_exercises`: `day_id` (composta, cascade), `catalog_id` → `exercise_catalog` o `user_exercise_id` → `user_exercises` (composta, `no action`), uno solo dei due; `position`, `sets` (1-20), `reps_min` (1-100) e `reps_max` (nullo = numero fisso, ≥ `reps_min`), `weights_kg numeric(6,1)[]` (al massimo `sets` valori, 0-1000, nulli ammessi), `rest_seconds` (5-1800, nullo), `note` (≤ 500). RLS: tutto sulle proprie righe. Si esportano.
+- Migrazione 018 (ADR-092): `reps_per_set smallint[]` (al massimo `sets` valori, 1-100, nulli ammessi); dove manca vale `reps_min`. `reps_min`/`reps_max` seguono il minimo e il massimo delle serie. Le funzioni di duplicazione copiano anche `reps_per_set`.
 - Funzioni `duplicate_workout_plan(uuid)` e `duplicate_workout_day(uuid)`: `security invoker`, `set search_path = ''`, execute solo ad `authenticated`; il giorno duplicato va in fondo, senza giorno della settimana, con "(copia)".
 
 ### workout_sessions, workout_session_exercises, workout_sets (migrazione 017, Fase 5a, ADR-091)
